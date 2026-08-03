@@ -1,0 +1,72 @@
+import 'package:manage_app/core/enums/expense_enums.dart';
+import 'package:manage_app/features/expense/models/expense_split_model.dart';
+
+class ExpenseModel {
+  final String? id;
+  final String? title;
+  final double? amount;
+  final ExpenseCategory? category;
+  final DateTime? date;
+  final DateTime? createdAt;
+  final String? groupId;
+  // A member's userId. `null` means "me" - defaults to the creator server-side when omitted.
+  final String? payerId;
+  final List<ExpenseSplit> splits;
+
+  ExpenseModel({
+    this.id,
+    required this.title,
+    required this.amount,
+    required this.category,
+    required this.date,
+    required this.createdAt,
+    this.groupId,
+    this.payerId,
+    this.splits = const [],
+  });
+
+  factory ExpenseModel.fromJson(Map<String, dynamic> json) {
+    return ExpenseModel(
+      id: json['_id'] as String?,
+      title: json['title'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      category: json['category'] != null ? ExpenseCategoryApi.fromApiValue(json['category'] as String) : null,
+      date: DateTime.parse(json['date'] as String),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : null,
+      groupId: json['groupId'] as String?,
+      payerId: (json['payer'] as Map<String, dynamic>?)?['userId'] as String?,
+      splits: json['splits'] != null
+          ? (json['splits'] as List<dynamic>).map((split) => ExpenseSplit.fromJson(split as Map<String, dynamic>)).toList()
+          : const [],
+    );
+  }
+
+  /// Serializes for the create-expense request body. `id` is server-assigned and omitted.
+  /// `payer` is omitted entirely when [payerId] is null so the backend defaults it to the creator.
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'amount': amount,
+      if (category != null) 'category': category!.apiValue,
+      if (date != null) 'date': date!.toIso8601String(),
+      if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
+      if (groupId != null) 'groupId': groupId,
+      if (payerId != null) 'payer': {'userId': payerId},
+      'splits': splits.map((split) => split.toJson()).toList(),
+    };
+  }
+
+  ExpenseModel copyWith({String? title, double? amount, ExpenseCategory? category, DateTime? date, String? payerId, List<ExpenseSplit>? splits}) {
+    return ExpenseModel(
+      id: id,
+      title: title ?? this.title,
+      amount: amount ?? this.amount,
+      category: category ?? this.category,
+      date: date ?? this.date,
+      createdAt: createdAt,
+      groupId: groupId,
+      payerId: payerId ?? this.payerId,
+      splits: splits ?? this.splits,
+    );
+  }
+}

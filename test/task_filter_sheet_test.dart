@@ -1,0 +1,171 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:manage_app/core/enums/expense_enums.dart';
+import 'package:manage_app/core/enums/task_enums.dart';
+import 'package:manage_app/core/resources/app_strings.dart';
+import 'package:manage_app/core/services/expense_service.dart';
+import 'package:manage_app/core/services/group_preference_service.dart';
+import 'package:manage_app/core/services/group_service.dart';
+import 'package:manage_app/core/services/task_service.dart';
+import 'package:manage_app/core/themes/app_theme.dart';
+import 'package:manage_app/features/expense/models/expense_model.dart';
+import 'package:manage_app/features/expense/providers/expense_provider.dart';
+import 'package:manage_app/features/group/models/group_model.dart';
+import 'package:manage_app/features/group/providers/group_provider.dart';
+import 'package:manage_app/features/home/screens/home_screen.dart';
+import 'package:manage_app/features/task/models/task_model.dart';
+import 'package:manage_app/features/task/providers/task_provider.dart';
+import 'package:provider/provider.dart';
+
+class _FakeGroupService extends GroupService {
+  @override
+  Future<List<GroupModel>> listGroups() async => [
+    GroupModel(id: 'group-1', name: 'Test Group', inviteCode: 'TESTCODE', createdBy: 'user-1', createdAt: DateTime(2026, 1, 1)),
+  ];
+}
+
+class _FakeGroupPreferenceService extends GroupPreferenceService {
+  @override
+  Future<String?> readActiveGroupId() async => null;
+
+  @override
+  Future<void> saveActiveGroupId(String? groupId) async {}
+}
+
+class _FakeExpenseService extends ExpenseService {
+  @override
+  Future<List<ExpenseModel>> listExpenses({ExpenseCategory? category, String? groupId}) async => [];
+}
+
+class _FakeTaskService extends TaskService {
+  @override
+  Future<List<TaskModel>> listTasks({TaskStatus? status, String? groupId}) async {
+    final all = [
+      TaskModel(
+        id: '1',
+        title: 'High priority, due today',
+        description: '',
+        priority: TaskPriority.high,
+        status: TaskStatus.open,
+        createdAt: DateTime(2026, 1, 1),
+        dueDate: DateTime.now(),
+      ),
+      TaskModel(
+        id: '2',
+        title: 'Low priority, due tomorrow',
+        description: '',
+        priority: TaskPriority.low,
+        status: TaskStatus.open,
+        createdAt: DateTime(2026, 1, 2),
+        dueDate: DateTime.now().add(const Duration(days: 1)),
+      ),
+      TaskModel(
+        id: '3',
+        title: 'Completed task',
+        description: '',
+        priority: TaskPriority.medium,
+        status: TaskStatus.completed,
+        createdAt: DateTime(2026, 1, 3),
+        dueDate: null,
+      ),
+    ];
+    if (status == null) return all;
+    return all.where((t) => t.status == status).toList();
+  }
+}
+
+Future<void> _pumpHome(WidgetTester tester) async {
+  final groupProvider = GroupProvider(groupService: _FakeGroupService(), groupPreferenceService: _FakeGroupPreferenceService())..onInit();
+  await tester.pumpWidget(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: groupProvider),
+        ChangeNotifierProvider(create: (_) => TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider)..onInit()),
+        ChangeNotifierProvider(
+          create: (_) => ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider)..onInit(),
+        ),
+      ],
+      child: MaterialApp(theme: AppThemes.lightTheme, home: const HomeScreen()),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+void main() {
+  testWidgets('filter icon opens the filter & sort sheet', (tester) async {
+    await _pumpHome(tester);
+
+    expect(find.text('High priority, due today'), findsOneWidget);
+    expect(find.text('Low priority, due tomorrow'), findsOneWidget);
+    expect(find.text('Completed task'), findsNothing); // default status filter is Open
+
+    await tester.tap(find.byIcon(Icons.tune));
+    await tester.pumpAndSettle();
+
+    expect(find.text(AppStrings.filterAndSort), findsOneWidget);
+    expect(find.text(AppStrings.statusLabel), findsOneWidget);
+    expect(find.text(AppStrings.priorityLabel), findsOneWidget);
+    expect(find.text(AppStrings.sortByLabel), findsOneWidget);
+    expect(find.text(AppStrings.dateLabel), findsOneWidget);
+  });
+
+  testWidgets('selecting "All" status shows both open and completed tasks', (tester) async {
+    await _pumpHome(tester);
+
+    await tester.tap(find.byIcon(Icons.tune));
+    await tester.pumpAndSettle();
+
+    // Status dropdown currently shows "Open" (the default filter); tap it to open the
+    // panel, then pick "All" from the list of options.
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    final allOption = find.text(AppStrings.all).first;
+    await tester.ensureVisible(allOption);
+    await tester.pumpAndSettle();
+    await tester.tap(allOption);
+    await tester.pumpAndSettle();
+
+    final provider = tester.element(find.byType(HomeScreen)).read<TaskProvider>();
+    expect(provider.taskStatusFilter, isNull, reason: 'status filter should be null (both) after selecting All');
+    expect(provider.tasks.map((t) => t.title), contains('Completed task'));
+
+    await tester.tap(find.byTooltip(AppStrings.closeTooltip));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Completed task'), findsOneWidget);
+  });
+
+  testWidgets('date filter chip filters the list down to matching due dates', (tester) async {
+    await _pumpHome(tester);
+
+    await tester.tap(find.byIcon(Icons.tune));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(AppStrings.tomorrow));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip(AppStrings.closeTooltip));
+    await tester.pumpAndSettle();
+
+    expect(find.text('High priority, due today'), findsNothing);
+    expect(find.text('Low priority, due tomorrow'), findsOneWidget);
+  });
+
+  testWidgets('Clear All resets filters back to defaults', (tester) async {
+    await _pumpHome(tester);
+
+    await tester.tap(find.byIcon(Icons.tune));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(AppStrings.tomorrow));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(AppStrings.clearAll));
+    await tester.pumpAndSettle();
+
+    final provider = tester.element(find.byType(HomeScreen)).read<TaskProvider>();
+    expect(provider.dateFilterOption, TaskDateFilterOption.all);
+    expect(provider.priorityFilter, isNull);
+    expect(provider.sortOption, TaskSortOption.dueDate);
+    expect(provider.taskStatusFilter, TaskStatus.open);
+  });
+}

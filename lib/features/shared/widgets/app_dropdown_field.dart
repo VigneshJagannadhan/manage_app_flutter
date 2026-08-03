@@ -1,0 +1,153 @@
+import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
+import 'package:manage_app/core/resources/app_assets.dart';
+import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
+
+class AppDropdownField<T> extends StatefulWidget {
+  const AppDropdownField({
+    super.key,
+    required this.items,
+    required this.itemLabelBuilder,
+    this.value,
+    this.onChanged,
+    this.hint,
+    this.enabled = true,
+  });
+
+  final List<T> items;
+  final String Function(T item) itemLabelBuilder;
+  final T? value;
+  final ValueChanged<T>? onChanged;
+  final String? hint;
+  final bool enabled;
+
+  @override
+  State<AppDropdownField<T>> createState() => _AppDropdownFieldState<T>();
+}
+
+class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
+  static const _animDuration = Duration(milliseconds: 200);
+
+  bool _isOpen = false;
+
+  void _toggle() {
+    if (!widget.enabled) return;
+    setState(() => _isOpen = !_isOpen);
+  }
+
+  void _select(T item) {
+    setState(() => _isOpen = false);
+    widget.onChanged?.call(item);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.appTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(theme.appBorderRadius ?? 8);
+    final outlineColor = theme.outlineColor ?? colorScheme.outline;
+    final controlHeight = theme.controlHeight ?? 48;
+    final selectedLabel = widget.value != null ? widget.itemLabelBuilder(widget.value as T) : null;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          button: true,
+          enabled: widget.enabled,
+          label: widget.hint,
+          value: selectedLabel,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: widget.enabled ? _toggle : null,
+            child: Container(
+              height: controlHeight,
+              padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHigh,
+                borderRadius: radius,
+                border: Border.all(color: widget.enabled ? outlineColor : colorScheme.outlineVariant),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedLabel ?? widget.hint ?? '',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.copyWith(color: selectedLabel != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: _isOpen ? 0.5 : 0,
+                    duration: _animDuration,
+                    child: AppSvgIcon(SvgIcons.downArrow, color: colorScheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: _animDuration,
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          child: _isOpen
+              ? Padding(
+                  padding: EdgeInsets.only(top: theme.spacingSmall ?? 8),
+                  child: _DropdownPanel<T>(
+                    items: widget.items,
+                    value: widget.value,
+                    itemLabelBuilder: widget.itemLabelBuilder,
+                    onSelected: _select,
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+}
+
+class _DropdownPanel<T> extends StatelessWidget {
+  const _DropdownPanel({required this.items, required this.value, required this.itemLabelBuilder, required this.onSelected});
+
+  final List<T> items;
+  final T? value;
+  final String Function(T item) itemLabelBuilder;
+  final ValueChanged<T> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.appTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final accentColor = theme.secondaryColor ?? colorScheme.secondary;
+    final itemRadius = BorderRadius.circular(theme.appBorderRadius ?? 8);
+
+    return Material(
+      color: colorScheme.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 8),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: EdgeInsets.all(theme.spacingSmall ?? 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: items.map((item) {
+            final isSelected = item == value;
+            return InkWell(
+              borderRadius: itemRadius,
+              onTap: () => onSelected(item),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16, vertical: theme.spacingSmall ?? 8),
+                decoration: BoxDecoration(borderRadius: itemRadius, border: isSelected ? Border.all(color: accentColor) : null),
+                child: Text(itemLabelBuilder(item), style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface)),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
