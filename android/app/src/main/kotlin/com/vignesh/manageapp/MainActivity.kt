@@ -1,4 +1,4 @@
-package com.example.manage_app
+package com.vignesh.manageapp
 
 import io.flutter.embedding.android.FlutterActivity
 

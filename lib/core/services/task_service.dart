@@ -47,12 +47,12 @@ class TaskService {
     final result = await _api.patch<TaskModel>(
       '${AppUrls.tasks}/$id',
       data: {
-        if (title != null) 'title': title,
-        if (description != null) 'description': description,
-        if (priority != null) 'priority': priority.apiValue,
-        if (status != null) 'status': status.apiValue,
-        if (createdAt != null) 'createdAt': createdAt.toIso8601String(),
-        if (dueDate != null) 'dueDate': dueDate.toIso8601String(),
+        'title': ?title,
+        'description': ?description,
+        'priority': ?priority?.apiValue,
+        'status': ?status?.apiValue,
+        'createdAt': ?createdAt?.toIso8601String(),
+        'dueDate': ?dueDate?.toIso8601String(),
       },
       parser: (data) => TaskModel.fromJson(data as Map<String, dynamic>),
     );
@@ -68,7 +68,7 @@ class TaskService {
   Future<List<TaskModel>> listTasks({TaskStatus? status, String? groupId}) async {
     final result = await _api.get<List<TaskModel>>(
       AppUrls.tasks,
-      queryParameters: {if (status != null) 'status': status.apiValue, if (groupId != null) 'groupId': groupId},
+      queryParameters: {'status': ?status?.apiValue, 'groupId': ?groupId},
       parser: (data) => (data as List<dynamic>).map((task) => TaskModel.fromJson(task as Map<String, dynamic>)).toList(),
     );
     return _unwrap(result);
