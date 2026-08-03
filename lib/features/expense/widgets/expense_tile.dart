@@ -52,7 +52,7 @@ class ExpenseTile extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(((theme.appBorderRadius ?? 12) - AppSpacing.space4)),
-                    color: colorScheme.primary.withOpacity(0.5),
+                    color: colorScheme.primary.withValues(alpha: 0.5),
                   ),
                   child: Icon(iconFor(category), size: 50, color: Colors.white),
                 ),

@@ -37,10 +37,10 @@ class ExpenseService {
     final result = await _api.patch<ExpenseModel>(
       '${AppUrls.expenses}/$id',
       data: {
-        if (title != null) 'title': title,
-        if (amount != null) 'amount': amount,
-        if (category != null) 'category': category.apiValue,
-        if (date != null) 'date': date.toIso8601String(),
+        'title': ?title,
+        'amount': ?amount,
+        'category': ?category?.apiValue,
+        'date': ?date?.toIso8601String(),
       },
       parser: (data) => ExpenseModel.fromJson(data as Map<String, dynamic>),
     );
@@ -56,7 +56,7 @@ class ExpenseService {
   Future<List<ExpenseModel>> listExpenses({ExpenseCategory? category, String? groupId}) async {
     final result = await _api.get<List<ExpenseModel>>(
       AppUrls.expenses,
-      queryParameters: {if (category != null) 'category': category.apiValue, if (groupId != null) 'groupId': groupId},
+      queryParameters: {'category': ?category?.apiValue, 'groupId': ?groupId},
       parser: (data) => (data as List<dynamic>).map((expense) => ExpenseModel.fromJson(expense as Map<String, dynamic>)).toList(),
     );
     return _unwrap(result);
