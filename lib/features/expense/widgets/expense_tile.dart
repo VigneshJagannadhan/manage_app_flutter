@@ -9,13 +9,12 @@ import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/shared/widgets/app_card.dart';
 
 class ExpenseTile extends StatelessWidget {
-  const ExpenseTile({super.key, required this.expense, this.groupName, this.onTap, this.onEdit});
+  const ExpenseTile({super.key, required this.expense, this.groupName, this.onTap});
 
   final ExpenseModel expense;
   // Shown only in "all groups" mode, where expenses from multiple groups are mixed together.
   final String? groupName;
   final VoidCallback? onTap;
-  final VoidCallback? onEdit;
 
   String get title => expense.title ?? '';
   ExpenseCategory? get category => expense.category;

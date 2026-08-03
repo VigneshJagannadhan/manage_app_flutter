@@ -97,6 +97,11 @@ class AppStrings {
   static const String couldNotCreateExpense = 'Could not create expense. Please try again.';
   static const String editExpenseTooltip = 'Edit expense';
 
+  // expense detail screen
+  static const String expenseDetails = 'Expense Details';
+  static const String splitDetailsLabel = 'Split Details';
+  static const String noSplitsRecorded = 'No splits recorded for this expense';
+
   // settings screen
   static const String checkServerHealth = 'Check Server Health';
   static const String checkingServerHealth = 'Checking...';

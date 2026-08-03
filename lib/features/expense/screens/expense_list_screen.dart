@@ -4,6 +4,7 @@ import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/expense/providers/expense_provider.dart';
+import 'package:manage_app/features/expense/screens/expense_detail_screen.dart';
 import 'package:manage_app/features/expense/screens/expense_form_screen.dart';
 import 'package:manage_app/features/expense/widgets/expense_tile.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
@@ -29,8 +30,8 @@ class ExpenseListScreen extends StatelessWidget {
     return navigationService.push<ExpenseChangeResult>(context, const ExpenseFormScreen());
   }
 
-  Future<void> _openEditExpense(BuildContext context, ExpenseModel expense) {
-    return navigationService.push<ExpenseChangeResult>(context, ExpenseFormScreen(expense: expense));
+  Future<void> _openExpenseDetail(BuildContext context, ExpenseModel expense) {
+    return navigationService.push<ExpenseChangeResult>(context, ExpenseDetailScreen(expense: expense));
   }
 
   @override
@@ -112,8 +113,7 @@ class ExpenseListScreen extends StatelessWidget {
                       child: ExpenseTile(
                         expense: expenses[index],
                         groupName: provider.showAllGroups ? groupProvider.nameForGroup(expenses[index].groupId) : null,
-                        onTap: () => _openEditExpense(context, expenses[index]),
-                        onEdit: () => _openEditExpense(context, expenses[index]),
+                        onTap: () => _openExpenseDetail(context, expenses[index]),
                       ),
                     ),
                   ),
