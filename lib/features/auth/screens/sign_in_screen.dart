@@ -3,6 +3,7 @@ import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
+import 'package:manage_app/core/themes/constants/app_sizing.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/auth/screens/sign_up_screen.dart';
 import 'package:manage_app/features/auth/validators/auth_validators.dart';
@@ -10,6 +11,7 @@ import 'package:manage_app/features/auth/widgets/auth_footer.dart';
 import 'package:manage_app/features/home/screens/home_screen.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
+import 'package:manage_app/features/shared/widgets/app_image.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
@@ -65,7 +67,7 @@ class _SignInScreenState extends State<SignInScreen> {
             spacing: 16,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(AppImages.appLogo, width: 72, height: 72),
+              AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
               Text(AppStrings.welcomeBack, style: context.appTheme.displayMedium, textAlign: TextAlign.center),
               Text(AppStrings.signInSubtitle, style: textTheme.bodyMedium, textAlign: TextAlign.center),
               const SizedBox(height: 8),
@@ -86,15 +88,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 validator: validatePassword,
                 onFieldSubmitted: (_) => _submit(),
               ),
-              AppButton.primary(
-                label: isSubmitting ? AppStrings.signingIn : AppStrings.signIn,
-                onPressed: isSubmitting ? null : _submit,
-              ),
-              AuthFooter(
-                promptText: AppStrings.dontHaveAccount,
-                actionText: AppStrings.signUp,
-                onPressed: isSubmitting ? null : _openSignUp,
-              ),
+              AppButton.primary(label: isSubmitting ? AppStrings.signingIn : AppStrings.signIn, onPressed: isSubmitting ? null : _submit),
+              AuthFooter(promptText: AppStrings.dontHaveAccount, actionText: AppStrings.signUp, onPressed: isSubmitting ? null : _openSignUp),
             ],
           ),
         ),

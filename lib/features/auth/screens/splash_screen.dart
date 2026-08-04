@@ -5,6 +5,7 @@ import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/auth/screens/sign_in_screen.dart';
 import 'package:manage_app/features/home/screens/home_screen.dart';
+import 'package:manage_app/features/shared/widgets/app_image.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +27,14 @@ class _SplashScreenState extends State<SplashScreen> {
     await context.read<AuthProvider>().restoreSession();
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (isAuthenticated) {
+      // we need to load the data here before navigating to the home screen.
+      // Our goal is to make sure the app has as less loading as possible
+    }
+
+    if (!mounted) return;
     navigationService.pushReplacement(context, isAuthenticated ? HomeScreen() : const SignInScreen());
   }
 
@@ -36,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(AppImages.appLogo, width: 120, height: 120),
+            AppImage.asset(source: AppImages.appLogo, width: 120, height: 120),
             SizedBox(height: 32),
             CircularProgressIndicator.adaptive(backgroundColor: context.appTheme.primaryColor),
           ],
