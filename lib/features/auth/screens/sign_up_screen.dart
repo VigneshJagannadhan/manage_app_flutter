@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
+import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
+import 'package:manage_app/core/themes/constants/app_sizing.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/auth/validators/auth_validators.dart';
 import 'package:manage_app/features/auth/widgets/auth_footer.dart';
 import 'package:manage_app/features/home/screens/home_screen.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
+import 'package:manage_app/features/shared/widgets/app_image.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/app_text_field.dart';
-import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -75,7 +78,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final isSubmitting = context.watch<AuthProvider>().isLoading;
 
     return AppScaffold(
-      appBar: ScreenAppBar(title: AppStrings.createAccount),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -84,6 +86,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: AppBodyColumn(
                 spacing: 16,
                 children: [
+                  AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
+                  Text(AppStrings.createAccount, style: context.appTheme.displayMedium, textAlign: TextAlign.center),
                   Text(AppStrings.signUpSubtitle, style: textTheme.bodyMedium, textAlign: TextAlign.center),
                   const SizedBox(height: 8),
                   AppTextField(
