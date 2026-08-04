@@ -1,4 +1,4 @@
-# manage_app
+# TaskEasy
 
 A new Flutter project.
 

@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 /// can be swapped in one place if needed.
 class AppStyles {
   static TextStyle createStyle({required double fontSize, required FontWeight fontWeight, required Color color}) {
-    return GoogleFonts.roboto(fontSize: fontSize, fontWeight: fontWeight, color: color);
+    return GoogleFonts.bitcountPropSingle(fontSize: fontSize, fontWeight: fontWeight, color: color);
   }
 
   static TextStyle displayLarge({required Color color}) => createStyle(fontSize: 57, fontWeight: FontWeight.bold, color: color);
