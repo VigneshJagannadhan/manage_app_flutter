@@ -1,15 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/themes/constants/app_radius.dart';
 
 enum _AppImageSource { asset, network }
 
 class AppImage extends StatelessWidget {
-  const AppImage.asset({super.key, required this.source, this.width, this.height, this.fit, this.radius = AppRadius.large})
-    : _source = _AppImageSource.asset;
+  const AppImage.asset({super.key, required this.source, this.width, this.height, this.fit, this.radius}) : _source = _AppImageSource.asset;
 
-  const AppImage.network({super.key, required this.source, this.width, this.height, this.fit, this.radius = AppRadius.large})
+  const AppImage.network({super.key, required this.source, this.width, this.height, this.fit, this.radius})
     : _source = _AppImageSource.network;
 
   final String source;
@@ -39,8 +37,9 @@ class AppImage extends StatelessWidget {
       ),
     };
 
-    if (radius == null) return image;
-    return ClipRRect(borderRadius: BorderRadius.circular(radius!), child: image);
+    final resolvedRadius = radius ?? context.appTheme.appBorderRadius ?? 8.0;
+    if (resolvedRadius <= 0) return image;
+    return ClipRRect(borderRadius: BorderRadius.circular(resolvedRadius), child: image);
   }
 
   Widget _buildStatus(BuildContext context, Widget child) {
