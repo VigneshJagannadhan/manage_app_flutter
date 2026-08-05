@@ -32,8 +32,13 @@ class ManageApp extends StatefulWidget {
 }
 
 class _ManageAppState extends State<ManageApp> {
-  late final _groupProvider = GroupProvider(groupService: groupService, groupPreferenceService: groupPreferenceService)
-    ..onInit();
+  late final _authProvider = AuthProvider(authService: authService, tokenStorageService: tokenStorageService)..onInit();
+
+  // Depends on _authProvider being constructed first so GroupProvider.onInit() sees
+  // its real isAuthenticated value instead of racing session restoration/login.
+  late final _groupProvider =
+      GroupProvider(groupService: groupService, groupPreferenceService: groupPreferenceService, authProvider: _authProvider)
+        ..onInit();
 
   @override
   void initState() {
@@ -58,9 +63,7 @@ class _ManageAppState extends State<ManageApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(authService: authService, tokenStorageService: tokenStorageService)..onInit(),
-        ),
+        ChangeNotifierProvider.value(value: _authProvider),
         ChangeNotifierProvider.value(value: _groupProvider),
         ChangeNotifierProvider(
           create: (_) => TaskProvider(taskService: taskService, groupProvider: _groupProvider)..onInit(),

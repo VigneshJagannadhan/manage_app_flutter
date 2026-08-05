@@ -2,15 +2,17 @@ import 'dart:async';
 
 import 'package:manage_app/core/services/group_preference_service.dart';
 import 'package:manage_app/core/services/group_service.dart';
+import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/group/models/group_member_model.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
 import 'package:manage_app/features/shared/providers/base_provider.dart';
 
 class GroupProvider extends BaseProvider {
-  GroupProvider({required this.groupService, required this.groupPreferenceService});
+  GroupProvider({required this.groupService, required this.groupPreferenceService, required this.authProvider});
 
   final GroupService groupService;
   final GroupPreferenceService groupPreferenceService;
+  final AuthProvider authProvider;
 
   final Completer<void> _readyCompleter = Completer<void>();
 
@@ -19,15 +21,39 @@ class GroupProvider extends BaseProvider {
   /// because group restoration is still in flight.
   Future<void> get ready => _readyCompleter.future;
 
+  bool _wasAuthenticated = false;
+
   @override
   void onInit() {
-    _restore();
+    _wasAuthenticated = authProvider.isAuthenticated;
+    authProvider.addListener(_onAuthChanged);
+    if (_wasAuthenticated) _restore();
   }
 
   @override
   void onDispose() {
+    authProvider.removeListener(_onAuthChanged);
     _groups = [];
     _membersByGroup.clear();
+  }
+
+  /// [onInit] runs before session restoration or sign-in resolves, so a session-less
+  /// fetch at that point would always 401. Instead the first load is deferred to
+  /// whichever happens first - a restored session or a fresh sign-in - and signing
+  /// out clears the previous account's groups so they don't linger into the next login.
+  void _onAuthChanged() {
+    final isAuthenticated = authProvider.isAuthenticated;
+    if (isAuthenticated == _wasAuthenticated) return;
+    _wasAuthenticated = isAuthenticated;
+    if (isAuthenticated) {
+      _restore();
+    } else {
+      _groups = [];
+      _activeGroupId = null;
+      _membersByGroup.clear();
+      _errorMessage = null;
+      notifyListeners();
+    }
   }
 
   List<GroupModel> _groups = [];

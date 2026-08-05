@@ -3,6 +3,7 @@ import 'package:manage_app/core/constants/app_constants.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
+import 'package:manage_app/core/themes/constants/app_spacing.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/auth/screens/sign_in_screen.dart';
 import 'package:manage_app/features/group/screens/groups_screen.dart';
@@ -80,11 +81,11 @@ class _SettingsBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        ProfileHeader(
-          profile: profileProvider.profile,
-          isLoading: profileProvider.isLoading,
-          onEdit: () => _openEditProfile(context),
-        ),
+        ProfileHeader(profile: profileProvider.profile, isLoading: profileProvider.isLoading, onEdit: () => _openEditProfile(context)),
+        AppButton.primary(label: AppStrings.groups, onPressed: () => _openGroups(context)),
+
+        AppButton.destructive(label: AppStrings.logOut, onPressed: isSigningOut ? null : () => _signOut(context)),
+
         Semantics(
           toggled: themeProvider.isDarkMode,
           label: AppStrings.darkMode,
@@ -96,33 +97,29 @@ class _SettingsBody extends StatelessWidget {
             ],
           ),
         ),
-        AppButton.primary(label: AppStrings.groups, onPressed: () => _openGroups(context)),
-        if (provider.showDebugStuff)
+
+        if (provider.showDebugStuff) ...[
           AppButton.primary(
             label: provider.isCheckingHealth ? AppStrings.checkingServerHealth : AppStrings.checkServerHealth,
             onPressed: provider.isCheckingHealth ? null : () => context.read<SettingsProvider>().checkServerHealth(),
           ),
-        if (result != null)
-          Text(
-            'Status: ${result.status}\nUptime: ${result.uptime.toStringAsFixed(2)}s\nDB: ${result.db}',
-            style: context.appTheme.bodyMedium?.copyWith(color: Colors.green.shade700),
-          ),
-        if (error != null)
-          Text(
-            AppStrings.serverDown,
-            style: context.appTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error),
-          ),
-        AppButton.destructive(label: AppStrings.logOut, onPressed: isSigningOut ? null : () => _signOut(context)),
+          if (result != null)
+            Text(
+              'Status: ${result.status}\nUptime: ${result.uptime.toStringAsFixed(2)}s\nDB: ${result.db}',
+              style: context.appTheme.bodyMedium?.copyWith(color: Colors.green.shade700),
+            ),
+          if (error != null) Text(AppStrings.serverDown, style: context.appTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error)),
+        ],
+
+        Spacer(),
         InkWell(
           onDoubleTap: () => provider.toggleDebugStuff(),
           child: Align(
             alignment: Alignment.center,
-            child: Text(
-              appVersion,
-              style: context.appTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-            ),
+            child: Text(appVersion, style: context.appTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ),
         ),
+        SizedBox(height: AppSpacing.space20),
       ],
     );
   }
