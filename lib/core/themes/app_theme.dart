@@ -24,6 +24,8 @@ class AppThemes {
     surface: AppColors.backgroundColor,
     onSurface: AppColors.textColor,
     outline: AppColors.outlineColor,
+    error: AppColors.errorColor,
+    onError: Colors.white,
     surfaceContainerLowest: AppColors.surfaceColor,
     surfaceContainerLow: AppColors.surfaceColor,
     surfaceContainer: AppColors.surfaceColor,
@@ -39,6 +41,8 @@ class AppThemes {
     surface: AppColors.backgroundColorDark,
     onSurface: AppColors.textColorDark,
     outline: AppColors.outlineColorDark,
+    error: AppColors.errorColorDark,
+    onError: Colors.white,
     surfaceContainerLowest: AppColors.surfaceColorDark,
     surfaceContainerLow: AppColors.surfaceColorDark,
     surfaceContainer: AppColors.surfaceColorDark,
@@ -80,6 +84,7 @@ class AppThemes {
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColor)),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
       iconTheme: WidgetStateProperty.resolveWith(
         (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColor : AppColors.outlineColor),
       ),
@@ -132,6 +137,7 @@ class AppThemes {
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColorDark)),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
       iconTheme: WidgetStateProperty.resolveWith(
         (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColorDark : AppColors.outlineColorDark),
       ),

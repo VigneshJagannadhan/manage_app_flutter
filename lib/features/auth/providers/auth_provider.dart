@@ -72,6 +72,13 @@ class AuthProvider extends BaseProvider {
     }
   }
 
+  /// Syncs a freshly edited profile back into in-memory and persisted session state.
+  Future<void> updateCurrentUser(UserModel user) async {
+    _currentUser = user;
+    notifyListeners();
+    await tokenStorageService.updateUser(user);
+  }
+
   Future<void> signOut() async {
     final refreshToken = await tokenStorageService.readRefreshToken();
     _isLoading = true;

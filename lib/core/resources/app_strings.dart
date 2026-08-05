@@ -108,6 +108,24 @@ class AppStrings {
   static const String serverDown = 'Server down';
   static const String darkMode = 'Dark Mode';
 
+  // profile
+  static const String editProfileTooltip = 'Edit profile';
+  static const String editProfile = 'Edit Profile';
+  static const String phoneLabel = 'Phone';
+  static const String invalidPhone = 'Enter a valid phone number';
+  static const String updateProfile = 'Update Profile';
+  static const String updating = 'Updating...';
+  static const String profileUpdated = 'Profile updated';
+  static const String couldNotLoadProfile = 'Could not load profile. Please try again.';
+  static const String changePassword = 'Change Password';
+  static const String currentPasswordLabel = 'Current Password';
+  static const String newPasswordLabel = 'New Password';
+  static const String confirmNewPasswordLabel = 'Confirm New Password';
+  static const String currentPasswordRequired = 'Current password is required';
+  static const String changingPassword = 'Changing Password...';
+  static const String passwordChanged = 'Password changed';
+  static const String passwordChangedNote = "You'll need to sign in again on your other devices.";
+
   // auth
   static const String signIn = 'Sign In';
   static const String signUp = 'Sign Up';

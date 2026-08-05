@@ -3,11 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:manage_app/core/enums/expense_enums.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
+import 'package:manage_app/core/services/auth_service.dart';
 import 'package:manage_app/core/services/expense_service.dart';
 import 'package:manage_app/core/services/group_preference_service.dart';
 import 'package:manage_app/core/services/group_service.dart';
 import 'package:manage_app/core/services/task_service.dart';
+import 'package:manage_app/core/services/token_storage_service.dart';
 import 'package:manage_app/core/themes/app_theme.dart';
+import 'package:manage_app/features/auth/models/auth_session_model.dart';
+import 'package:manage_app/features/auth/models/token_pair_model.dart';
+import 'package:manage_app/features/auth/models/user_model.dart';
+import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
@@ -16,6 +22,14 @@ import 'package:manage_app/features/home/screens/home_screen.dart';
 import 'package:manage_app/features/task/models/task_model.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
 import 'package:provider/provider.dart';
+
+class _FakeTokenStorageService extends TokenStorageService {
+  @override
+  Future<AuthSessionModel?> readSession() async => AuthSessionModel(
+    user: const UserModel(id: 'user-1', name: 'Test User', email: 'test@example.com'),
+    tokens: const TokenPairModel(accessToken: 'access', refreshToken: 'refresh'),
+  );
+}
 
 class _FakeGroupService extends GroupService {
   @override
@@ -75,10 +89,15 @@ class _FakeTaskService extends TaskService {
 }
 
 Future<void> _pumpHome(WidgetTester tester) async {
-  final groupProvider = GroupProvider(groupService: _FakeGroupService(), groupPreferenceService: _FakeGroupPreferenceService())..onInit();
+  final authProvider = AuthProvider(authService: AuthService(), tokenStorageService: _FakeTokenStorageService())..onInit();
+  await authProvider.restoreSession();
+  final groupProvider =
+      GroupProvider(groupService: _FakeGroupService(), groupPreferenceService: _FakeGroupPreferenceService(), authProvider: authProvider)
+        ..onInit();
   await tester.pumpWidget(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider.value(value: groupProvider),
         ChangeNotifierProvider(create: (_) => TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider)..onInit()),
         ChangeNotifierProvider(

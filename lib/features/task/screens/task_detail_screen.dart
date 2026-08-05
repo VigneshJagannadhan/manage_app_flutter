@@ -120,7 +120,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             Text(description, style: theme.bodyLarge),
             Divider(color: colorScheme.outlineVariant),
             if (assigneeName != null)
-              _DetailRow(icon: Icon(Icons.person, size: 18, color: colorScheme.outline), label: AppStrings.assignedToLabel, value: assigneeName),
+              _DetailRow(
+                icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
+                label: AppStrings.assignedToLabel,
+                value: assigneeName,
+              ),
             _DetailRow(
               icon: AppSvgIcon(SvgIcons.calendar, size: 18, color: colorScheme.outline),
               label: AppStrings.due,
@@ -131,22 +135,26 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               label: AppStrings.created,
               value: createdAt,
             ),
-            SizedBox(height: theme.spacingLarge ?? 24),
-            Row(
-              spacing: theme.spacingMedium ?? 16,
-              children: [
-                Expanded(
-                  child: AppButton.secondary(label: AppStrings.edit, onPressed: _isClosing ? null : _editTask),
-                ),
-                Expanded(
-                  child: AppButton.primary(
-                    label: _isCompleted ? AppStrings.completed : (_isClosing ? AppStrings.closing : AppStrings.closeTask),
-                    onPressed: (_isCompleted || _isClosing) ? null : _closeTask,
-                  ),
-                ),
-              ],
-            ),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+          child: Row(
+            spacing: theme.spacingMedium ?? 16,
+            children: [
+              Expanded(
+                child: AppButton.secondary(label: AppStrings.edit, onPressed: _isClosing ? null : _editTask),
+              ),
+              Expanded(
+                child: AppButton.primary(
+                  label: _isCompleted ? AppStrings.completed : (_isClosing ? AppStrings.closing : AppStrings.closeTask),
+                  onPressed: (_isCompleted || _isClosing) ? null : _closeTask,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
