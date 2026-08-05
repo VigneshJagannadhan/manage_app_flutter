@@ -68,7 +68,7 @@ class AppBottomSheet extends StatelessWidget {
                 child: Row(
                   children: [
                     if (icon != null) ...[Icon(icon, color: colorScheme.primary), SizedBox(width: spacingSmall)],
-                    Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge)),
+                    Expanded(child: Text(title, style: theme.titleLarge)),
                     IconButton(icon: const AppSvgIcon(SvgIcons.close), onPressed: () => navigationService.pop(context), tooltip: AppStrings.closeTooltip),
                   ],
                 ),

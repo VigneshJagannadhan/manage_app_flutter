@@ -33,7 +33,7 @@ class ScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       titleSpacing: showBackButton ? 0 : (theme.horizontalMargin ?? 16),
-      title: Text(title, style: Theme.of(context).textTheme.titleLarge),
+      title: Text(title, style: theme.titleLarge),
       actions: actions,
     );
   }

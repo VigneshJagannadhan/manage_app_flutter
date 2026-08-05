@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
+import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
+import 'package:manage_app/core/themes/constants/app_sizing.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/auth/screens/sign_up_screen.dart';
 import 'package:manage_app/features/auth/validators/auth_validators.dart';
@@ -9,6 +11,7 @@ import 'package:manage_app/features/auth/widgets/auth_footer.dart';
 import 'package:manage_app/features/home/screens/home_screen.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
+import 'package:manage_app/features/shared/widgets/app_image.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
@@ -53,51 +56,40 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final isSubmitting = context.watch<AuthProvider>().isLoading;
 
     return AppScaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Form(
-              key: _formKey,
-              child: AppBodyColumn(
-                spacing: 16,
-                children: [
-                  Text(AppStrings.appName, style: textTheme.titleMedium?.copyWith(color: context.appTheme.primaryColor)),
-                  Text(AppStrings.welcomeBack, style: textTheme.headlineSmall, textAlign: TextAlign.center),
-                  Text(AppStrings.signInSubtitle, style: textTheme.bodyMedium, textAlign: TextAlign.center),
-                  const SizedBox(height: 8),
-                  AppTextField(
-                    label: AppStrings.emailLabel,
-                    controller: _emailController,
-                    prefixIcon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    enabled: !isSubmitting,
-                    validator: validateEmail,
-                  ),
-                  AppTextField.password(
-                    label: AppStrings.passwordLabel,
-                    controller: _passwordController,
-                    textInputAction: TextInputAction.done,
-                    enabled: !isSubmitting,
-                    validator: validatePassword,
-                    onFieldSubmitted: (_) => _submit(),
-                  ),
-                  AppButton.primary(
-                    label: isSubmitting ? AppStrings.signingIn : AppStrings.signIn,
-                    onPressed: isSubmitting ? null : _submit,
-                  ),
-                  AuthFooter(
-                    promptText: AppStrings.dontHaveAccount,
-                    actionText: AppStrings.signUp,
-                    onPressed: isSubmitting ? null : _openSignUp,
-                  ),
-                ],
+        child: Form(
+          key: _formKey,
+          child: AppBodyColumn(
+            spacing: 16,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
+              Text(AppStrings.welcomeBack, style: context.appTheme.displayMedium, textAlign: TextAlign.center),
+              Text(AppStrings.signInSubtitle, style: context.appTheme.bodyMedium, textAlign: TextAlign.center),
+              const SizedBox(height: 8),
+              AppTextField(
+                label: AppStrings.emailLabel,
+                controller: _emailController,
+                prefixIcon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                enabled: !isSubmitting,
+                validator: validateEmail,
               ),
-            ),
+              AppTextField.password(
+                label: AppStrings.passwordLabel,
+                controller: _passwordController,
+                textInputAction: TextInputAction.done,
+                enabled: !isSubmitting,
+                validator: validatePassword,
+                onFieldSubmitted: (_) => _submit(),
+              ),
+              AppButton.primary(label: isSubmitting ? AppStrings.signingIn : AppStrings.signIn, onPressed: isSubmitting ? null : _submit),
+              AuthFooter(promptText: AppStrings.dontHaveAccount, actionText: AppStrings.signUp, onPressed: isSubmitting ? null : _openSignUp),
+            ],
           ),
         ),
       ),

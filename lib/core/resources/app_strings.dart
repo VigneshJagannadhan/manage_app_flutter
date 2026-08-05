@@ -1,5 +1,4 @@
 class AppStrings {
-  static const String appName = 'TaskEasy';
   static const String manageEverything = 'Manage Everything';
   static const String manageYourTasks = 'Manage your tasks';
   static const String taskDetails = 'Task Details';
@@ -67,6 +66,7 @@ class AppStrings {
 
   // settings
   static const String settings = 'Settings';
+  static const String appVersion = 'App Version';
 
   // bottom navigation
   static const String tasksTab = 'Tasks';

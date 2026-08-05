@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
@@ -23,7 +24,7 @@ class JournalScreen extends StatelessWidget {
           children: [
             Icon(Icons.book_outlined, size: 48, color: colorScheme.outline),
             const SizedBox(height: 16),
-            Text(AppStrings.journalComingSoon, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+            Text(AppStrings.journalComingSoon, style: context.appTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
           ],
         ),
       ),

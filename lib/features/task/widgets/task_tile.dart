@@ -26,7 +26,6 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final priorityColor = TaskPriorityBadge.colorFor(task.priority ?? TaskPriority.medium, colorScheme);
 
     return AppCard(
@@ -45,12 +44,12 @@ class TaskTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (groupName != null) ...[
-                      Text(groupName!, style: textTheme.labelSmall?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.w700)),
+                      Text(groupName!, style: theme.labelSmall?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.w700)),
                       SizedBox(height: theme.spacingXSmall ?? 4),
                     ],
-                    Text(title, style: textTheme.titleMedium),
+                    Text(title, style: theme.titleMedium),
                     SizedBox(height: theme.spacingXSmall ?? 4),
-                    Text(description, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+                    Text(description, style: theme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
                     SizedBox(height: theme.spacingSmall ?? 8),
                     if (task.dueDate != null) ...[
                       Row(
@@ -60,7 +59,7 @@ class TaskTile extends StatelessWidget {
                           SizedBox(width: theme.spacingXSmall ?? 4),
                           Text(
                             '${AppStrings.due}: ${task.dueDate!.formattedDateTime}',
-                            style: textTheme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
+                            style: theme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
@@ -68,7 +67,7 @@ class TaskTile extends StatelessWidget {
                     ],
                     Text(
                       '${AppStrings.created}: ${task.createdAt?.formattedDateTime}',
-                      style: textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                      style: theme.bodySmall?.copyWith(color: colorScheme.outline),
                     ),
                   ],
                 ),

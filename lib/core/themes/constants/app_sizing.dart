@@ -22,6 +22,7 @@ class AppSizing {
   static const double size22 = 44.0;
   static const double size23 = 46.0;
   static const double size24 = 48.0;
+  static const double size36 = 72.0;
 
   static const double xSmall = AppSizing.size2;
   static const double small = AppSizing.size4;

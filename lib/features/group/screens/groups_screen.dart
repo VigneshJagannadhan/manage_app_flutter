@@ -100,7 +100,7 @@ class GroupsScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(AppStrings.noGroupsYet, style: Theme.of(context).textTheme.titleMedium),
+              Text(AppStrings.noGroupsYet, style: context.appTheme.titleMedium),
               const SizedBox(height: 8),
               Text(AppStrings.noGroupsSubtitle, textAlign: TextAlign.center),
             ],
@@ -143,7 +143,6 @@ class _GroupListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final roleLabel = switch (group.role) {
       GroupRole.owner => AppStrings.owner,
       GroupRole.member => AppStrings.member,
@@ -160,14 +159,14 @@ class _GroupListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(group.name, style: textTheme.titleMedium),
+                Text(group.name, style: theme.titleMedium),
                 if (roleLabel != null)
-                  Text(roleLabel, style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
+                  Text(roleLabel, style: theme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
           if (isActive)
-            Text(AppStrings.active, style: textTheme.labelLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700)),
+            Text(AppStrings.active, style: theme.labelLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700)),
           IconButton(
             icon: const Icon(Icons.vpn_key_outlined),
             tooltip: AppStrings.viewInviteCodeTooltip,

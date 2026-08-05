@@ -21,7 +21,7 @@ class AppTextField extends StatefulWidget {
     this.autofocus = false,
     this.maxLines = 1,
     this.textCapitalization = TextCapitalization.none,
-    this.autovalidateMode,
+    this.autovalidateMode = AutovalidateMode.onUserInteraction,
   }) : obscureText = false;
 
   const AppTextField.password({
@@ -37,7 +37,7 @@ class AppTextField extends StatefulWidget {
     this.enabled = true,
     this.autofocus = false,
     this.textInputAction,
-    this.autovalidateMode,
+    this.autovalidateMode = AutovalidateMode.onUserInteraction,
   }) : obscureText = true,
        prefixIcon = null,
        suffixIcon = null,
@@ -79,7 +79,7 @@ class _AppTextFieldState extends State<AppTextField> {
     final outlineColor = theme.outlineColor ?? colorScheme.outline;
     final isSingleLine = widget.obscureText || widget.maxLines == 1;
 
-    final field = TextFormField(
+    return TextFormField(
       controller: widget.controller,
       focusNode: widget.focusNode,
       enabled: widget.enabled,
@@ -106,13 +106,19 @@ class _AppTextFieldState extends State<AppTextField> {
                 onPressed: () => setState(() => _obscured = !_obscured),
               )
             : widget.suffixIcon,
-        border: OutlineInputBorder(borderRadius: borderRadius, borderSide: BorderSide(color: outlineColor)),
-        enabledBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: BorderSide(color: outlineColor)),
-        disabledBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: BorderSide(color: colorScheme.outlineVariant)),
+        border: OutlineInputBorder(
+          borderRadius: borderRadius,
+          borderSide: BorderSide(color: outlineColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: borderRadius,
+          borderSide: BorderSide(color: outlineColor),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: borderRadius,
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        ),
       ),
     );
-
-    if (!isSingleLine) return field;
-    return SizedBox(height: theme.controlHeight ?? 48, child: field);
   }
 }
