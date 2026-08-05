@@ -47,24 +47,22 @@ class GroupsScreen extends StatelessWidget {
 
     return AppScaffold(
       appBar: ScreenAppBar(title: AppStrings.groups),
-      body: Column(
-        children: [
-          Expanded(child: _buildBody(context)),
-          Padding(
-            padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
-            child: Row(
-              spacing: theme.spacingMedium ?? 16,
-              children: [
-                Expanded(
-                  child: AppButton.secondary(label: AppStrings.joinGroup, onPressed: () => _openJoinGroup(context)),
-                ),
-                Expanded(
-                  child: AppButton.primary(label: AppStrings.createGroup, onPressed: () => _openCreateGroup(context)),
-                ),
-              ],
-            ),
+      body: _buildBody(context),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+          child: Row(
+            spacing: theme.spacingMedium ?? 16,
+            children: [
+              Expanded(
+                child: AppButton.secondary(label: AppStrings.joinGroup, onPressed: () => _openJoinGroup(context)),
+              ),
+              Expanded(
+                child: AppButton.primary(label: AppStrings.createGroup, onPressed: () => _openCreateGroup(context)),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
