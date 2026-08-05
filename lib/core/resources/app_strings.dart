@@ -66,6 +66,7 @@ class AppStrings {
 
   // settings
   static const String settings = 'Settings';
+  static const String appVersion = 'App Version';
 
   // bottom navigation
   static const String tasksTab = 'Tasks';

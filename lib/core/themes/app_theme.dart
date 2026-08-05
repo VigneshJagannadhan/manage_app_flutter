@@ -48,13 +48,45 @@ class AppThemes {
 
   static const appBorderRadius = AppSizing.size12;
 
+  /// Backs every default Material widget that doesn't set an explicit style
+  /// (SegmentedButton, ChoiceChip, etc.) with [AppStyles] instead of the
+  /// Material default typeface, so typography stays consistent without
+  /// having to patch each such widget individually.
+  static TextTheme _textTheme(Color color) => TextTheme(
+    displayLarge: AppStyles.displayLarge(color: color),
+    displayMedium: AppStyles.displayMedium(color: color),
+    displaySmall: AppStyles.displaySmall(color: color),
+    headlineLarge: AppStyles.headlineLarge(color: color),
+    headlineMedium: AppStyles.headlineMedium(color: color),
+    headlineSmall: AppStyles.headlineSmall(color: color),
+    titleLarge: AppStyles.titleLarge(color: color),
+    titleMedium: AppStyles.titleMedium(color: color),
+    titleSmall: AppStyles.titleSmall(color: color),
+    bodyLarge: AppStyles.bodyLarge(color: color),
+    bodyMedium: AppStyles.bodyMedium(color: color),
+    bodySmall: AppStyles.bodySmall(color: color),
+    labelLarge: AppStyles.labelLarge(color: color),
+    labelMedium: AppStyles.labelMedium(color: color),
+    labelSmall: AppStyles.labelSmall(color: color),
+  );
+
   /// Light Theme
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
     colorScheme: _lightColorScheme,
     scaffoldBackgroundColor: AppColors.backgroundColor,
+    textTheme: _textTheme(AppColors.textColor),
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColor)),
+    navigationBarTheme: NavigationBarThemeData(
+      indicatorColor: Colors.transparent,
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColor : AppColors.outlineColor),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => AppStyles.labelMedium(color: states.contains(WidgetState.selected) ? AppColors.primaryColor : AppColors.outlineColor),
+      ),
+    ),
     extensions: [
       AppTheme(
         primaryColor: AppColors.primaryColor,
@@ -96,7 +128,17 @@ class AppThemes {
     brightness: Brightness.dark,
     colorScheme: _darkColorScheme,
     scaffoldBackgroundColor: AppColors.backgroundColorDark,
+    textTheme: _textTheme(AppColors.textColorDark),
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColorDark)),
+    navigationBarTheme: NavigationBarThemeData(
+      indicatorColor: Colors.transparent,
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColorDark : AppColors.outlineColorDark),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => AppStyles.labelMedium(color: states.contains(WidgetState.selected) ? AppColors.primaryColorDark : AppColors.outlineColorDark),
+      ),
+    ),
     extensions: [
       AppTheme(
         primaryColor: AppColors.primaryColorDark,

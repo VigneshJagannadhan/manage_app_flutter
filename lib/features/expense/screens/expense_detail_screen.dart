@@ -78,7 +78,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final groupProvider = context.watch<GroupProvider>();
     final currentUserId = context.watch<AuthProvider>().currentUser?.id;
     final groupId = _expense.groupId;
@@ -90,9 +89,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
       appBar: ScreenAppBar(
         title: AppStrings.expenseDetails,
         onBackPressed: () => navigationService.pop(context, _pendingResult),
-        actions: [
-          IconButton(icon: const Icon(Icons.edit), tooltip: AppStrings.editExpenseTooltip, onPressed: _editExpense),
-        ],
+        actions: [IconButton(icon: const Icon(Icons.edit), tooltip: AppStrings.editExpenseTooltip, onPressed: _editExpense)],
       ),
       body: SingleChildScrollView(
         child: AppBodyColumn(
@@ -101,25 +98,22 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
           children: [
             Row(
               children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Container(
-                    width: 48,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular((theme.appBorderRadius ?? 12) - AppSpacing.space4),
-                      color: colorScheme.primary.withValues(alpha: 0.5),
-                    ),
-                    child: Icon(ExpenseTile.iconFor(category), color: Colors.white),
+                Container(
+                  width: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular((theme.appBorderRadius ?? 12) - AppSpacing.space4),
+                    color: colorScheme.primary.withValues(alpha: 0.5),
                   ),
+                  child: Icon(ExpenseTile.iconFor(category), color: Colors.white),
                 ),
                 SizedBox(width: theme.spacingMedium ?? 16),
-                Expanded(child: Text(title, style: textTheme.headlineSmall)),
+                Expanded(child: Text(title, style: theme.headlineSmall)),
               ],
             ),
             Text(
               displayAmount,
-              style: textTheme.headlineSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
+              style: theme.headlineSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
             ),
             Divider(color: colorScheme.outlineVariant),
             if (category != null)
@@ -141,12 +135,11 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
                 value: payerLabel,
               ),
             SizedBox(height: theme.spacingSmall ?? 8),
-            Text(AppStrings.splitDetailsLabel, style: textTheme.titleSmall),
+            Text(AppStrings.splitDetailsLabel, style: theme.titleSmall),
             if (_expense.splits.isEmpty)
-              Text(AppStrings.noSplitsRecorded, style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline))
+              Text(AppStrings.noSplitsRecorded, style: theme.bodyMedium?.copyWith(color: colorScheme.outline))
             else
-              for (final split in _expense.splits)
-                _SplitRow(label: _memberLabel(split.userId, members, currentUserId), amount: split.amountOwed),
+              for (final split in _expense.splits) _SplitRow(label: _memberLabel(split.userId, members, currentUserId), amount: split.amountOwed),
           ],
         ),
       ),
@@ -165,14 +158,13 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Row(
       children: [
         icon,
         SizedBox(width: theme.spacingSmall ?? 8),
-        Text('$label: ', style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline)),
-        Text(value, style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text('$label: ', style: theme.bodyMedium?.copyWith(color: colorScheme.outline)),
+        Text(value, style: theme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -186,12 +178,12 @@ class _SplitRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = context.appTheme;
 
     return Row(
       children: [
-        Expanded(child: Text(label, style: textTheme.bodyMedium)),
-        Text(amount.toCurrencyString(), style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Expanded(child: Text(label, style: theme.bodyMedium)),
+        Text(amount.toCurrencyString(), style: theme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
       ],
     );
   }

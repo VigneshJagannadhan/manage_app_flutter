@@ -22,6 +22,13 @@ class SettingsProvider extends BaseProvider {
   String? _healthCheckError;
   String? get healthCheckError => _healthCheckError;
 
+  bool _showDebugStuff = false;
+  bool get showDebugStuff => _showDebugStuff;
+  void toggleDebugStuff() {
+    _showDebugStuff = !_showDebugStuff;
+    notifyListeners();
+  }
+
   Future<void> checkServerHealth() async {
     _isCheckingHealth = true;
     _healthCheckResult = null;

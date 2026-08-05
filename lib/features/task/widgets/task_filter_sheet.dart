@@ -48,7 +48,7 @@ class _TaskFilterSheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<TaskProvider>();
     final theme = context.appTheme;
-    final labelStyle = Theme.of(context).textTheme.labelLarge;
+    final labelStyle = theme.labelLarge;
     final sectionGap = theme.spacingMedium ?? 16;
     final fieldGap = theme.spacingSmall ?? 8;
 

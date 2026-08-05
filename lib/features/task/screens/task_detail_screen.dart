@@ -94,7 +94,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final assigneeName = _resolveAssigneeName(context.watch<GroupProvider>());
 
     return AppScaffold(
@@ -105,7 +104,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           spacing: theme.spacingMedium ?? 16,
           children: [
             TaskPriorityBadge(priority: priority, large: true),
-            Text(title, style: textTheme.headlineSmall?.copyWith(decoration: _isCompleted ? TextDecoration.lineThrough : null)),
+            Text(title, style: theme.headlineSmall?.copyWith(decoration: _isCompleted ? TextDecoration.lineThrough : null)),
             if (_isCompleted)
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -114,11 +113,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   SizedBox(width: theme.spacingXSmall ?? 4),
                   Text(
                     AppStrings.completed,
-                    style: textTheme.labelLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
+                    style: theme.labelLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
-            Text(description, style: textTheme.bodyLarge),
+            Text(description, style: theme.bodyLarge),
             Divider(color: colorScheme.outlineVariant),
             if (assigneeName != null)
               _DetailRow(icon: Icon(Icons.person, size: 18, color: colorScheme.outline), label: AppStrings.assignedToLabel, value: assigneeName),
@@ -165,14 +164,13 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Row(
       children: [
         icon,
         SizedBox(width: theme.spacingSmall ?? 8),
-        Text('$label: ', style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline)),
-        Text(value, style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text('$label: ', style: theme.bodyMedium?.copyWith(color: colorScheme.outline)),
+        Text(value, style: theme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
       ],
     );
   }

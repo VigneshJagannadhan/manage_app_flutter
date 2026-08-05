@@ -74,9 +74,7 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
                   Expanded(
                     child: Text(
                       selectedLabel ?? widget.hint ?? '',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyLarge?.copyWith(color: selectedLabel != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant),
+                      style: theme.bodyLarge?.copyWith(color: selectedLabel != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant),
                     ),
                   ),
                   AnimatedRotation(
@@ -142,7 +140,7 @@ class _DropdownPanel<T> extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16, vertical: theme.spacingSmall ?? 8),
                 decoration: BoxDecoration(borderRadius: itemRadius, border: isSelected ? Border.all(color: accentColor) : null),
-                child: Text(itemLabelBuilder(item), style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface)),
+                child: Text(itemLabelBuilder(item), style: theme.bodyLarge?.copyWith(color: colorScheme.onSurface)),
               ),
             );
           }).toList(),

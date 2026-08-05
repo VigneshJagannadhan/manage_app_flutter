@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/expense_enums.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/expense_service.dart';
@@ -217,7 +218,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
           TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text(AppStrings.cancel)),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(AppStrings.delete, style: TextStyle(color: Theme.of(dialogContext).colorScheme.error)),
+            child: Text(AppStrings.delete, style: dialogContext.appTheme.labelLarge?.copyWith(color: Theme.of(dialogContext).colorScheme.error)),
           ),
         ],
       ),
@@ -327,7 +328,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
         enabled: !_isBusy,
         onChanged: (member) => setState(() => _selectedPayer = member),
       ),
-      Align(alignment: Alignment.centerLeft, child: Text(AppStrings.splitsLabel, style: Theme.of(context).textTheme.titleSmall)),
+      Align(alignment: Alignment.centerLeft, child: Text(AppStrings.splitsLabel, style: context.appTheme.titleSmall)),
       for (final member in members) _buildSplitRow(member, currentUserId),
       AppButton.secondary(label: AppStrings.splitEqually, onPressed: _isBusy ? null : _splitEqually),
     ];

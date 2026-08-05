@@ -20,7 +20,6 @@ class TaskPriorityBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final color = colorFor(priority, colorScheme);
 
     return Container(
@@ -36,7 +35,7 @@ class TaskPriorityBadge extends StatelessWidget {
           SizedBox(width: (theme.spacingXSmall ?? 4) / 2),
           Text(
             priority.name.toTitleCase,
-            style: (large ? textTheme.titleMedium : textTheme.labelSmall)?.copyWith(color: color, fontWeight: FontWeight.w700),
+            style: (large ? theme.titleMedium : theme.labelSmall)?.copyWith(color: color, fontWeight: FontWeight.w700),
           ),
         ],
       ),

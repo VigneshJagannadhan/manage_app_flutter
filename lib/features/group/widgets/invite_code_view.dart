@@ -26,7 +26,6 @@ class InviteCodeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return AppBodyColumn(
       padding: EdgeInsets.zero,
@@ -41,7 +40,7 @@ class InviteCodeView extends StatelessWidget {
           ),
           child: Text(
             group.inviteCode,
-            style: textTheme.headlineMedium?.copyWith(color: colorScheme.onPrimaryContainer, letterSpacing: 4, fontWeight: FontWeight.w700),
+            style: theme.headlineMedium?.copyWith(color: colorScheme.onPrimaryContainer, letterSpacing: 4, fontWeight: FontWeight.w700),
           ),
         ),
         Row(

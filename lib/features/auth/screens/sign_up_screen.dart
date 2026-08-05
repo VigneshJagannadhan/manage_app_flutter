@@ -74,7 +74,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final isSubmitting = context.watch<AuthProvider>().isLoading;
 
     return AppScaffold(
@@ -88,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
                   Text(AppStrings.createAccount, style: context.appTheme.displayMedium, textAlign: TextAlign.center),
-                  Text(AppStrings.signUpSubtitle, style: textTheme.bodyMedium, textAlign: TextAlign.center),
+                  Text(AppStrings.signUpSubtitle, style: context.appTheme.bodyMedium, textAlign: TextAlign.center),
                   const SizedBox(height: 8),
                   AppTextField(
                     label: AppStrings.fullNameLabel,

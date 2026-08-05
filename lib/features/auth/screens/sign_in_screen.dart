@@ -56,7 +56,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final isSubmitting = context.watch<AuthProvider>().isLoading;
 
     return AppScaffold(
@@ -69,7 +68,7 @@ class _SignInScreenState extends State<SignInScreen> {
             children: [
               AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
               Text(AppStrings.welcomeBack, style: context.appTheme.displayMedium, textAlign: TextAlign.center),
-              Text(AppStrings.signInSubtitle, style: textTheme.bodyMedium, textAlign: TextAlign.center),
+              Text(AppStrings.signInSubtitle, style: context.appTheme.bodyMedium, textAlign: TextAlign.center),
               const SizedBox(height: 8),
               AppTextField(
                 label: AppStrings.emailLabel,

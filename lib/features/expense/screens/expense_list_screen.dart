@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -37,24 +38,9 @@ class ExpenseListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBar: ScreenAppBar(
-        title: AppStrings.manageYourExpenses,
-        showBackButton: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.group),
-            tooltip: AppStrings.groupsTooltip,
-            onPressed: () => _openGroups(context),
-          ),
-          const SettingsAvatarButton(),
-        ],
-      ),
+      appBar: ScreenAppBar(title: AppStrings.manageYourExpenses, showBackButton: false, actions: [const SettingsAvatarButton()]),
       body: _buildBody(context),
-      floatingActionButton: FloatingActionButton(
-        heroTag: null,
-        onPressed: () => _openCreateExpense(context),
-        child: const AppSvgIcon(SvgIcons.add),
-      ),
+      floatingActionButton: FloatingActionButton(heroTag: null, onPressed: () => _openCreateExpense(context), child: const AppSvgIcon(SvgIcons.add)),
     );
   }
 
@@ -137,7 +123,7 @@ class _NoGroupsPrompt extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(AppStrings.noGroupsYet, style: Theme.of(context).textTheme.titleMedium),
+            Text(AppStrings.noGroupsYet, style: context.appTheme.titleMedium),
             const SizedBox(height: 8),
             Text(AppStrings.noActiveGroupMessage, textAlign: TextAlign.center),
             const SizedBox(height: 16),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 
 /// "`promptText` `actionText`" row used under sign-in/sign-up forms to
 /// switch between the two screens.
@@ -14,7 +15,7 @@ class AuthFooter extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(promptText, style: Theme.of(context).textTheme.bodyMedium),
+        Text(promptText, style: context.appTheme.bodyMedium),
         TextButton(onPressed: onPressed, child: Text(actionText)),
       ],
     );

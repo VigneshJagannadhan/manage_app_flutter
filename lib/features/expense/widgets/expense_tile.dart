@@ -36,7 +36,6 @@ class ExpenseTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return AppCard(
       onTap: onTap,
@@ -63,15 +62,15 @@ class ExpenseTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (groupName != null) ...[
-                    Text(groupName!, style: textTheme.labelSmall?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.w700)),
+                    Text(groupName!, style: theme.labelSmall?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.w700)),
                     SizedBox(height: theme.spacingXSmall ?? 4),
                   ],
-                  Text(title, style: textTheme.titleMedium, overflow: TextOverflow.ellipsis),
+                  Text(title, style: theme.titleMedium, overflow: TextOverflow.ellipsis),
                   if (category != null) ...[
                     SizedBox(height: theme.spacingXSmall ?? 4),
                     Text(
                       categoryName,
-                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                      style: theme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -79,12 +78,12 @@ class ExpenseTile extends StatelessWidget {
                   if (expense.date != null)
                     Text(
                       formattedDateTime2,
-                      style: textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                      style: theme.bodySmall?.copyWith(color: colorScheme.outline),
                       overflow: TextOverflow.ellipsis,
                     ),
                   Text(
                     displayAmount,
-                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: colorScheme.primary),
+                    style: theme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: colorScheme.primary),
                   ),
                 ],
               ),

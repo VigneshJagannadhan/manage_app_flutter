@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -155,7 +156,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
           TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text(AppStrings.cancel)),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(AppStrings.delete, style: TextStyle(color: Theme.of(dialogContext).colorScheme.error)),
+            child: Text(AppStrings.delete, style: dialogContext.appTheme.labelLarge?.copyWith(color: Theme.of(dialogContext).colorScheme.error)),
           ),
         ],
       ),
