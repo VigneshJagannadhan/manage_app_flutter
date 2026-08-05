@@ -114,6 +114,8 @@ class _SettingsBody extends StatelessWidget {
         Spacer(),
         InkWell(
           onDoubleTap: () => provider.toggleDebugStuff(),
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
           child: Align(
             alignment: Alignment.center,
             child: Text(appVersion, style: context.appTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),

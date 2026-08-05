@@ -84,6 +84,7 @@ class AppThemes {
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColor)),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
       iconTheme: WidgetStateProperty.resolveWith(
         (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColor : AppColors.outlineColor),
       ),
@@ -136,6 +137,7 @@ class AppThemes {
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColorDark)),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
       iconTheme: WidgetStateProperty.resolveWith(
         (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColorDark : AppColors.outlineColorDark),
       ),

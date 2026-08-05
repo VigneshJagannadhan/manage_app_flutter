@@ -120,7 +120,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             Text(description, style: theme.bodyLarge),
             Divider(color: colorScheme.outlineVariant),
             if (assigneeName != null)
-              _DetailRow(icon: Icon(Icons.person, size: 18, color: colorScheme.outline), label: AppStrings.assignedToLabel, value: assigneeName),
+              _DetailRow(
+                icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
+                label: AppStrings.assignedToLabel,
+                value: assigneeName,
+              ),
             _DetailRow(
               icon: AppSvgIcon(SvgIcons.calendar, size: 18, color: colorScheme.outline),
               label: AppStrings.due,
