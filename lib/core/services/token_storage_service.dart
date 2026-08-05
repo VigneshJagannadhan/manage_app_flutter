@@ -43,12 +43,21 @@ class TokenStorageService {
     );
   }
 
+  /// Updates the stored user only, leaving the tokens untouched. Used after a profile edit.
+  Future<void> updateUser(UserModel user) async {
+    await _storage.write(key: _userKey, value: jsonEncode(user.toJson()));
+  }
+
   Future<String?> readAccessToken() => _storage.read(key: _accessTokenKey);
 
   Future<String?> readRefreshToken() => _storage.read(key: _refreshTokenKey);
 
   Future<void> clear() async {
-    await Future.wait([_storage.delete(key: _accessTokenKey), _storage.delete(key: _refreshTokenKey), _storage.delete(key: _userKey)]);
+    await Future.wait([
+      _storage.delete(key: _accessTokenKey),
+      _storage.delete(key: _refreshTokenKey),
+      _storage.delete(key: _userKey),
+    ]);
   }
 }
 

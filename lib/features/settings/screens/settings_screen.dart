@@ -6,17 +6,34 @@ import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/auth/screens/sign_in_screen.dart';
 import 'package:manage_app/features/group/screens/groups_screen.dart';
+import 'package:manage_app/features/settings/providers/profile_provider.dart';
 import 'package:manage_app/features/settings/providers/settings_provider.dart';
 import 'package:manage_app/features/settings/providers/theme_provider.dart';
+import 'package:manage_app/features/settings/screens/profile_edit_screen.dart';
 import 'package:manage_app/features/settings/services/health_service.dart';
+import 'package:manage_app/features/settings/widgets/profile_header.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:provider/provider.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final profileProvider = context.read<ProfileProvider>();
+    if (profileProvider.profile == null && !profileProvider.isLoading) {
+      profileProvider.loadProfile();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +53,16 @@ class _SettingsBody extends StatelessWidget {
   Future<void> _signOut(BuildContext context) async {
     await context.read<AuthProvider>().signOut();
     if (!context.mounted) return;
+    context.read<ProfileProvider>().clearProfile();
     navigationService.pushAndRemoveUntil(context, const SignInScreen());
   }
 
   Future<void> _openGroups(BuildContext context) {
     return navigationService.push(context, const GroupsScreen());
+  }
+
+  Future<void> _openEditProfile(BuildContext context) {
+    return navigationService.push(context, const ProfileEditScreen());
   }
 
   String get appVersion => '${AppStrings.appVersion}: ${AppConstants.appVersion}';
@@ -52,11 +74,17 @@ class _SettingsBody extends StatelessWidget {
     final error = provider.healthCheckError;
     final isSigningOut = context.watch<AuthProvider>().isLoading;
     final themeProvider = context.watch<ThemeProvider>();
+    final profileProvider = context.watch<ProfileProvider>();
 
     return AppBodyColumn(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
+        ProfileHeader(
+          profile: profileProvider.profile,
+          isLoading: profileProvider.isLoading,
+          onEdit: () => _openEditProfile(context),
+        ),
         Semantics(
           toggled: themeProvider.isDarkMode,
           label: AppStrings.darkMode,
@@ -79,13 +107,20 @@ class _SettingsBody extends StatelessWidget {
             'Status: ${result.status}\nUptime: ${result.uptime.toStringAsFixed(2)}s\nDB: ${result.db}',
             style: context.appTheme.bodyMedium?.copyWith(color: Colors.green.shade700),
           ),
-        if (error != null) Text(AppStrings.serverDown, style: context.appTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error)),
+        if (error != null)
+          Text(
+            AppStrings.serverDown,
+            style: context.appTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error),
+          ),
         AppButton.destructive(label: AppStrings.logOut, onPressed: isSigningOut ? null : () => _signOut(context)),
         InkWell(
           onDoubleTap: () => provider.toggleDebugStuff(),
           child: Align(
             alignment: Alignment.center,
-            child: Text(appVersion, style: context.appTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            child: Text(
+              appVersion,
+              style: context.appTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ),
           ),
         ),
       ],

@@ -14,7 +14,9 @@ import 'package:manage_app/features/auth/screens/sign_in_screen.dart';
 import 'package:manage_app/features/auth/screens/splash_screen.dart';
 import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
+import 'package:manage_app/features/settings/providers/profile_provider.dart';
 import 'package:manage_app/features/settings/providers/theme_provider.dart';
+import 'package:manage_app/features/settings/services/profile_service.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +32,8 @@ class ManageApp extends StatefulWidget {
 }
 
 class _ManageAppState extends State<ManageApp> {
-  late final _groupProvider = GroupProvider(groupService: groupService, groupPreferenceService: groupPreferenceService)..onInit();
+  late final _groupProvider = GroupProvider(groupService: groupService, groupPreferenceService: groupPreferenceService)
+    ..onInit();
 
   @override
   void initState() {
@@ -45,7 +48,10 @@ class _ManageAppState extends State<ManageApp> {
   }
 
   void _handleSessionExpired() {
-    navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const SignInScreen()), (route) => false);
+    navigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const SignInScreen()),
+      (route) => false,
+    );
   }
 
   @override
@@ -63,6 +69,7 @@ class _ManageAppState extends State<ManageApp> {
           create: (_) => ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider)..onInit(),
         ),
         ChangeNotifierProvider(create: (_) => ThemeProvider(themePreferenceService: themePreferenceService)..onInit()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider(profileService: profileService)..onInit()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (_, themeProvider, _) {
