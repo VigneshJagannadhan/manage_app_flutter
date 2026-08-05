@@ -9,6 +9,7 @@ class AppColors {
   static const Color surfaceColor = Color(0xFFF2F2F5);
   static const Color textColor = Color(0xFF000000);
   static const Color outlineColor = Color(0xFF79747E);
+  static const Color errorColor = Color(0xFFB3261E);
 
   /// dark theme colors
   static const Color primaryColorDark = Color(0xFF0153F7);
@@ -18,4 +19,5 @@ class AppColors {
   static const Color surfaceColorDark = Color(0xFF1C1C1E);
   static const Color textColorDark = Color(0xFFFFFFFF);
   static const Color outlineColorDark = Color(0xFF938F99);
+  static const Color errorColorDark = Color(0xFFB3261E);
 }
