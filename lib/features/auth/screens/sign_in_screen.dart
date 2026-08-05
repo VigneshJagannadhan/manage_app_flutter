@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -14,6 +13,8 @@ import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_image.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/app_text_field.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/display_text.dart';
 import 'package:provider/provider.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -67,8 +68,8 @@ class _SignInScreenState extends State<SignInScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
-              Text(AppStrings.welcomeBack, style: context.appTheme.displayMedium, textAlign: TextAlign.center),
-              Text(AppStrings.signInSubtitle, style: context.appTheme.bodyMedium, textAlign: TextAlign.center),
+              DisplayText.medium(AppStrings.welcomeBack, textAlign: TextAlign.center),
+              BodyText.medium(AppStrings.signInSubtitle, textAlign: TextAlign.center),
               const SizedBox(height: 8),
               AppTextField(
                 label: AppStrings.emailLabel,

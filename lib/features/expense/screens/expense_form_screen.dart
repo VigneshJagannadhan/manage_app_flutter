@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/expense_service.dart';
@@ -19,6 +18,9 @@ import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/app_text_field.dart';
 import 'package:manage_app/features/shared/widgets/member_dropdown_field.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 import 'package:provider/provider.dart';
 
 /// Result of pushing [ExpenseFormScreen]: either the expense was saved, or -
@@ -218,7 +220,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
           TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text(AppStrings.cancel)),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(AppStrings.delete, style: dialogContext.appTheme.labelLarge?.copyWith(color: Theme.of(dialogContext).colorScheme.error)),
+            child: LabelText.large(AppStrings.delete, color: Theme.of(dialogContext).colorScheme.error),
           ),
         ],
       ),
@@ -308,7 +310,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
   List<Widget> _buildGroupFields() {
     final groupId = _activeGroupId;
     if (groupId == null) {
-      return [const Text(AppStrings.noActiveGroupMessage)];
+      return [const BodyText.medium(AppStrings.noActiveGroupMessage)];
     }
 
     final groupProvider = context.watch<GroupProvider>();
@@ -328,7 +330,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
         enabled: !_isBusy,
         onChanged: (member) => setState(() => _selectedPayer = member),
       ),
-      Align(alignment: Alignment.centerLeft, child: Text(AppStrings.splitsLabel, style: context.appTheme.titleSmall)),
+      Align(alignment: Alignment.centerLeft, child: TitleText.small(AppStrings.splitsLabel)),
       for (final member in members) _buildSplitRow(member, currentUserId),
       AppButton.secondary(label: AppStrings.splitEqually, onPressed: _isBusy ? null : _splitEqually),
     ];
@@ -341,7 +343,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
     return Row(
       children: [
         Checkbox(value: isChecked, onChanged: _isBusy ? null : (checked) => _toggleSplitMember(member.userId, checked ?? false)),
-        Expanded(child: Text(label)),
+        Expanded(child: BodyText.medium(label)),
         if (isChecked)
           SizedBox(
             width: 100,

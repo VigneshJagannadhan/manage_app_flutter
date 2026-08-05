@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 
 /// Priority pill shared by the task list tile and the task detail screen.
 class TaskPriorityBadge extends StatelessWidget {
@@ -33,10 +35,9 @@ class TaskPriorityBadge extends StatelessWidget {
         children: [
           Icon(Icons.flag, size: large ? 20 : 14, color: color),
           SizedBox(width: (theme.spacingXSmall ?? 4) / 2),
-          Text(
-            priority.name.toTitleCase,
-            style: (large ? theme.titleMedium : theme.labelSmall)?.copyWith(color: color, fontWeight: FontWeight.w700),
-          ),
+          large
+              ? TitleText.medium(priority.name.toTitleCase, color: color, style: const TextStyle(fontWeight: FontWeight.w700))
+              : LabelText.small(priority.name.toTitleCase, color: color, style: const TextStyle(fontWeight: FontWeight.w700)),
         ],
       ),
     );

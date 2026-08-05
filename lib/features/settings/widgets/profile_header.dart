@@ -3,6 +3,7 @@ import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/features/auth/models/user_model.dart';
 import 'package:manage_app/features/shared/widgets/app_card.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key, required this.profile, required this.isLoading, required this.onEdit});
@@ -32,13 +33,13 @@ class ProfileHeader extends StatelessWidget {
           CircleAvatar(
             radius: 28,
             backgroundColor: colorScheme.primaryContainer,
-            child: Text(_initials, style: theme.titleLarge?.copyWith(color: colorScheme.onPrimaryContainer)),
+            child: TitleText.large(_initials, color: colorScheme.onPrimaryContainer),
           ),
           SizedBox(width: theme.spacingMedium ?? 16),
           Expanded(
             child: isLoading && profile == null
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator.adaptive(strokeWidth: 2))
-                : Text(profile?.name ?? '', style: theme.titleMedium, overflow: TextOverflow.ellipsis),
+                : TitleText.medium(profile?.name ?? '', overflow: TextOverflow.ellipsis),
           ),
           IconButton(
             icon: const Icon(Icons.edit_outlined),

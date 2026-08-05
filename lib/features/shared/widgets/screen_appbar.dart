@@ -4,6 +4,7 @@ import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 
 class ScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ScreenAppBar({super.key, required this.title, this.actions, this.showBackButton = true, this.onBackPressed});
@@ -33,7 +34,7 @@ class ScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       titleSpacing: showBackButton ? 0 : (theme.horizontalMargin ?? 16),
-      title: Text(title, style: theme.titleLarge),
+      title: TitleText.large(title),
       actions: actions,
     );
   }

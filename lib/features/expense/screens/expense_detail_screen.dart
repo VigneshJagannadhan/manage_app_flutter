@@ -16,6 +16,9 @@ import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 import 'package:provider/provider.dart';
 
 class ExpenseDetailScreen extends StatefulWidget {
@@ -108,13 +111,10 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
                   child: Icon(ExpenseTile.iconFor(category), color: Colors.white),
                 ),
                 SizedBox(width: theme.spacingMedium ?? 16),
-                Expanded(child: Text(title, style: theme.headlineSmall)),
+                Expanded(child: HeadlineText.small(title)),
               ],
             ),
-            Text(
-              displayAmount,
-              style: theme.headlineSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
-            ),
+            HeadlineText.small(displayAmount, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
             Divider(color: colorScheme.outlineVariant),
             if (category != null)
               _DetailRow(
@@ -135,9 +135,9 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
                 value: payerLabel,
               ),
             SizedBox(height: theme.spacingSmall ?? 8),
-            Text(AppStrings.splitDetailsLabel, style: theme.titleSmall),
+            TitleText.small(AppStrings.splitDetailsLabel),
             if (_expense.splits.isEmpty)
-              Text(AppStrings.noSplitsRecorded, style: theme.bodyMedium?.copyWith(color: colorScheme.outline))
+              BodyText.medium(AppStrings.noSplitsRecorded, color: colorScheme.outline)
             else
               for (final split in _expense.splits) _SplitRow(label: _memberLabel(split.userId, members, currentUserId), amount: split.amountOwed),
           ],
@@ -163,8 +163,8 @@ class _DetailRow extends StatelessWidget {
       children: [
         icon,
         SizedBox(width: theme.spacingSmall ?? 8),
-        Text('$label: ', style: theme.bodyMedium?.copyWith(color: colorScheme.outline)),
-        Text(value, style: theme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+        BodyText.medium('$label: ', color: colorScheme.outline),
+        BodyText.medium(value, style: const TextStyle(fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -178,12 +178,10 @@ class _SplitRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.appTheme;
-
     return Row(
       children: [
-        Expanded(child: Text(label, style: theme.bodyMedium)),
-        Text(amount.toCurrencyString(), style: theme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Expanded(child: BodyText.medium(label)),
+        BodyText.medium(amount.toCurrencyString(), style: const TextStyle(fontWeight: FontWeight.w600)),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 
 class AppDropdownField<T> extends StatefulWidget {
   const AppDropdownField({
@@ -72,9 +73,9 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(
+                    child: BodyText.large(
                       selectedLabel ?? widget.hint ?? '',
-                      style: theme.bodyLarge?.copyWith(color: selectedLabel != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant),
+                      color: selectedLabel != null ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                     ),
                   ),
                   AnimatedRotation(
@@ -140,7 +141,7 @@ class _DropdownPanel<T> extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16, vertical: theme.spacingSmall ?? 8),
                 decoration: BoxDecoration(borderRadius: itemRadius, border: isSelected ? Border.all(color: accentColor) : null),
-                child: Text(itemLabelBuilder(item), style: theme.bodyLarge?.copyWith(color: colorScheme.onSurface)),
+                child: BodyText.large(itemLabelBuilder(item), color: colorScheme.onSurface),
               ),
             );
           }).toList(),

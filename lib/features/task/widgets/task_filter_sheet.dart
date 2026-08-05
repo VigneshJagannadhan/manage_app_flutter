@@ -9,6 +9,7 @@ import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_date_picker.dart';
 import 'package:manage_app/features/shared/widgets/app_dropdown_field.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 class TaskFilterSheet {
@@ -48,7 +49,6 @@ class _TaskFilterSheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<TaskProvider>();
     final theme = context.appTheme;
-    final labelStyle = theme.labelLarge;
     final sectionGap = theme.spacingMedium ?? 16;
     final fieldGap = theme.spacingSmall ?? 8;
 
@@ -57,7 +57,7 @@ class _TaskFilterSheetBody extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppStrings.statusLabel, style: labelStyle),
+          LabelText.large(AppStrings.statusLabel),
           SizedBox(height: fieldGap),
           AppDropdownField<TaskStatus?>(
             items: const [null, TaskStatus.open, TaskStatus.completed],
@@ -66,7 +66,7 @@ class _TaskFilterSheetBody extends StatelessWidget {
             onChanged: provider.setTaskStatusFilter,
           ),
           SizedBox(height: sectionGap),
-          Text(AppStrings.priorityLabel, style: labelStyle),
+          LabelText.large(AppStrings.priorityLabel),
           SizedBox(height: fieldGap),
           AppDropdownField<TaskPriority?>(
             items: const [null, TaskPriority.low, TaskPriority.medium, TaskPriority.high],
@@ -75,7 +75,7 @@ class _TaskFilterSheetBody extends StatelessWidget {
             onChanged: provider.setPriorityFilter,
           ),
           SizedBox(height: sectionGap),
-          Text(AppStrings.sortByLabel, style: labelStyle),
+          LabelText.large(AppStrings.sortByLabel),
           SizedBox(height: fieldGap),
           AppDropdownField<TaskSortOption>(
             items: TaskSortOption.values,
@@ -84,7 +84,7 @@ class _TaskFilterSheetBody extends StatelessWidget {
             onChanged: provider.setSortOption,
           ),
           SizedBox(height: sectionGap),
-          Text(AppStrings.dateLabel, style: labelStyle),
+          LabelText.large(AppStrings.dateLabel),
           SizedBox(height: fieldGap),
           Wrap(
             spacing: fieldGap,

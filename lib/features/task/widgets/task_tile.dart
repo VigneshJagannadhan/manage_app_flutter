@@ -8,6 +8,9 @@ import 'package:manage_app/features/shared/widgets/app_card.dart';
 import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
 import 'package:manage_app/features/task/models/task_model.dart';
 import 'package:manage_app/features/task/widgets/task_priority_badge.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 
 class TaskTile extends StatelessWidget {
   const TaskTile({super.key, required this.task, this.groupName, this.onTap, this.onEdit});
@@ -44,12 +47,12 @@ class TaskTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (groupName != null) ...[
-                      Text(groupName!, style: theme.labelSmall?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.w700)),
+                      LabelText.small(groupName!, color: colorScheme.secondary, style: const TextStyle(fontWeight: FontWeight.w700)),
                       SizedBox(height: theme.spacingXSmall ?? 4),
                     ],
-                    Text(title, style: theme.titleMedium),
+                    TitleText.medium(title),
                     SizedBox(height: theme.spacingXSmall ?? 4),
-                    Text(description, style: theme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+                    BodyText.medium(description, color: colorScheme.onSurfaceVariant),
                     SizedBox(height: theme.spacingSmall ?? 8),
                     if (task.dueDate != null) ...[
                       Row(
@@ -57,17 +60,18 @@ class TaskTile extends StatelessWidget {
                         children: [
                           AppSvgIcon(SvgIcons.calendar, size: 16, color: colorScheme.primary),
                           SizedBox(width: theme.spacingXSmall ?? 4),
-                          Text(
+                          BodyText.medium(
                             '${AppStrings.due}: ${task.dueDate!.formattedDateTime}',
-                            style: theme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
+                            color: colorScheme.primary,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
                       SizedBox(height: theme.spacingXSmall ?? 4),
                     ],
-                    Text(
+                    BodyText.small(
                       '${AppStrings.created}: ${task.createdAt?.formattedDateTime}',
-                      style: theme.bodySmall?.copyWith(color: colorScheme.outline),
+                      color: colorScheme.outline,
                     ),
                   ],
                 ),
