@@ -24,7 +24,7 @@ class ApiClient {
     }
   }
 
-  final Dio dio;
+  final Dio dio; 
 
   static const _baseUrl = AppUrls.baseUrl;
 }
