@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -19,6 +18,8 @@ import 'package:manage_app/features/shared/widgets/member_dropdown_field.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:manage_app/features/task/models/task_model.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 /// Result of pushing [TaskFormScreen]: either the task was saved, or - when
@@ -156,7 +157,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
           TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text(AppStrings.cancel)),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(AppStrings.delete, style: dialogContext.appTheme.labelLarge?.copyWith(color: Theme.of(dialogContext).colorScheme.error)),
+            child: LabelText.large(AppStrings.delete, color: Theme.of(dialogContext).colorScheme.error),
           ),
         ],
       ),
@@ -250,7 +251,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   Widget _buildAssigneeField() {
     final groupId = _activeGroupId;
     if (groupId == null) {
-      return const Text(AppStrings.noActiveGroupMessage);
+      return const BodyText.medium(AppStrings.noActiveGroupMessage);
     }
 
     final groupProvider = context.watch<GroupProvider>();

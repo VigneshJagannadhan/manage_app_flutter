@@ -7,6 +7,9 @@ import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/themes/constants/app_spacing.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/shared/widgets/app_card.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 
 class ExpenseTile extends StatelessWidget {
   const ExpenseTile({super.key, required this.expense, this.groupName, this.onTap});
@@ -62,29 +65,18 @@ class ExpenseTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (groupName != null) ...[
-                    Text(groupName!, style: theme.labelSmall?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.w700)),
+                    LabelText.small(groupName!, color: colorScheme.secondary, style: const TextStyle(fontWeight: FontWeight.w700)),
                     SizedBox(height: theme.spacingXSmall ?? 4),
                   ],
-                  Text(title, style: theme.titleMedium, overflow: TextOverflow.ellipsis),
+                  TitleText.medium(title, overflow: TextOverflow.ellipsis),
                   if (category != null) ...[
                     SizedBox(height: theme.spacingXSmall ?? 4),
-                    Text(
-                      categoryName,
-                      style: theme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    BodyText.small(categoryName, color: colorScheme.onSurfaceVariant, overflow: TextOverflow.ellipsis),
                   ],
                   SizedBox(height: theme.spacingXSmall ?? 4),
                   if (expense.date != null)
-                    Text(
-                      formattedDateTime2,
-                      style: theme.bodySmall?.copyWith(color: colorScheme.outline),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  Text(
-                    displayAmount,
-                    style: theme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: colorScheme.primary),
-                  ),
+                    BodyText.small(formattedDateTime2, color: colorScheme.outline, overflow: TextOverflow.ellipsis),
+                  TitleText.medium(displayAmount, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ],
               ),
             ),

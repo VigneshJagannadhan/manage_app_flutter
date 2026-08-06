@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/constants/app_constants.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/core/themes/constants/app_spacing.dart';
@@ -17,6 +16,7 @@ import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -92,7 +92,7 @@ class _SettingsBody extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(AppStrings.darkMode),
+              const BodyText.medium(AppStrings.darkMode),
               Switch.adaptive(value: themeProvider.isDarkMode, onChanged: themeProvider.setDarkMode),
             ],
           ),
@@ -104,11 +104,11 @@ class _SettingsBody extends StatelessWidget {
             onPressed: provider.isCheckingHealth ? null : () => context.read<SettingsProvider>().checkServerHealth(),
           ),
           if (result != null)
-            Text(
+            BodyText.medium(
               'Status: ${result.status}\nUptime: ${result.uptime.toStringAsFixed(2)}s\nDB: ${result.db}',
-              style: context.appTheme.bodyMedium?.copyWith(color: Colors.green.shade700),
+              color: Colors.green.shade700,
             ),
-          if (error != null) Text(AppStrings.serverDown, style: context.appTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error)),
+          if (error != null) BodyText.medium(AppStrings.serverDown, color: Theme.of(context).colorScheme.error),
         ],
 
         Spacer(),
@@ -118,7 +118,7 @@ class _SettingsBody extends StatelessWidget {
           highlightColor: Colors.transparent,
           child: Align(
             alignment: Alignment.center,
-            child: Text(appVersion, style: context.appTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            child: BodyText.small(appVersion, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ),
         SizedBox(height: AppSpacing.space20),

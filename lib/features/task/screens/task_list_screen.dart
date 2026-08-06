@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -16,6 +15,8 @@ import 'package:manage_app/features/task/screens/task_detail_screen.dart';
 import 'package:manage_app/features/task/screens/task_form_screen.dart';
 import 'package:manage_app/features/task/widgets/task_filter_sheet.dart';
 import 'package:manage_app/features/task/widgets/task_tile.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 import 'package:provider/provider.dart';
 
 class TaskListScreen extends StatelessWidget {
@@ -75,7 +76,7 @@ class TaskListScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(provider.errorMessage!, textAlign: TextAlign.center),
+              BodyText.medium(provider.errorMessage!, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               AppButton.secondary(label: AppStrings.retry, onPressed: provider.loadTasks),
             ],
@@ -100,7 +101,7 @@ class TaskListScreen extends StatelessWidget {
         ),
         Expanded(
           child: tasks.isEmpty
-              ? const Center(child: Text(AppStrings.noTasksYet))
+              ? const Center(child: BodyText.medium(AppStrings.noTasksYet))
               : RefreshIndicator(
                   onRefresh: provider.loadTasks,
                   child: ListView.builder(
@@ -136,9 +137,9 @@ class _NoGroupsPrompt extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(AppStrings.noGroupsYet, style: context.appTheme.titleMedium),
+            TitleText.medium(AppStrings.noGroupsYet),
             const SizedBox(height: 8),
-            Text(AppStrings.noActiveGroupMessage, textAlign: TextAlign.center),
+            BodyText.medium(AppStrings.noActiveGroupMessage, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             AppButton.primary(label: AppStrings.goToGroups, onPressed: onGoToGroups),
           ],

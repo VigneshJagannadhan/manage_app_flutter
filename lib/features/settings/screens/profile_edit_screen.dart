@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
@@ -12,6 +11,8 @@ import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/app_text_field.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 class ProfileEditScreen extends StatefulWidget {
@@ -70,7 +71,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   @override
   Widget build(BuildContext context) {
     final isSaving = context.watch<ProfileProvider>().isSaving;
-    final theme = context.appTheme;
 
     return AppScaffold(
       appBar: const ScreenAppBar(title: AppStrings.editProfile),
@@ -108,8 +108,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 enabled: !isSaving,
                 validator: validatePhone,
               ),
-              Text(AppStrings.passwordLabel, style: theme.labelLarge),
-              Text('••••••••', style: theme.bodyLarge),
+              LabelText.large(AppStrings.passwordLabel),
+              BodyText.large('••••••••'),
               AppButton.secondary(label: AppStrings.changePassword, onPressed: isSaving ? null : _openChangePassword),
               AppButton.primary(
                 label: isSaving ? AppStrings.updating : AppStrings.updateProfile,

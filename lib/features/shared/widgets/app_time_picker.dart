@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 
 class AppTimePicker extends StatelessWidget {
   const AppTimePicker({
@@ -68,7 +69,7 @@ class AppTimePicker extends StatelessWidget {
                   enabledBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: BorderSide(color: outlineColor)),
                   disabledBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: BorderSide(color: colorScheme.outlineVariant)),
                 ),
-                child: Text(selectedLabel ?? ''),
+                child: BodyText.large(selectedLabel ?? ''),
               ),
             ),
           ),

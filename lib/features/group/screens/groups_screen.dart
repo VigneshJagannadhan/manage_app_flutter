@@ -14,6 +14,9 @@ import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_card.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -81,7 +84,7 @@ class GroupsScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(provider.errorMessage!, textAlign: TextAlign.center),
+              BodyText.medium(provider.errorMessage!, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               AppButton.secondary(label: AppStrings.retry, onPressed: provider.loadGroups),
             ],
@@ -98,9 +101,9 @@ class GroupsScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(AppStrings.noGroupsYet, style: context.appTheme.titleMedium),
+              TitleText.medium(AppStrings.noGroupsYet),
               const SizedBox(height: 8),
-              Text(AppStrings.noGroupsSubtitle, textAlign: TextAlign.center),
+              BodyText.medium(AppStrings.noGroupsSubtitle, textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -157,14 +160,13 @@ class _GroupListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(group.name, style: theme.titleMedium),
-                if (roleLabel != null)
-                  Text(roleLabel, style: theme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
+                TitleText.medium(group.name),
+                if (roleLabel != null) BodyText.small(roleLabel, color: colorScheme.onSurfaceVariant),
               ],
             ),
           ),
           if (isActive)
-            Text(AppStrings.active, style: theme.labelLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700)),
+            LabelText.large(AppStrings.active, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
           IconButton(
             icon: const Icon(Icons.vpn_key_outlined),
             tooltip: AppStrings.viewInviteCodeTooltip,

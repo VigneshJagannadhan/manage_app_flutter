@@ -5,6 +5,8 @@ import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
 import 'package:share_plus/share_plus.dart' show Share;
 
 class InviteCodeView extends StatelessWidget {
@@ -31,16 +33,17 @@ class InviteCodeView extends StatelessWidget {
       padding: EdgeInsets.zero,
       spacing: 16,
       children: [
-        Text(AppStrings.shareThisCode, textAlign: TextAlign.center),
+        BodyText.medium(AppStrings.shareThisCode, textAlign: TextAlign.center),
         Container(
           padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 24, vertical: theme.spacingLarge ?? 24),
           decoration: BoxDecoration(
             color: colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
           ),
-          child: Text(
+          child: HeadlineText.medium(
             group.inviteCode,
-            style: theme.headlineMedium?.copyWith(color: colorScheme.onPrimaryContainer, letterSpacing: 4, fontWeight: FontWeight.w700),
+            color: colorScheme.onPrimaryContainer,
+            style: const TextStyle(letterSpacing: 4, fontWeight: FontWeight.w700),
           ),
         ),
         Row(

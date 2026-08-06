@@ -16,6 +16,9 @@ import 'package:manage_app/features/task/models/task_model.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
 import 'package:manage_app/features/task/screens/task_form_screen.dart';
 import 'package:manage_app/features/task/widgets/task_priority_badge.dart';
+import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
+import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 class TaskDetailScreen extends StatefulWidget {
@@ -104,20 +107,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           spacing: theme.spacingMedium ?? 16,
           children: [
             TaskPriorityBadge(priority: priority, large: true),
-            Text(title, style: theme.headlineSmall?.copyWith(decoration: _isCompleted ? TextDecoration.lineThrough : null)),
+            HeadlineText.small(title, style: TextStyle(decoration: _isCompleted ? TextDecoration.lineThrough : null)),
             if (_isCompleted)
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.check_circle, size: 18, color: colorScheme.primary),
                   SizedBox(width: theme.spacingXSmall ?? 4),
-                  Text(
-                    AppStrings.completed,
-                    style: theme.labelLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w700),
-                  ),
+                  LabelText.large(AppStrings.completed, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ],
               ),
-            Text(description, style: theme.bodyLarge),
+            BodyText.large(description),
             Divider(color: colorScheme.outlineVariant),
             if (assigneeName != null)
               _DetailRow(
@@ -177,8 +177,8 @@ class _DetailRow extends StatelessWidget {
       children: [
         icon,
         SizedBox(width: theme.spacingSmall ?? 8),
-        Text('$label: ', style: theme.bodyMedium?.copyWith(color: colorScheme.outline)),
-        Text(value, style: theme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+        BodyText.medium('$label: ', color: colorScheme.outline),
+        BodyText.medium(value, style: const TextStyle(fontWeight: FontWeight.w600)),
       ],
     );
   }
