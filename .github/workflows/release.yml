@@ -10,20 +10,36 @@ permissions:
 jobs:
   build-and-distribute:
     runs-on: ubuntu-latest
+    # Skip runs triggered by this workflow's own version-bump commit, to avoid re-releasing in a loop.
+    if: "!contains(github.event.head_commit.message, '[skip release]')"
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Scans commit messages since the last tag for Conventional Commits
-      # prefixes (feat:/fix:/BREAKING CHANGE) to decide patch/minor/major,
-      # then creates and pushes the next vX.Y.Z tag.
-      - name: Bump version
+      # Computes the next vX.Y.Z from Conventional Commits since the last tag, without
+      # creating or pushing it - the tag is only created once the release actually succeeds.
+      - name: Compute next version
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: patch
+          dry_run: true
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          PREV_TAG="${{ steps.tag_version.outputs.previous_tag }}"
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="$PREV_TAG..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+          git log $RANGE --no-merges --pretty=format:%s \
+            | sed -E 's/^(feat|fix|chore|docs|refactor)(\([^)]*\))?:[[:space:]]*//I' \
+            | sed 's/^/- /' > release_notes.txt
+          cat release_notes.txt
 
       - uses: subosito/flutter-action@v2
         with:
@@ -51,12 +67,6 @@ jobs:
             --build-name=${{ steps.tag_version.outputs.new_version }} \
             --build-number=${{ github.run_number }}
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          files: build/app/outputs/flutter-apk/app-release.apk
-
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
@@ -64,3 +74,28 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           groups: testers
           file: build/app/outputs/flutter-apk/app-release.apk
+          releaseNotesFile: release_notes.txt
+
+      # Only runs if build + upload above succeeded - keeps pubspec.yaml's version in sync
+      # with what was actually shipped, and gives the release tag a commit to point at.
+      - name: Bump pubspec.yaml version
+        id: version_bump
+        run: |
+          NEW_VERSION="${{ steps.tag_version.outputs.new_version }}+${{ github.run_number }}"
+          sed -i -E "s/^version: .+/version: $NEW_VERSION/" pubspec.yaml
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pubspec.yaml
+          git commit -m "chore: bump version to v${{ steps.tag_version.outputs.new_version }} [skip release]"
+          git push origin HEAD:main
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Last step: creates the tag (pointing at the version-bump commit) and the release
+      # together. Nothing above this line ever left a tag/release behind on failure.
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          target_commitish: ${{ steps.version_bump.outputs.sha }}
+          body_path: release_notes.txt
+          files: build/app/outputs/flutter-apk/app-release.apk
