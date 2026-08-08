@@ -38,9 +38,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   bool get _isCompleted => _task.status == TaskStatus.completed;
   TaskPriority get priority => _task.priority ?? TaskPriority.medium;
   String get title => _task.title ?? AppStrings.untitledTask;
-  String get description => _task.description ?? AppStrings.noDescriptionProvided;
-  String get createdAt => _task.createdAt?.formattedDateTime ?? AppStrings.noCreationDate;
-  String get dueDate => _task.dueDate != null ? _task.dueDate!.formattedDateTime : AppStrings.noDueDate;
+  String get description =>
+      _task.description ?? AppStrings.noDescriptionProvided;
+  String get createdAt =>
+      _task.createdAt?.formattedDateTime ?? AppStrings.noCreationDate;
+  String get dueDate => _task.dueDate != null
+      ? _task.dueDate!.formattedDateTime
+      : AppStrings.noDueDate;
 
   @override
   void initState() {
@@ -66,7 +70,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   Future<void> _editTask() async {
-    final result = await navigationService.push<TaskChangeResult>(context, TaskFormScreen(task: _task));
+    final result = await navigationService.push<TaskChangeResult>(
+      context,
+      TaskFormScreen(task: _task),
+    );
     if (!mounted || result == null) return;
     switch (result) {
       case TaskChangeSaved(:final task):
@@ -82,12 +89,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Future<void> _closeTask() async {
     setState(() => _isClosing = true);
     try {
-      final updated = await context.read<TaskProvider>().updateTask(id: _task.id!, status: TaskStatus.completed);
+      final updated = await context.read<TaskProvider>().updateTask(
+        id: _task.id!,
+        status: TaskStatus.completed,
+      );
       if (!mounted) return;
       navigationService.pop(context, TaskChangeSaved(updated));
     } on TaskServiceException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _isClosing = false);
     }
@@ -100,61 +112,79 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final assigneeName = _resolveAssigneeName(context.watch<GroupProvider>());
 
     return AppScaffold(
-      appBar: ScreenAppBar(title: AppStrings.taskDetails, onBackPressed: () => navigationService.pop(context, _pendingResult)),
-      body: SingleChildScrollView(
-        child: AppBodyColumn(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: ScreenAppBar(
+        title: AppStrings.taskDetails,
+        onBackPressed: () => navigationService.pop(context, _pendingResult),
+      ),
+      scrollable: true,
+      body: AppBodyColumn(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: theme.spacingMedium ?? 16,
+        children: [
+          TaskPriorityBadge(priority: priority, large: true),
+          HeadlineText.small(
+            title,
+            style: TextStyle(
+              decoration: _isCompleted ? TextDecoration.lineThrough : null,
+            ),
+          ),
+          if (_isCompleted)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check_circle, size: 18, color: colorScheme.primary),
+                SizedBox(width: theme.spacingXSmall ?? 4),
+                LabelText.large(
+                  AppStrings.completed,
+                  color: colorScheme.primary,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          BodyText.large(description),
+          Divider(color: colorScheme.outlineVariant),
+          if (assigneeName != null)
+            _DetailRow(
+              icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
+              label: AppStrings.assignedToLabel,
+              value: assigneeName,
+            ),
+          _DetailRow(
+            icon: AppSvgIcon(
+              SvgIcons.calendar,
+              size: 18,
+              color: colorScheme.outline,
+            ),
+            label: AppStrings.due,
+            value: dueDate,
+          ),
+          _DetailRow(
+            icon: Icon(Icons.access_time, size: 18, color: colorScheme.outline),
+            label: AppStrings.created,
+            value: createdAt,
+          ),
+        ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+        child: Row(
           spacing: theme.spacingMedium ?? 16,
           children: [
-            TaskPriorityBadge(priority: priority, large: true),
-            HeadlineText.small(title, style: TextStyle(decoration: _isCompleted ? TextDecoration.lineThrough : null)),
-            if (_isCompleted)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.check_circle, size: 18, color: colorScheme.primary),
-                  SizedBox(width: theme.spacingXSmall ?? 4),
-                  LabelText.large(AppStrings.completed, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
-                ],
+            Expanded(
+              child: AppButton.secondary(
+                label: AppStrings.edit,
+                onPressed: _isClosing ? null : _editTask,
               ),
-            BodyText.large(description),
-            Divider(color: colorScheme.outlineVariant),
-            if (assigneeName != null)
-              _DetailRow(
-                icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
-                label: AppStrings.assignedToLabel,
-                value: assigneeName,
-              ),
-            _DetailRow(
-              icon: AppSvgIcon(SvgIcons.calendar, size: 18, color: colorScheme.outline),
-              label: AppStrings.due,
-              value: dueDate,
             ),
-            _DetailRow(
-              icon: Icon(Icons.access_time, size: 18, color: colorScheme.outline),
-              label: AppStrings.created,
-              value: createdAt,
+            Expanded(
+              child: AppButton.primary(
+                label: _isCompleted
+                    ? AppStrings.completed
+                    : (_isClosing ? AppStrings.closing : AppStrings.closeTask),
+                onPressed: (_isCompleted || _isClosing) ? null : _closeTask,
+              ),
             ),
           ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
-          child: Row(
-            spacing: theme.spacingMedium ?? 16,
-            children: [
-              Expanded(
-                child: AppButton.secondary(label: AppStrings.edit, onPressed: _isClosing ? null : _editTask),
-              ),
-              Expanded(
-                child: AppButton.primary(
-                  label: _isCompleted ? AppStrings.completed : (_isClosing ? AppStrings.closing : AppStrings.closeTask),
-                  onPressed: (_isCompleted || _isClosing) ? null : _closeTask,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -162,7 +192,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 }
 
 class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.icon, required this.label, required this.value});
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   final Widget icon;
   final String label;
@@ -178,7 +212,10 @@ class _DetailRow extends StatelessWidget {
         icon,
         SizedBox(width: theme.spacingSmall ?? 8),
         BodyText.medium('$label: ', color: colorScheme.outline),
-        BodyText.medium(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+        BodyText.medium(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }

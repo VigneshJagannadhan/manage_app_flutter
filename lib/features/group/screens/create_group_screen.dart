@@ -37,12 +37,16 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
     setState(() => _isSubmitting = true);
     try {
-      final group = await context.read<GroupProvider>().createGroup(_nameController.text.trim());
+      final group = await context.read<GroupProvider>().createGroup(
+        _nameController.text.trim(),
+      );
       if (!mounted) return;
       setState(() => _createdGroup = group);
     } on GroupServiceException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -52,8 +56,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   Widget build(BuildContext context) {
     final group = _createdGroup;
     return AppScaffold(
-      appBar: ScreenAppBar(title: group != null ? AppStrings.groupCreated : AppStrings.createGroup),
-      body: Center(child: group != null ? _buildResult(group) : _buildForm()),
+      appBar: ScreenAppBar(
+        title: group != null ? AppStrings.groupCreated : AppStrings.createGroup,
+      ),
+      scrollable: true,
+      body: group != null ? _buildResult(group) : _buildForm(),
     );
   }
 
@@ -62,7 +69,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       spacing: 16,
       children: [
         InviteCodeView(group: group),
-        AppButton.primary(label: AppStrings.done, onPressed: () => navigationService.pop(context, group)),
+        AppButton.primary(
+          label: AppStrings.done,
+          onPressed: () => navigationService.pop(context, group),
+        ),
       ],
     );
   }
@@ -78,7 +88,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             controller: _nameController,
             enabled: !_isSubmitting,
             autofocus: true,
-            validator: (value) => (value == null || value.trim().isEmpty) ? AppStrings.groupNameRequired : null,
+            validator: (value) => (value == null || value.trim().isEmpty)
+                ? AppStrings.groupNameRequired
+                : null,
           ),
           AppButton.primary(
             label: _isSubmitting ? AppStrings.creating : AppStrings.createGroup,

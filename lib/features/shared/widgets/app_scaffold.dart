@@ -11,6 +11,7 @@ class AppScaffold extends StatelessWidget {
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
     this.extendBody = false,
+    this.scrollable = false,
   });
 
   final PreferredSizeWidget? appBar;
@@ -21,18 +22,48 @@ class AppScaffold extends StatelessWidget {
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
   final bool extendBody;
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context) {
+    final navigationBar = bottomNavigationBar;
     return Scaffold(
       appBar: appBar,
-      body: body,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: SafeArea(
+          child: scrollable ? _ScrollableBody(child: body) : body,
+        ),
+      ),
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
-      bottomNavigationBar: bottomNavigationBar,
+      bottomNavigationBar: navigationBar == null
+          ? null
+          : SafeArea(child: navigationBar),
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       extendBody: extendBody,
+    );
+  }
+}
+
+class _ScrollableBody extends StatelessWidget {
+  const _ScrollableBody({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: child,
+          ),
+        );
+      },
     );
   }
 }

@@ -41,7 +41,11 @@ class GroupsScreen extends StatelessWidget {
   }
 
   Future<void> _viewInviteCode(BuildContext context, GroupModel group) {
-    return AppBottomSheet.show(context, title: AppStrings.inviteCodeLabel, body: InviteCodeView(group: group));
+    return AppBottomSheet.show(
+      context,
+      title: AppStrings.inviteCodeLabel,
+      body: InviteCodeView(group: group),
+    );
   }
 
   @override
@@ -51,20 +55,24 @@ class GroupsScreen extends StatelessWidget {
     return AppScaffold(
       appBar: ScreenAppBar(title: AppStrings.groups),
       body: _buildBody(context),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
-          child: Row(
-            spacing: theme.spacingMedium ?? 16,
-            children: [
-              Expanded(
-                child: AppButton.secondary(label: AppStrings.joinGroup, onPressed: () => _openJoinGroup(context)),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+        child: Row(
+          spacing: theme.spacingMedium ?? 16,
+          children: [
+            Expanded(
+              child: AppButton.secondary(
+                label: AppStrings.joinGroup,
+                onPressed: () => _openJoinGroup(context),
               ),
-              Expanded(
-                child: AppButton.primary(label: AppStrings.createGroup, onPressed: () => _openCreateGroup(context)),
+            ),
+            Expanded(
+              child: AppButton.primary(
+                label: AppStrings.createGroup,
+                onPressed: () => _openCreateGroup(context),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -84,9 +92,15 @@ class GroupsScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              BodyText.medium(provider.errorMessage!, textAlign: TextAlign.center),
+              BodyText.medium(
+                provider.errorMessage!,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 16),
-              AppButton.secondary(label: AppStrings.retry, onPressed: provider.loadGroups),
+              AppButton.secondary(
+                label: AppStrings.retry,
+                onPressed: provider.loadGroups,
+              ),
             ],
           ),
         ),
@@ -103,7 +117,10 @@ class GroupsScreen extends StatelessWidget {
             children: [
               TitleText.medium(AppStrings.noGroupsYet),
               const SizedBox(height: 8),
-              BodyText.medium(AppStrings.noGroupsSubtitle, textAlign: TextAlign.center),
+              BodyText.medium(
+                AppStrings.noGroupsSubtitle,
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -133,7 +150,12 @@ class GroupsScreen extends StatelessWidget {
 }
 
 class _GroupListItem extends StatelessWidget {
-  const _GroupListItem({required this.group, required this.isActive, required this.onTap, required this.onViewInviteCode});
+  const _GroupListItem({
+    required this.group,
+    required this.isActive,
+    required this.onTap,
+    required this.onViewInviteCode,
+  });
 
   final GroupModel group;
   final bool isActive;
@@ -154,19 +176,32 @@ class _GroupListItem extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(isActive ? Icons.radio_button_checked : Icons.radio_button_unchecked, color: colorScheme.primary),
+          Icon(
+            isActive
+                ? Icons.radio_button_checked
+                : Icons.radio_button_unchecked,
+            color: colorScheme.primary,
+          ),
           SizedBox(width: theme.spacingMedium ?? 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TitleText.medium(group.name),
-                if (roleLabel != null) BodyText.small(roleLabel, color: colorScheme.onSurfaceVariant),
+                if (roleLabel != null)
+                  BodyText.small(
+                    roleLabel,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
               ],
             ),
           ),
           if (isActive)
-            LabelText.large(AppStrings.active, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
+            LabelText.large(
+              AppStrings.active,
+              color: colorScheme.primary,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
           IconButton(
             icon: const Icon(Icons.vpn_key_outlined),
             tooltip: AppStrings.viewInviteCodeTooltip,

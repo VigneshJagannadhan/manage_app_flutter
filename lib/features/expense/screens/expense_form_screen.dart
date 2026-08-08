@@ -54,8 +54,12 @@ class ExpenseFormScreen extends StatefulWidget {
 
 class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _titleController = TextEditingController(text: widget.expense?.title);
-  late final _amountController = TextEditingController(text: widget.expense?.amount?.toStringAsFixed(2));
+  late final _titleController = TextEditingController(
+    text: widget.expense?.title,
+  );
+  late final _amountController = TextEditingController(
+    text: widget.expense?.amount?.toStringAsFixed(2),
+  );
 
   bool get _isEditing => widget.expense != null;
 
@@ -72,7 +76,8 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
 
   // Payer/splits only apply at creation - the API doesn't support editing them on an
   // existing expense yet, so this screen only offers title/amount/category/date when editing.
-  String? get _activeGroupId => _isEditing ? null : context.read<GroupProvider>().activeGroupId;
+  String? get _activeGroupId =>
+      _isEditing ? null : context.read<GroupProvider>().activeGroupId;
 
   @override
   void initState() {
@@ -101,7 +106,8 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
     }
   }
 
-  TextEditingController _splitControllerFor(String userId) => _splitControllers.putIfAbsent(userId, TextEditingController.new);
+  TextEditingController _splitControllerFor(String userId) =>
+      _splitControllers.putIfAbsent(userId, TextEditingController.new);
 
   void _toggleSplitMember(String userId, bool checked) {
     setState(() {
@@ -117,11 +123,15 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
   void _splitEqually() {
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.amountRequired)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text(AppStrings.amountRequired)));
       return;
     }
     if (_checkedMemberIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.selectAtLeastOneMember)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.selectAtLeastOneMember)),
+      );
       return;
     }
 
@@ -144,12 +154,18 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
 
     final splits = <ExpenseSplit>[];
     for (final userId in _checkedMemberIds) {
-      final owed = double.tryParse(_splitControllerFor(userId).text.trim()) ?? 0;
+      final owed =
+          double.tryParse(_splitControllerFor(userId).text.trim()) ?? 0;
       splits.add(ExpenseSplit(userId: userId, amountOwed: owed));
     }
-    final sum = splits.fold<double>(0, (total, split) => total + split.amountOwed);
+    final sum = splits.fold<double>(
+      0,
+      (total, split) => total + split.amountOwed,
+    );
     if ((sum - totalAmount).abs() > 0.01) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.splitsMismatchError)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.splitsMismatchError)),
+      );
       return null;
     }
     return splits;
@@ -170,7 +186,9 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
     if (!isFormValid) return;
 
     if (_selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.categoryRequired)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.categoryRequired)),
+      );
       return;
     }
 
@@ -183,7 +201,13 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
     try {
       final expenseProvider = context.read<ExpenseProvider>();
       final expense = _isEditing
-          ? await expenseProvider.updateExpense(id: widget.expense!.id!, title: title, amount: amount, category: _selectedCategory!, date: _date!)
+          ? await expenseProvider.updateExpense(
+              id: widget.expense!.id!,
+              title: title,
+              amount: amount,
+              category: _selectedCategory!,
+              date: _date!,
+            )
           : await expenseProvider.createExpense(
               ExpenseModel(
                 title: title,
@@ -198,13 +222,17 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
             );
       if (!mounted) return;
       if (expense == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.couldNotCreateExpense)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(AppStrings.couldNotCreateExpense)),
+        );
         return;
       }
       navigationService.pop(context, ExpenseChangeSaved(expense));
     } on ExpenseServiceException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -217,10 +245,16 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
         title: const Text(AppStrings.deleteExpense),
         content: const Text(AppStrings.deleteExpenseConfirmation),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text(AppStrings.cancel)),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text(AppStrings.cancel),
+          ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: LabelText.large(AppStrings.delete, color: Theme.of(dialogContext).colorScheme.error),
+            child: LabelText.large(
+              AppStrings.delete,
+              color: Theme.of(dialogContext).colorScheme.error,
+            ),
           ),
         ],
       ),
@@ -235,7 +269,9 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
       navigationService.pop(context, ExpenseChangeDeleted(id));
     } on ExpenseServiceException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _isDeleting = false);
     }
@@ -244,64 +280,80 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBar: ScreenAppBar(title: _isEditing ? AppStrings.editExpenseTitle : AppStrings.createExpense),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: AppBodyColumn(
-            spacing: 16,
-            children: [
-              AppTextField(
-                label: AppStrings.expenseTitleLabel,
-                controller: _titleController,
-                enabled: !_isBusy,
-                validator: (value) => (value == null || value.trim().isEmpty) ? AppStrings.expenseTitleRequired : null,
+      appBar: ScreenAppBar(
+        title: _isEditing
+            ? AppStrings.editExpenseTitle
+            : AppStrings.createExpense,
+      ),
+      scrollable: true,
+      body: Form(
+        key: _formKey,
+        child: AppBodyColumn(
+          spacing: 16,
+          children: [
+            AppTextField(
+              label: AppStrings.expenseTitleLabel,
+              controller: _titleController,
+              enabled: !_isBusy,
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? AppStrings.expenseTitleRequired
+                  : null,
+            ),
+            AppTextField(
+              label: AppStrings.amountLabel,
+              controller: _amountController,
+              enabled: !_isBusy,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
-              AppTextField(
-                label: AppStrings.amountLabel,
-                controller: _amountController,
-                enabled: !_isBusy,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) return AppStrings.amountRequired;
-                  final parsed = double.tryParse(value.trim());
-                  if (parsed == null || parsed <= 0) return AppStrings.invalidAmount;
-                  return null;
-                },
+              validator: (value) {
+                if (value == null || value.trim().isEmpty)
+                  return AppStrings.amountRequired;
+                final parsed = double.tryParse(value.trim());
+                if (parsed == null || parsed <= 0)
+                  return AppStrings.invalidAmount;
+                return null;
+              },
+            ),
+            AppDropdownField<ExpenseCategory>(
+              hint: AppStrings.categoryLabel,
+              value: _selectedCategory,
+              items: ExpenseCategory.values,
+              itemLabelBuilder: (item) => item.name.toTitleCase,
+              enabled: !_isBusy,
+              onChanged: (value) {
+                _selectedCategory = value;
+                setState(() {});
+              },
+            ),
+            AppDatePicker(
+              label: AppStrings.dateLabel,
+              value: _date,
+              enabled: !_isBusy,
+              lastDate: DateTime.now(),
+              validator: (value) =>
+                  value == null ? AppStrings.expenseDateRequired : null,
+              onChanged: (value) => _date = value,
+            ),
+            if (!_isEditing) ..._buildGroupFields(),
+            AppButton.primary(
+              label: _isSubmitting
+                  ? (_isEditing ? AppStrings.saving : AppStrings.creating)
+                  : (_isEditing
+                        ? AppStrings.saveChanges
+                        : AppStrings.createExpense),
+              onPressed: (_isBusy || (!_isEditing && _activeGroupId == null))
+                  ? null
+                  : _submit,
+            ),
+            if (_isEditing)
+              AppButton.destructive(
+                label: _isDeleting
+                    ? AppStrings.deleting
+                    : AppStrings.deleteExpense,
+                onPressed: _isBusy ? null : _delete,
               ),
-              AppDropdownField<ExpenseCategory>(
-                hint: AppStrings.categoryLabel,
-                value: _selectedCategory,
-                items: ExpenseCategory.values,
-                itemLabelBuilder: (item) => item.name.toTitleCase,
-                enabled: !_isBusy,
-                onChanged: (value) {
-                  _selectedCategory = value;
-                  setState(() {});
-                },
-              ),
-              AppDatePicker(
-                label: AppStrings.dateLabel,
-                value: _date,
-                enabled: !_isBusy,
-                lastDate: DateTime.now(),
-                validator: (value) => value == null ? AppStrings.expenseDateRequired : null,
-                onChanged: (value) => _date = value,
-              ),
-              if (!_isEditing) ..._buildGroupFields(),
-              AppButton.primary(
-                label: _isSubmitting
-                    ? (_isEditing ? AppStrings.saving : AppStrings.creating)
-                    : (_isEditing ? AppStrings.saveChanges : AppStrings.createExpense),
-                onPressed: (_isBusy || (!_isEditing && _activeGroupId == null)) ? null : _submit,
-              ),
-              if (_isEditing)
-                AppButton.destructive(
-                  label: _isDeleting ? AppStrings.deleting : AppStrings.deleteExpense,
-                  onPressed: _isBusy ? null : _delete,
-                ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -330,19 +382,33 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
         enabled: !_isBusy,
         onChanged: (member) => setState(() => _selectedPayer = member),
       ),
-      Align(alignment: Alignment.centerLeft, child: TitleText.small(AppStrings.splitsLabel)),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: TitleText.small(AppStrings.splitsLabel),
+      ),
       for (final member in members) _buildSplitRow(member, currentUserId),
-      AppButton.secondary(label: AppStrings.splitEqually, onPressed: _isBusy ? null : _splitEqually),
+      AppButton.secondary(
+        label: AppStrings.splitEqually,
+        onPressed: _isBusy ? null : _splitEqually,
+      ),
     ];
   }
 
   Widget _buildSplitRow(GroupMemberModel member, String? currentUserId) {
     final isChecked = _checkedMemberIds.contains(member.userId);
-    final label = member.userId == currentUserId ? '${member.name}${AppStrings.youSuffix}' : member.name;
+    final label = member.userId == currentUserId
+        ? '${member.name}${AppStrings.youSuffix}'
+        : member.name;
 
     return Row(
       children: [
-        Checkbox(value: isChecked, onChanged: _isBusy ? null : (checked) => _toggleSplitMember(member.userId, checked ?? false)),
+        Checkbox(
+          value: isChecked,
+          onChanged: _isBusy
+              ? null
+              : (checked) =>
+                    _toggleSplitMember(member.userId, checked ?? false),
+        ),
         Expanded(child: BodyText.medium(label)),
         if (isChecked)
           SizedBox(
@@ -351,7 +417,9 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
               label: AppStrings.amountOwedLabel,
               controller: _splitControllerFor(member.userId),
               enabled: !_isBusy,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
             ),
           ),
       ],

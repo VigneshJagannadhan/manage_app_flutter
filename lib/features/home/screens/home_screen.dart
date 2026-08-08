@@ -17,7 +17,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static const _tabs = [TaskListScreen(), ExpenseListScreen(), RemindersScreen(), JournalScreen()];
+  static const _tabs = [
+    TaskListScreen(),
+    ExpenseListScreen(),
+    RemindersScreen(),
+    JournalScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -25,31 +30,43 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return AppScaffold(
       body: IndexedStack(index: _selectedIndex, children: _tabs),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(theme.horizontalMargin ?? 16, 0, theme.horizontalMargin ?? 16, 0),
-          child: Material(
-            elevation: theme.elevationLarge ?? 6,
-            borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
-            clipBehavior: Clip.antiAlias,
-            child: NavigationBar(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-              destinations: const [
-                NavigationDestination(icon: Icon(Icons.task_alt_outlined), selectedIcon: Icon(Icons.task_alt), label: AppStrings.tasksTab),
-                NavigationDestination(
-                  icon: Icon(Icons.account_balance_wallet_outlined),
-                  selectedIcon: Icon(Icons.account_balance_wallet),
-                  label: AppStrings.expensesTab,
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.notifications_outlined),
-                  selectedIcon: Icon(Icons.notifications),
-                  label: AppStrings.remindersTab,
-                ),
-                NavigationDestination(icon: Icon(Icons.book_outlined), selectedIcon: Icon(Icons.book), label: AppStrings.journalTab),
-              ],
-            ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.fromLTRB(
+          theme.horizontalMargin ?? 16,
+          0,
+          theme.horizontalMargin ?? 16,
+          0,
+        ),
+        child: Material(
+          elevation: theme.elevationLarge ?? 6,
+          borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
+          clipBehavior: Clip.antiAlias,
+          child: NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (index) =>
+                setState(() => _selectedIndex = index),
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.task_alt_outlined),
+                selectedIcon: Icon(Icons.task_alt),
+                label: AppStrings.tasksTab,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.account_balance_wallet_outlined),
+                selectedIcon: Icon(Icons.account_balance_wallet),
+                label: AppStrings.expensesTab,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.notifications_outlined),
+                selectedIcon: Icon(Icons.notifications),
+                label: AppStrings.remindersTab,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.book_outlined),
+                selectedIcon: Icon(Icons.book),
+                label: AppStrings.journalTab,
+              ),
+            ],
           ),
         ),
       ),

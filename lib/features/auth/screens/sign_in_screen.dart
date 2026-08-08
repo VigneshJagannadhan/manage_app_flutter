@@ -41,13 +41,18 @@ class _SignInScreenState extends State<SignInScreen> {
     if (!isFormValid) return;
 
     final authProvider = context.read<AuthProvider>();
-    final success = await authProvider.signIn(email: _emailController.text.trim(), password: _passwordController.text);
+    final success = await authProvider.signIn(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
     if (!mounted) return;
 
     if (success) {
       navigationService.pushAndRemoveUntil(context, HomeScreen());
     } else if (authProvider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(authProvider.errorMessage!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(authProvider.errorMessage!)));
     }
   }
 
@@ -60,38 +65,54 @@ class _SignInScreenState extends State<SignInScreen> {
     final isSubmitting = context.watch<AuthProvider>().isLoading;
 
     return AppScaffold(
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: AppBodyColumn(
-            spacing: 16,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
-              DisplayText.medium(AppStrings.welcomeBack, textAlign: TextAlign.center),
-              BodyText.medium(AppStrings.signInSubtitle, textAlign: TextAlign.center),
-              const SizedBox(height: 8),
-              AppTextField(
-                label: AppStrings.emailLabel,
-                controller: _emailController,
-                prefixIcon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                enabled: !isSubmitting,
-                validator: validateEmail,
-              ),
-              AppTextField.password(
-                label: AppStrings.passwordLabel,
-                controller: _passwordController,
-                textInputAction: TextInputAction.done,
-                enabled: !isSubmitting,
-                validator: validatePassword,
-                onFieldSubmitted: (_) => _submit(),
-              ),
-              AppButton.primary(label: isSubmitting ? AppStrings.signingIn : AppStrings.signIn, onPressed: isSubmitting ? null : _submit),
-              AuthFooter(promptText: AppStrings.dontHaveAccount, actionText: AppStrings.signUp, onPressed: isSubmitting ? null : _openSignUp),
-            ],
-          ),
+      scrollable: true,
+      body: Form(
+        key: _formKey,
+        child: AppBodyColumn(
+          spacing: 16,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppImage.asset(
+              source: AppImages.appLogo,
+              width: AppSizing.size36,
+              height: AppSizing.size36,
+            ),
+            DisplayText.medium(
+              AppStrings.welcomeBack,
+              textAlign: TextAlign.center,
+            ),
+            BodyText.medium(
+              AppStrings.signInSubtitle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            AppTextField(
+              label: AppStrings.emailLabel,
+              controller: _emailController,
+              prefixIcon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              enabled: !isSubmitting,
+              validator: validateEmail,
+            ),
+            AppTextField.password(
+              label: AppStrings.passwordLabel,
+              controller: _passwordController,
+              textInputAction: TextInputAction.done,
+              enabled: !isSubmitting,
+              validator: validatePassword,
+              onFieldSubmitted: (_) => _submit(),
+            ),
+            AppButton.primary(
+              label: isSubmitting ? AppStrings.signingIn : AppStrings.signIn,
+              onPressed: isSubmitting ? null : _submit,
+            ),
+            AuthFooter(
+              promptText: AppStrings.dontHaveAccount,
+              actionText: AppStrings.signUp,
+              onPressed: isSubmitting ? null : _openSignUp,
+            ),
+          ],
         ),
       ),
     );
