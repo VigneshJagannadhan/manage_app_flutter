@@ -115,29 +115,45 @@ Only after explicit approval:
    - No "Co-Authored-By" trailers
    - See `.agent/agent-rules-git-flow.md` for full commit rules
 
-4. **After all tasks complete**
+4. **After all tasks complete: Push and create PR**
    ```
    git push -u origin P#<ticket-number>/<kebab-case-summary>
    ```
+   
+   Then create a pull request to main:
+   ```
+   gh pr create --title "TAS-<number>: <summary>" \
+     --body "## Summary\n...\n## Testing\n...\n## Related\n- Jira: TAS-<number>" \
+     --base main
+   ```
+   - Title format: `TAS-<number>: <summary>`
+   - Body includes: Summary, Changes, Testing, and Jira reference
+   - Always target `main` branch
 
-5. **Return to main**
+5. **Return to feature branch** (if needed)
+   ```
+   git checkout P#<ticket-number>/<kebab-case-summary>
+   ```
+   
+   Or return to main after PR is created:
    ```
    git checkout main
    ```
 
-6. **Optionally suggest next steps**
-   - Create/update PR if applicable
-   - Transition ticket to "In Review" or "Done" in Jira
-   - Link to branch/PR in the ticket
+6. **Report completion and next steps**
+   - Link to the created PR
+   - Suggest: await review, merge when approved, or transition Jira ticket
+   - Optionally transition ticket to "In Review" in Jira
 
 ---
 
-## Step 5: Optional - Transition ticket status (post-approval)
+## Step 5: Transition ticket status (optional, on user request)
 
-If the user wants to close or update the ticket:
+After PR is created and merged:
 
-- **After implementation:** Transition to "In Review" (if PR needed) or "Done" (if direct merge)
-- **On user request:** Update status accordingly in Jira
+- **After PR merge:** Optionally transition ticket to "Done" in Jira
+- **On user request:** Update ticket status at any point
+- **Before merge:** Can transition to "In Review" to reflect review state
 
 ---
 
@@ -161,8 +177,9 @@ If the user wants to close or update the ticket:
 - [ ] Implemented tasks in order
 - [ ] Committed after each task (conventional format)
 - [ ] Pushed to feature branch
-- [ ] Checked out back to main
-- [ ] Optionally suggested next steps (PR, ticket transition)
+- [ ] Created PR to main with proper title and description
+- [ ] Reported PR link to user
+- [ ] Suggested next steps (merge, review, ticket transition)
 
 ---
 
@@ -189,8 +206,9 @@ Ready to proceed? Awaiting your approval.
 1. Creates branch `P#27/splash-screen-min-delay`
 2. Implements changes
 3. Commits: `fix: add 3-second minimum to splash screen`
-4. Pushes to remote
-5. Checks out main
-6. Reports completion
+4. Pushes to remote: `git push -u origin P#27/splash-screen-min-delay`
+5. Creates PR to main with proper title and body
+6. Reports PR link: https://github.com/.../pull/7
+7. Suggests: awaiting review and merge approval
 
 ---
