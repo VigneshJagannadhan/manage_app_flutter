@@ -12,6 +12,9 @@ to the project-specific standards files kept in `.agent/`.
 - [.agent/agent-rules-theme.md](.agent/agent-rules-theme.md) -
   Rules for working with Flutter theme extensions and context usage. Apply
   these whenever touching theme/design-token related code.
+- [.agent/agent-rules-git-flow.md](.agent/agent-rules-git-flow.md) -
+  Commit message format, branch naming, and push flow. Apply these when the
+  user says "Let's push this change" - never commit/push proactively.
 
 Note: the user's global `~/.claude/CLAUDE.md` separately references
 `AGENTS.md` and `THEMING_GUIDELINES.md` as canonical standard file names.
