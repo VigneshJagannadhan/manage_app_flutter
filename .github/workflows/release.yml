@@ -3,6 +3,15 @@ name: Release
 on:
   push:
     branches: [main]
+    paths:
+      - "lib/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "assets/**"
+      - "android/**"
+      - "ios/**"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
