@@ -17,6 +17,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const _minimumSplashDuration = Duration(seconds: 3);
+
   @override
   void initState() {
     super.initState();
@@ -24,7 +26,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _goToHome() async {
+    final stopwatch = Stopwatch()..start();
     await context.read<AuthProvider>().restoreSession();
+    stopwatch.stop();
+
+    if (!mounted) return;
+
+    final remainingTime = _minimumSplashDuration - stopwatch.elapsed;
+    if (remainingTime.isNegative == false) {
+      await Future.delayed(remainingTime);
+    }
+
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
     navigationService.pushReplacement(context, isAuthenticated ? HomeScreen() : const SignInScreen());
