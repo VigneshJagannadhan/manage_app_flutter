@@ -307,11 +307,13 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                 decimal: true,
               ),
               validator: (value) {
-                if (value == null || value.trim().isEmpty)
+                if (value == null || value.trim().isEmpty) {
                   return AppStrings.amountRequired;
+                }
                 final parsed = double.tryParse(value.trim());
-                if (parsed == null || parsed <= 0)
+                if (parsed == null || parsed <= 0) {
                   return AppStrings.invalidAmount;
+                }
                 return null;
               },
             ),

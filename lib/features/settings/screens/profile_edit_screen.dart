@@ -43,8 +43,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   String? _validateName(String? value) {
-    if (value == null || value.trim().isEmpty)
+    if (value == null || value.trim().isEmpty) {
       return AppStrings.fullNameRequired;
+    }
     return null;
   }
 

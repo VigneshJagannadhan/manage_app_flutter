@@ -40,16 +40,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   String? _validateFullName(String? value) {
-    if (value == null || value.trim().isEmpty)
+    if (value == null || value.trim().isEmpty) {
       return AppStrings.fullNameRequired;
+    }
     return null;
   }
 
   String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty)
+    if (value == null || value.isEmpty) {
       return AppStrings.confirmPasswordRequired;
-    if (value != _passwordController.text)
+    }
+    if (value != _passwordController.text) {
       return AppStrings.passwordsDoNotMatch;
+    }
     return null;
   }
 

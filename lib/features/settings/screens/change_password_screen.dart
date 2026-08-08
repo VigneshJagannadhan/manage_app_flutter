@@ -32,16 +32,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   String? _validateCurrentPassword(String? value) {
-    if (value == null || value.isEmpty)
+    if (value == null || value.isEmpty) {
       return AppStrings.currentPasswordRequired;
+    }
     return null;
   }
 
   String? _validateConfirmNewPassword(String? value) {
-    if (value == null || value.isEmpty)
+    if (value == null || value.isEmpty) {
       return AppStrings.confirmPasswordRequired;
-    if (value != _newPasswordController.text)
+    }
+    if (value != _newPasswordController.text) {
       return AppStrings.passwordsDoNotMatch;
+    }
     return null;
   }
 
