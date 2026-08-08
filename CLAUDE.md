@@ -15,6 +15,10 @@ to the project-specific standards files kept in `.agent/`.
 - [.agent/agent-rules-git-flow.md](.agent/agent-rules-git-flow.md) -
   Commit message format, branch naming, and push flow. Apply these when the
   user says "Let's push this change" - never commit/push proactively.
+- [.agent/agent-rules-jira.md](.agent/agent-rules-jira.md) -
+  Jira ticket workflow: use "check <ticket>" to fetch a ticket, analyze scope,
+  create a plan, await approval, then implement with proper branching and
+  committing per git flow rules.
 
 Note: the user's global `~/.claude/CLAUDE.md` separately references
 `AGENTS.md` and `THEMING_GUIDELINES.md` as canonical standard file names.
