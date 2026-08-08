@@ -24,9 +24,15 @@ class ProfileEditScreen extends StatefulWidget {
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final _nameController = TextEditingController(text: context.read<ProfileProvider>().profile?.name);
-  late final _emailController = TextEditingController(text: context.read<ProfileProvider>().profile?.email);
-  late final _phoneController = TextEditingController(text: context.read<ProfileProvider>().profile?.phone);
+  late final _nameController = TextEditingController(
+    text: context.read<ProfileProvider>().profile?.name,
+  );
+  late final _emailController = TextEditingController(
+    text: context.read<ProfileProvider>().profile?.email,
+  );
+  late final _phoneController = TextEditingController(
+    text: context.read<ProfileProvider>().profile?.phone,
+  );
 
   @override
   void dispose() {
@@ -37,7 +43,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   String? _validateName(String? value) {
-    if (value == null || value.trim().isEmpty) return AppStrings.fullNameRequired;
+    if (value == null || value.trim().isEmpty) {
+      return AppStrings.fullNameRequired;
+    }
     return null;
   }
 
@@ -57,10 +65,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     if (updated != null) {
       await context.read<AuthProvider>().updateCurrentUser(updated);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.profileUpdated)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text(AppStrings.profileUpdated)));
       navigationService.pop(context);
     } else if (profileProvider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(profileProvider.errorMessage!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(profileProvider.errorMessage!)));
     }
   }
 
@@ -74,49 +86,51 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
     return AppScaffold(
       appBar: const ScreenAppBar(title: AppStrings.editProfile),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: AppBodyColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 16,
-            children: [
-              AppTextField(
-                label: AppStrings.fullNameLabel,
-                controller: _nameController,
-                prefixIcon: Icons.person_outline,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                enabled: !isSaving,
-                validator: _validateName,
-              ),
-              AppTextField(
-                label: AppStrings.emailLabel,
-                controller: _emailController,
-                prefixIcon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                enabled: !isSaving,
-                validator: validateEmail,
-              ),
-              AppTextField(
-                label: AppStrings.phoneLabel,
-                controller: _phoneController,
-                prefixIcon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.done,
-                enabled: !isSaving,
-                validator: validatePhone,
-              ),
-              LabelText.large(AppStrings.passwordLabel),
-              BodyText.large('••••••••'),
-              AppButton.secondary(label: AppStrings.changePassword, onPressed: isSaving ? null : _openChangePassword),
-              AppButton.primary(
-                label: isSaving ? AppStrings.updating : AppStrings.updateProfile,
-                onPressed: isSaving ? null : _submit,
-              ),
-            ],
-          ),
+      scrollable: true,
+      body: Form(
+        key: _formKey,
+        child: AppBodyColumn(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
+          children: [
+            AppTextField(
+              label: AppStrings.fullNameLabel,
+              controller: _nameController,
+              prefixIcon: Icons.person_outline,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.next,
+              enabled: !isSaving,
+              validator: _validateName,
+            ),
+            AppTextField(
+              label: AppStrings.emailLabel,
+              controller: _emailController,
+              prefixIcon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              enabled: !isSaving,
+              validator: validateEmail,
+            ),
+            AppTextField(
+              label: AppStrings.phoneLabel,
+              controller: _phoneController,
+              prefixIcon: Icons.phone_outlined,
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.done,
+              enabled: !isSaving,
+              validator: validatePhone,
+            ),
+            LabelText.large(AppStrings.passwordLabel),
+            BodyText.large('••••••••'),
+            AppButton.secondary(
+              label: AppStrings.changePassword,
+              onPressed: isSaving ? null : _openChangePassword,
+            ),
+            AppButton.primary(
+              label: isSaving ? AppStrings.updating : AppStrings.updateProfile,
+              onPressed: isSaving ? null : _submit,
+            ),
+          ],
         ),
       ),
     );

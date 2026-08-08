@@ -34,12 +34,16 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
 
     setState(() => _isSubmitting = true);
     try {
-      final group = await context.read<GroupProvider>().joinGroup(_codeController.text.trim());
+      final group = await context.read<GroupProvider>().joinGroup(
+        _codeController.text.trim(),
+      );
       if (!mounted) return;
       navigationService.pop(context, group);
     } on GroupServiceException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -49,26 +53,27 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: ScreenAppBar(title: AppStrings.joinGroup),
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: AppBodyColumn(
-            spacing: 16,
-            children: [
-              AppTextField(
-                label: AppStrings.inviteCodeLabel,
-                controller: _codeController,
-                enabled: !_isSubmitting,
-                autofocus: true,
-                textCapitalization: TextCapitalization.characters,
-                validator: (value) => (value == null || value.trim().isEmpty) ? AppStrings.inviteCodeRequired : null,
-              ),
-              AppButton.primary(
-                label: _isSubmitting ? AppStrings.joining : AppStrings.join,
-                onPressed: _isSubmitting ? null : _submit,
-              ),
-            ],
-          ),
+      scrollable: true,
+      body: Form(
+        key: _formKey,
+        child: AppBodyColumn(
+          spacing: 16,
+          children: [
+            AppTextField(
+              label: AppStrings.inviteCodeLabel,
+              controller: _codeController,
+              enabled: !_isSubmitting,
+              autofocus: true,
+              textCapitalization: TextCapitalization.characters,
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? AppStrings.inviteCodeRequired
+                  : null,
+            ),
+            AppButton.primary(
+              label: _isSubmitting ? AppStrings.joining : AppStrings.join,
+              onPressed: _isSubmitting ? null : _submit,
+            ),
+          ],
         ),
       ),
     );

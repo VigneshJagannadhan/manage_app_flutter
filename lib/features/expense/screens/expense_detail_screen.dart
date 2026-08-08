@@ -58,13 +58,20 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
     return null;
   }
 
-  String _memberLabel(String userId, List<GroupMemberModel> members, String? currentUserId) {
+  String _memberLabel(
+    String userId,
+    List<GroupMemberModel> members,
+    String? currentUserId,
+  ) {
     final name = _findMember(userId, members)?.name ?? userId;
     return userId == currentUserId ? '$name${AppStrings.youSuffix}' : name;
   }
 
   Future<void> _editExpense() async {
-    final result = await navigationService.push<ExpenseChangeResult>(context, ExpenseFormScreen(expense: _expense));
+    final result = await navigationService.push<ExpenseChangeResult>(
+      context,
+      ExpenseFormScreen(expense: _expense),
+    );
     if (!mounted || result == null) return;
     switch (result) {
       case ExpenseChangeSaved(:final expense):
@@ -84,71 +91,101 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
     final groupProvider = context.watch<GroupProvider>();
     final currentUserId = context.watch<AuthProvider>().currentUser?.id;
     final groupId = _expense.groupId;
-    final members = groupId != null ? groupProvider.membersFor(groupId) : const <GroupMemberModel>[];
+    final members = groupId != null
+        ? groupProvider.membersFor(groupId)
+        : const <GroupMemberModel>[];
     final payerId = _expense.payerId;
-    final payerLabel = payerId != null ? _memberLabel(payerId, members, currentUserId) : null;
+    final payerLabel = payerId != null
+        ? _memberLabel(payerId, members, currentUserId)
+        : null;
 
     return AppScaffold(
       appBar: ScreenAppBar(
         title: AppStrings.expenseDetails,
         onBackPressed: () => navigationService.pop(context, _pendingResult),
-        actions: [IconButton(icon: const Icon(Icons.edit), tooltip: AppStrings.editExpenseTooltip, onPressed: _editExpense)],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            tooltip: AppStrings.editExpenseTooltip,
+            onPressed: _editExpense,
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: AppBodyColumn(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: theme.spacingMedium ?? 16,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular((theme.appBorderRadius ?? 12) - AppSpacing.space4),
-                    color: colorScheme.primary.withValues(alpha: 0.5),
+      scrollable: true,
+      body: AppBodyColumn(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: theme.spacingMedium ?? 16,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                    (theme.appBorderRadius ?? 12) - AppSpacing.space4,
                   ),
-                  child: Icon(ExpenseTile.iconFor(category), color: Colors.white),
+                  color: colorScheme.primary.withValues(alpha: 0.5),
                 ),
-                SizedBox(width: theme.spacingMedium ?? 16),
-                Expanded(child: HeadlineText.small(title)),
-              ],
+                child: Icon(ExpenseTile.iconFor(category), color: Colors.white),
+              ),
+              SizedBox(width: theme.spacingMedium ?? 16),
+              Expanded(child: HeadlineText.small(title)),
+            ],
+          ),
+          HeadlineText.small(
+            displayAmount,
+            color: colorScheme.primary,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          Divider(color: colorScheme.outlineVariant),
+          if (category != null)
+            _DetailRow(
+              icon: Icon(Icons.category, size: 18, color: colorScheme.outline),
+              label: AppStrings.categoryLabel,
+              value: categoryName,
             ),
-            HeadlineText.small(displayAmount, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
-            Divider(color: colorScheme.outlineVariant),
-            if (category != null)
-              _DetailRow(
-                icon: Icon(Icons.category, size: 18, color: colorScheme.outline),
-                label: AppStrings.categoryLabel,
-                value: categoryName,
+          if (_expense.date != null)
+            _DetailRow(
+              icon: Icon(
+                Icons.calendar_today,
+                size: 18,
+                color: colorScheme.outline,
               ),
-            if (_expense.date != null)
-              _DetailRow(
-                icon: Icon(Icons.calendar_today, size: 18, color: colorScheme.outline),
-                label: AppStrings.dateLabel,
-                value: formattedDate,
+              label: AppStrings.dateLabel,
+              value: formattedDate,
+            ),
+          if (payerLabel != null)
+            _DetailRow(
+              icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
+              label: AppStrings.payerLabel,
+              value: payerLabel,
+            ),
+          SizedBox(height: theme.spacingSmall ?? 8),
+          TitleText.small(AppStrings.splitDetailsLabel),
+          if (_expense.splits.isEmpty)
+            BodyText.medium(
+              AppStrings.noSplitsRecorded,
+              color: colorScheme.outline,
+            )
+          else
+            for (final split in _expense.splits)
+              _SplitRow(
+                label: _memberLabel(split.userId, members, currentUserId),
+                amount: split.amountOwed,
               ),
-            if (payerLabel != null)
-              _DetailRow(
-                icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
-                label: AppStrings.payerLabel,
-                value: payerLabel,
-              ),
-            SizedBox(height: theme.spacingSmall ?? 8),
-            TitleText.small(AppStrings.splitDetailsLabel),
-            if (_expense.splits.isEmpty)
-              BodyText.medium(AppStrings.noSplitsRecorded, color: colorScheme.outline)
-            else
-              for (final split in _expense.splits) _SplitRow(label: _memberLabel(split.userId, members, currentUserId), amount: split.amountOwed),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
 
 class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.icon, required this.label, required this.value});
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   final Widget icon;
   final String label;
@@ -164,7 +201,10 @@ class _DetailRow extends StatelessWidget {
         icon,
         SizedBox(width: theme.spacingSmall ?? 8),
         BodyText.medium('$label: ', color: colorScheme.outline),
-        BodyText.medium(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+        BodyText.medium(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }
@@ -181,7 +221,10 @@ class _SplitRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(child: BodyText.medium(label)),
-        BodyText.medium(amount.toCurrencyString(), style: const TextStyle(fontWeight: FontWeight.w600)),
+        BodyText.medium(
+          amount.toCurrencyString(),
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }

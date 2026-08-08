@@ -32,13 +32,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   String? _validateCurrentPassword(String? value) {
-    if (value == null || value.isEmpty) return AppStrings.currentPasswordRequired;
+    if (value == null || value.isEmpty) {
+      return AppStrings.currentPasswordRequired;
+    }
     return null;
   }
 
   String? _validateConfirmNewPassword(String? value) {
-    if (value == null || value.isEmpty) return AppStrings.confirmPasswordRequired;
-    if (value != _newPasswordController.text) return AppStrings.passwordsDoNotMatch;
+    if (value == null || value.isEmpty) {
+      return AppStrings.confirmPasswordRequired;
+    }
+    if (value != _newPasswordController.text) {
+      return AppStrings.passwordsDoNotMatch;
+    }
     return null;
   }
 
@@ -54,56 +60,65 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('${AppStrings.passwordChanged}. ${AppStrings.passwordChangedNote}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '${AppStrings.passwordChanged}. ${AppStrings.passwordChangedNote}',
+          ),
+        ),
+      );
       navigationService.pop(context);
     } else if (profileProvider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(profileProvider.errorMessage!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(profileProvider.errorMessage!)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isChangingPassword = context.watch<ProfileProvider>().isChangingPassword;
+    final isChangingPassword = context
+        .watch<ProfileProvider>()
+        .isChangingPassword;
 
     return AppScaffold(
       appBar: const ScreenAppBar(title: AppStrings.changePassword),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: AppBodyColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 16,
-            children: [
-              AppTextField.password(
-                label: AppStrings.currentPasswordLabel,
-                controller: _currentPasswordController,
-                textInputAction: TextInputAction.next,
-                enabled: !isChangingPassword,
-                validator: _validateCurrentPassword,
-              ),
-              AppTextField.password(
-                label: AppStrings.newPasswordLabel,
-                controller: _newPasswordController,
-                textInputAction: TextInputAction.next,
-                enabled: !isChangingPassword,
-                validator: validatePassword,
-              ),
-              AppTextField.password(
-                label: AppStrings.confirmNewPasswordLabel,
-                controller: _confirmNewPasswordController,
-                textInputAction: TextInputAction.done,
-                enabled: !isChangingPassword,
-                validator: _validateConfirmNewPassword,
-                onFieldSubmitted: (_) => _submit(),
-              ),
-              AppButton.primary(
-                label: isChangingPassword ? AppStrings.changingPassword : AppStrings.changePassword,
-                onPressed: isChangingPassword ? null : _submit,
-              ),
-            ],
-          ),
+      scrollable: true,
+      body: Form(
+        key: _formKey,
+        child: AppBodyColumn(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
+          children: [
+            AppTextField.password(
+              label: AppStrings.currentPasswordLabel,
+              controller: _currentPasswordController,
+              textInputAction: TextInputAction.next,
+              enabled: !isChangingPassword,
+              validator: _validateCurrentPassword,
+            ),
+            AppTextField.password(
+              label: AppStrings.newPasswordLabel,
+              controller: _newPasswordController,
+              textInputAction: TextInputAction.next,
+              enabled: !isChangingPassword,
+              validator: validatePassword,
+            ),
+            AppTextField.password(
+              label: AppStrings.confirmNewPasswordLabel,
+              controller: _confirmNewPasswordController,
+              textInputAction: TextInputAction.done,
+              enabled: !isChangingPassword,
+              validator: _validateConfirmNewPassword,
+              onFieldSubmitted: (_) => _submit(),
+            ),
+            AppButton.primary(
+              label: isChangingPassword
+                  ? AppStrings.changingPassword
+                  : AppStrings.changePassword,
+              onPressed: isChangingPassword ? null : _submit,
+            ),
+          ],
         ),
       ),
     );

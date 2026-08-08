@@ -54,13 +54,17 @@ class TaskFormScreen extends StatefulWidget {
 class _TaskFormScreenState extends State<TaskFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late final _titleController = TextEditingController(text: widget.task?.title);
-  late final _descriptionController = TextEditingController(text: widget.task?.description);
+  late final _descriptionController = TextEditingController(
+    text: widget.task?.description,
+  );
 
   bool get _isEditing => widget.task != null;
 
   late TaskPriority? _selectedPriority = widget.task?.priority;
   late DateTime? _dueDate = widget.task?.dueDate;
-  late TimeOfDay? _dueTime = widget.task?.dueDate != null ? TimeOfDay.fromDateTime(widget.task!.dueDate!) : null;
+  late TimeOfDay? _dueTime = widget.task?.dueDate != null
+      ? TimeOfDay.fromDateTime(widget.task!.dueDate!)
+      : null;
   bool _isSubmitting = false;
   bool _isDeleting = false;
   GroupMemberModel? _selectedAssignee;
@@ -69,7 +73,8 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
 
   // Assignment only happens at creation - the API doesn't support reassigning an
   // existing task, so an already-created task's assignee is display-only (see TaskDetailScreen).
-  String? get _activeGroupId => _isEditing ? null : context.read<GroupProvider>().activeGroupId;
+  String? get _activeGroupId =>
+      _isEditing ? null : context.read<GroupProvider>().activeGroupId;
 
   @override
   void initState() {
@@ -83,7 +88,9 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     } else {
       groupProvider.loadMembers(groupId).then((_) {
         if (!mounted) return;
-        setState(() => _applyDefaultAssignee(groupProvider.membersFor(groupId)));
+        setState(
+          () => _applyDefaultAssignee(groupProvider.membersFor(groupId)),
+        );
       });
     }
   }
@@ -110,18 +117,32 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     if (!isFormValid) return;
 
     if (_selectedPriority == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.pleaseSelectPriority)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.pleaseSelectPriority)),
+      );
       return;
     }
 
     setState(() => _isSubmitting = true);
     try {
-      final dueDate = DateTime(_dueDate!.year, _dueDate!.month, _dueDate!.day, _dueTime!.hour, _dueTime!.minute);
+      final dueDate = DateTime(
+        _dueDate!.year,
+        _dueDate!.month,
+        _dueDate!.day,
+        _dueTime!.hour,
+        _dueTime!.minute,
+      );
       final title = _titleController.text.trim();
       final description = _descriptionController.text.trim();
       final taskProvider = context.read<TaskProvider>();
       final task = _isEditing
-          ? await taskProvider.updateTask(id: widget.task!.id!, title: title, description: description, priority: _selectedPriority!, dueDate: dueDate)
+          ? await taskProvider.updateTask(
+              id: widget.task!.id!,
+              title: title,
+              description: description,
+              priority: _selectedPriority!,
+              dueDate: dueDate,
+            )
           : await taskProvider.createTask(
               TaskModel(
                 title: title,
@@ -135,13 +156,17 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             );
       if (!mounted) return;
       if (task == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.couldNotCreateTask)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(AppStrings.couldNotCreateTask)),
+        );
         return;
       }
       navigationService.pop(context, TaskChangeSaved(task));
     } on TaskServiceException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -154,10 +179,16 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         title: const Text(AppStrings.deleteTask),
         content: const Text(AppStrings.deleteTaskConfirmation),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text(AppStrings.cancel)),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text(AppStrings.cancel),
+          ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: LabelText.large(AppStrings.delete, color: Theme.of(dialogContext).colorScheme.error),
+            child: LabelText.large(
+              AppStrings.delete,
+              color: Theme.of(dialogContext).colorScheme.error,
+            ),
           ),
         ],
       ),
@@ -172,7 +203,9 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       navigationService.pop(context, TaskChangeDeleted(id));
     } on TaskServiceException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _isDeleting = false);
     }
@@ -181,68 +214,83 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBar: ScreenAppBar(title: _isEditing ? AppStrings.editTaskTitle : AppStrings.createTask),
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: AppBodyColumn(
-            spacing: 16,
-            children: [
-              AppTextField(
-                label: AppStrings.taskNameLabel,
-                controller: _titleController,
-                enabled: !_isBusy,
-                validator: (value) => (value == null || value.trim().isEmpty) ? AppStrings.taskNameRequired : null,
+      appBar: ScreenAppBar(
+        title: _isEditing ? AppStrings.editTaskTitle : AppStrings.createTask,
+      ),
+      scrollable: true,
+      body: Form(
+        key: _formKey,
+        child: AppBodyColumn(
+          spacing: 16,
+          children: [
+            AppTextField(
+              label: AppStrings.taskNameLabel,
+              controller: _titleController,
+              enabled: !_isBusy,
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? AppStrings.taskNameRequired
+                  : null,
+            ),
+            AppTextField(
+              label: AppStrings.descriptionLabel,
+              controller: _descriptionController,
+              enabled: !_isBusy,
+              maxLines: 3,
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? AppStrings.descriptionRequired
+                  : null,
+            ),
+            AppDropdownField<TaskPriority>(
+              hint: AppStrings.priorityLabel,
+              value: _selectedPriority,
+              items: TaskPriority.values,
+              itemLabelBuilder: (item) => item.name.toTitleCase,
+              enabled: !_isBusy,
+              onChanged: (value) {
+                _selectedPriority = value;
+                setState(() {});
+              },
+            ),
+            AppDatePicker(
+              label: AppStrings.dueDateLabel,
+              value: _dueDate,
+              enabled: !_isBusy,
+              // Editing a task whose due date is already in the past must not raise the
+              // picker's date range below that existing value.
+              firstDate: _dueDate != null && _dueDate!.isBefore(DateTime.now())
+                  ? _dueDate
+                  : DateTime.now(),
+              validator: (value) =>
+                  value == null ? AppStrings.dueDateRequired : null,
+              onChanged: (value) => _dueDate = value,
+            ),
+            AppTimePicker(
+              label: AppStrings.dueTimeLabel,
+              value: _dueTime,
+              enabled: !_isBusy,
+              validator: (value) =>
+                  value == null ? AppStrings.dueTimeRequired : null,
+              onChanged: (value) => _dueTime = value,
+            ),
+            if (!_isEditing) _buildAssigneeField(),
+            AppButton.primary(
+              label: _isSubmitting
+                  ? (_isEditing ? AppStrings.saving : AppStrings.creating)
+                  : (_isEditing
+                        ? AppStrings.saveChanges
+                        : AppStrings.createTask),
+              onPressed: (_isBusy || (!_isEditing && _activeGroupId == null))
+                  ? null
+                  : _submit,
+            ),
+            if (_isEditing)
+              AppButton.destructive(
+                label: _isDeleting
+                    ? AppStrings.deleting
+                    : AppStrings.deleteTask,
+                onPressed: _isBusy ? null : _delete,
               ),
-              AppTextField(
-                label: AppStrings.descriptionLabel,
-                controller: _descriptionController,
-                enabled: !_isBusy,
-                maxLines: 3,
-                validator: (value) => (value == null || value.trim().isEmpty) ? AppStrings.descriptionRequired : null,
-              ),
-              AppDropdownField<TaskPriority>(
-                hint: AppStrings.priorityLabel,
-                value: _selectedPriority,
-                items: TaskPriority.values,
-                itemLabelBuilder: (item) => item.name.toTitleCase,
-                enabled: !_isBusy,
-                onChanged: (value) {
-                  _selectedPriority = value;
-                  setState(() {});
-                },
-              ),
-              AppDatePicker(
-                label: AppStrings.dueDateLabel,
-                value: _dueDate,
-                enabled: !_isBusy,
-                // Editing a task whose due date is already in the past must not raise the
-                // picker's date range below that existing value.
-                firstDate: _dueDate != null && _dueDate!.isBefore(DateTime.now()) ? _dueDate : DateTime.now(),
-                validator: (value) => value == null ? AppStrings.dueDateRequired : null,
-                onChanged: (value) => _dueDate = value,
-              ),
-              AppTimePicker(
-                label: AppStrings.dueTimeLabel,
-                value: _dueTime,
-                enabled: !_isBusy,
-                validator: (value) => value == null ? AppStrings.dueTimeRequired : null,
-                onChanged: (value) => _dueTime = value,
-              ),
-              if (!_isEditing) _buildAssigneeField(),
-              AppButton.primary(
-                label: _isSubmitting
-                    ? (_isEditing ? AppStrings.saving : AppStrings.creating)
-                    : (_isEditing ? AppStrings.saveChanges : AppStrings.createTask),
-                onPressed: (_isBusy || (!_isEditing && _activeGroupId == null)) ? null : _submit,
-              ),
-              if (_isEditing)
-                AppButton.destructive(
-                  label: _isDeleting ? AppStrings.deleting : AppStrings.deleteTask,
-                  onPressed: _isBusy ? null : _delete,
-                ),
-            ],
-          ),
+          ],
         ),
       ),
     );

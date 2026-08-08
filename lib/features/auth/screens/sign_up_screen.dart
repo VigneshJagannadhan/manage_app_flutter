@@ -40,13 +40,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   String? _validateFullName(String? value) {
-    if (value == null || value.trim().isEmpty) return AppStrings.fullNameRequired;
+    if (value == null || value.trim().isEmpty) {
+      return AppStrings.fullNameRequired;
+    }
     return null;
   }
 
   String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) return AppStrings.confirmPasswordRequired;
-    if (value != _passwordController.text) return AppStrings.passwordsDoNotMatch;
+    if (value == null || value.isEmpty) {
+      return AppStrings.confirmPasswordRequired;
+    }
+    if (value != _passwordController.text) {
+      return AppStrings.passwordsDoNotMatch;
+    }
     return null;
   }
 
@@ -65,7 +71,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (success) {
       navigationService.pushAndRemoveUntil(context, HomeScreen());
     } else if (authProvider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(authProvider.errorMessage!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(authProvider.errorMessage!)));
     }
   }
 
@@ -78,64 +86,71 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final isSubmitting = context.watch<AuthProvider>().isLoading;
 
     return AppScaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Form(
-              key: _formKey,
-              child: AppBodyColumn(
-                spacing: 16,
-                children: [
-                  AppImage.asset(source: AppImages.appLogo, width: AppSizing.size36, height: AppSizing.size36),
-                  DisplayText.medium(AppStrings.createAccount, textAlign: TextAlign.center),
-                  BodyText.medium(AppStrings.signUpSubtitle, textAlign: TextAlign.center),
-                  const SizedBox(height: 8),
-                  AppTextField(
-                    label: AppStrings.fullNameLabel,
-                    controller: _fullNameController,
-                    prefixIcon: Icons.person_outline,
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                    enabled: !isSubmitting,
-                    validator: _validateFullName,
-                  ),
-                  AppTextField(
-                    label: AppStrings.emailLabel,
-                    controller: _emailController,
-                    prefixIcon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    enabled: !isSubmitting,
-                    validator: validateEmail,
-                  ),
-                  AppTextField.password(
-                    label: AppStrings.passwordLabel,
-                    controller: _passwordController,
-                    textInputAction: TextInputAction.next,
-                    enabled: !isSubmitting,
-                    validator: validatePassword,
-                  ),
-                  AppTextField.password(
-                    label: AppStrings.confirmPasswordLabel,
-                    controller: _confirmPasswordController,
-                    textInputAction: TextInputAction.done,
-                    enabled: !isSubmitting,
-                    validator: _validateConfirmPassword,
-                    onFieldSubmitted: (_) => _submit(),
-                  ),
-                  AppButton.primary(
-                    label: isSubmitting ? AppStrings.creatingAccount : AppStrings.signUp,
-                    onPressed: isSubmitting ? null : _submit,
-                  ),
-                  AuthFooter(
-                    promptText: AppStrings.alreadyHaveAccount,
-                    actionText: AppStrings.signIn,
-                    onPressed: isSubmitting ? null : _backToSignIn,
-                  ),
-                ],
-              ),
+      scrollable: true,
+      body: Form(
+        key: _formKey,
+        child: AppBodyColumn(
+          spacing: 16,
+          children: [
+            AppImage.asset(
+              source: AppImages.appLogo,
+              width: AppSizing.size36,
+              height: AppSizing.size36,
             ),
-          ),
+            DisplayText.medium(
+              AppStrings.createAccount,
+              textAlign: TextAlign.center,
+            ),
+            BodyText.medium(
+              AppStrings.signUpSubtitle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            AppTextField(
+              label: AppStrings.fullNameLabel,
+              controller: _fullNameController,
+              prefixIcon: Icons.person_outline,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.next,
+              enabled: !isSubmitting,
+              validator: _validateFullName,
+            ),
+            AppTextField(
+              label: AppStrings.emailLabel,
+              controller: _emailController,
+              prefixIcon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              enabled: !isSubmitting,
+              validator: validateEmail,
+            ),
+            AppTextField.password(
+              label: AppStrings.passwordLabel,
+              controller: _passwordController,
+              textInputAction: TextInputAction.next,
+              enabled: !isSubmitting,
+              validator: validatePassword,
+            ),
+            AppTextField.password(
+              label: AppStrings.confirmPasswordLabel,
+              controller: _confirmPasswordController,
+              textInputAction: TextInputAction.done,
+              enabled: !isSubmitting,
+              validator: _validateConfirmPassword,
+              onFieldSubmitted: (_) => _submit(),
+            ),
+            AppButton.primary(
+              label: isSubmitting
+                  ? AppStrings.creatingAccount
+                  : AppStrings.signUp,
+              onPressed: isSubmitting ? null : _submit,
+            ),
+            AuthFooter(
+              promptText: AppStrings.alreadyHaveAccount,
+              actionText: AppStrings.signIn,
+              onPressed: isSubmitting ? null : _backToSignIn,
+            ),
+          ],
         ),
       ),
     );
