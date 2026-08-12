@@ -81,6 +81,24 @@ class AppStrings {
   static const String noExpensesYet = 'No expenses yet';
   static const String currencySymbol = '₹';
 
+  // expense dashboard
+  static const String totalThisMonth = 'Total This Month';
+  static const String essentialLabel = 'Essential';
+  static const String nonEssentialLabel = 'Non-Essential';
+  static const String noExpensesThisMonth = 'No expenses this month';
+  static const String recentLabel = 'Recent';
+  static const String seeAll = 'See All';
+
+  // all expenses screen
+  static const String allExpensesTitle = 'All Expenses';
+  static const String searchExpensesHint = 'Search expenses';
+  static const String dateRange = 'Date Range';
+  static const String sort = 'Sort';
+  static const String sortNewest = 'Newest First';
+  static const String sortOldest = 'Oldest First';
+  static const String sortAmountHigh = 'Amount: High to Low';
+  static const String sortAmountLow = 'Amount: Low to High';
+
   // expense form
   static const String createExpense = 'Create Expense';
   static const String editExpenseTitle = 'Edit Expense';
