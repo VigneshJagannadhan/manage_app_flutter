@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/expense/screens/expense_list_screen.dart';
+import 'package:manage_app/features/expense/screens/expense_dashboard_screen.dart';
 import 'package:manage_app/features/journal/screens/journal_screen.dart';
 import 'package:manage_app/features/reminders/screens/reminders_screen.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const _tabs = [
     TaskListScreen(),
-    ExpenseListScreen(),
+    ExpenseDashboardScreen(),
     RemindersScreen(),
     JournalScreen(),
   ];

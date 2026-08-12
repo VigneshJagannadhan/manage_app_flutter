@@ -22,6 +22,22 @@ extension DateTimeExtensions on DateTime {
     return '$day $monthName $year : ${hour12.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $amPm';
   }
 
+  /// Whether this date falls on the same calendar day as [other].
+  bool isSameDate(DateTime other) => year == other.year && month == other.month && day == other.day;
+
+  /// Whether this date falls on today's calendar day.
+  bool get isToday => isSameDate(DateTime.now());
+
+  /// Time only (hh:mm am/pm) - used where the date is implied by context, e.g. "today".
+  String get formattedTime {
+    final hour12 = hour % 12 == 0 ? 12 : hour % 12;
+    final amPm = hour >= 12 ? 'PM' : 'AM';
+    return '${hour12.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $amPm';
+  }
+
+  /// Short date without year, e.g. "10 Aug".
+  String get formattedShortDate => '$day ${_monthNames[month - 1]}';
+
   static const List<String> _monthNames = [
     'Jan',
     'Feb',

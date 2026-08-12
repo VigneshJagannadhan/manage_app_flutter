@@ -4,8 +4,8 @@ import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/currency_extension.dart';
 import 'package:manage_app/core/extensions/date_time_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
-import 'package:manage_app/core/themes/constants/app_spacing.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
+import 'package:manage_app/features/expense/widgets/expense_category_style.dart';
 import 'package:manage_app/features/shared/widgets/app_card.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:manage_app/features/shared/widgets/text/label_text.dart';
@@ -22,66 +22,59 @@ class ExpenseTile extends StatelessWidget {
   String get title => expense.title ?? '';
   ExpenseCategory? get category => expense.category;
   String get categoryName => category?.name.toTitleCase ?? '';
-  String get formattedDateTime2 => expense.date?.formattedDateTime ?? '';
   String get displayAmount => expense.amount.toCurrencyString();
-  static IconData iconFor(ExpenseCategory? category) => switch (category) {
-    ExpenseCategory.food => Icons.restaurant,
-    ExpenseCategory.transport => Icons.directions_car,
-    ExpenseCategory.shopping => Icons.shopping_bag,
-    ExpenseCategory.bills => Icons.receipt_long,
-    ExpenseCategory.entertainment => Icons.movie,
-    ExpenseCategory.health => Icons.local_hospital,
-    ExpenseCategory.other => Icons.category,
-    null => Icons.category,
-  };
+
+  String? get _subtitle {
+    final date = expense.date;
+    final dateLabel = date == null ? null : (date.isToday ? date.formattedTime : date.formattedShortDate);
+    return switch ((categoryName.isEmpty, dateLabel)) {
+      (true, null) => null,
+      (true, final d?) => d,
+      (false, null) => categoryName,
+      (false, final d?) => '$categoryName · $d',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final categoryColor = ExpenseCategoryStyle.colorFor(category);
+    final subtitle = _subtitle;
 
     return AppCard(
       onTap: onTap,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (category != null) ...[
-              AspectRatio(
-                aspectRatio: 1,
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(((theme.appBorderRadius ?? 12) - AppSpacing.space4)),
-                    color: colorScheme.primary.withValues(alpha: 0.5),
-                  ),
-                  child: Icon(iconFor(category), size: 50, color: Colors.white),
-                ),
-              ),
-              SizedBox(width: theme.spacingMedium ?? 16),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (groupName != null) ...[
-                    LabelText.small(groupName!, color: colorScheme.secondary, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    SizedBox(height: theme.spacingXSmall ?? 4),
-                  ],
-                  TitleText.medium(title, overflow: TextOverflow.ellipsis),
-                  if (category != null) ...[
-                    SizedBox(height: theme.spacingXSmall ?? 4),
-                    BodyText.small(categoryName, color: colorScheme.onSurfaceVariant, overflow: TextOverflow.ellipsis),
-                  ],
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(theme.spacingSmall ?? 8), color: categoryColor.withValues(alpha: 0.16)),
+            child: Icon(ExpenseCategoryStyle.iconFor(category), size: 22, color: categoryColor),
+          ),
+          SizedBox(width: theme.spacingMedium ?? 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (groupName != null) ...[
+                  LabelText.small(groupName!, color: colorScheme.secondary, style: const TextStyle(fontWeight: FontWeight.w700)),
                   SizedBox(height: theme.spacingXSmall ?? 4),
-                  if (expense.date != null)
-                    BodyText.small(formattedDateTime2, color: colorScheme.outline, overflow: TextOverflow.ellipsis),
-                  TitleText.medium(displayAmount, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ],
-              ),
+                TitleText.small(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                if (subtitle != null) ...[
+                  SizedBox(height: (theme.spacingXSmall ?? 4) / 2),
+                  BodyText.small(subtitle, color: colorScheme.outline, overflow: TextOverflow.ellipsis),
+                ],
+              ],
             ),
-          ],
-        ),
+          ),
+          SizedBox(width: theme.spacingSmall ?? 8),
+          TitleText.small(displayAmount, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
+        ],
       ),
     );
   }

@@ -23,3 +23,6 @@ extension ExpenseCategoryApi on ExpenseCategory {
     _ => throw ArgumentError('Unknown expense category: $value'),
   };
 }
+
+/// Client-side sort applied to the "All Expenses" list. Not sent to the API.
+enum ExpenseSortOption { newest, oldest, amountHigh, amountLow }

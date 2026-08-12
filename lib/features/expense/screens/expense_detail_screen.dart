@@ -10,7 +10,7 @@ import 'package:manage_app/core/themes/constants/app_spacing.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/expense/screens/expense_form_screen.dart';
-import 'package:manage_app/features/expense/widgets/expense_tile.dart';
+import 'package:manage_app/features/expense/widgets/expense_category_style.dart';
 import 'package:manage_app/features/group/models/group_member_model.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
@@ -127,7 +127,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
                   ),
                   color: colorScheme.primary.withValues(alpha: 0.5),
                 ),
-                child: Icon(ExpenseTile.iconFor(category), color: Colors.white),
+                child: Icon(ExpenseCategoryStyle.iconFor(category), color: Colors.white),
               ),
               SizedBox(width: theme.spacingMedium ?? 16),
               Expanded(child: HeadlineText.small(title)),
