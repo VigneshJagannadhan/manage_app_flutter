@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
+import 'package:manage_app/core/providers/app_provider.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
@@ -25,6 +26,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _goToHome() async {
     await context.read<AuthProvider>().restoreSession();
+    if (!mounted) return;
+    await context.read<AppProvider>().loadAllData();
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
     navigationService.pushReplacement(context, isAuthenticated ? HomeScreen() : const SignInScreen());

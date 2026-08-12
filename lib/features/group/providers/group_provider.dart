@@ -14,20 +14,12 @@ class GroupProvider extends BaseProvider {
   final GroupPreferenceService groupPreferenceService;
   final AuthProvider authProvider;
 
-  final Completer<void> _readyCompleter = Completer<void>();
-
-  /// Resolves once the persisted active group has been restored. Task/Expense providers
-  /// await this before their first load so they don't fetch in "all groups" mode just
-  /// because group restoration is still in flight.
-  Future<void> get ready => _readyCompleter.future;
-
   bool _wasAuthenticated = false;
 
   @override
   void onInit() {
     _wasAuthenticated = authProvider.isAuthenticated;
     authProvider.addListener(_onAuthChanged);
-    if (_wasAuthenticated) _restore();
   }
 
   @override
@@ -37,23 +29,20 @@ class GroupProvider extends BaseProvider {
     _membersByGroup.clear();
   }
 
-  /// [onInit] runs before session restoration or sign-in resolves, so a session-less
-  /// fetch at that point would always 401. Instead the first load is deferred to
-  /// whichever happens first - a restored session or a fresh sign-in - and signing
-  /// out clears the previous account's groups so they don't linger into the next login.
+  /// Loading the active group on sign-in is AppProvider's job (it explicitly calls
+  /// [restoreActiveGroup] from splash and after sign-in/sign-up). This listener only
+  /// handles the logout side, so a signed-out account's groups can't linger into the next
+  /// login even if some future auth entry point skips AppProvider.resetAllData.
   void _onAuthChanged() {
     final isAuthenticated = authProvider.isAuthenticated;
     if (isAuthenticated == _wasAuthenticated) return;
     _wasAuthenticated = isAuthenticated;
-    if (isAuthenticated) {
-      _restore();
-    } else {
-      _groups = [];
-      _activeGroupId = null;
-      _membersByGroup.clear();
-      _errorMessage = null;
-      notifyListeners();
-    }
+    if (isAuthenticated) return;
+    _groups = [];
+    _activeGroupId = null;
+    _membersByGroup.clear();
+    _errorMessage = null;
+    notifyListeners();
   }
 
   List<GroupModel> _groups = [];
@@ -87,12 +76,16 @@ class GroupProvider extends BaseProvider {
     return null;
   }
 
+  /// Fetches the account's groups and re-resolves the active one against the persisted
+  /// preference. Called explicitly by AppProvider.loadAllData (splash, sign-in/sign-up) -
+  /// safe to call repeatedly across multiple sign-ins within the same app session.
+  Future<void> restoreActiveGroup() => _restore();
+
   Future<void> _restore() async {
     await loadGroups();
     final savedId = await groupPreferenceService.readActiveGroupId();
     _activeGroupId = _findGroup(savedId)?.id ?? (_groups.isNotEmpty ? _groups.first.id : null);
     notifyListeners();
-    if (!_readyCompleter.isCompleted) _readyCompleter.complete();
   }
 
   Future<void> loadGroups() async {
