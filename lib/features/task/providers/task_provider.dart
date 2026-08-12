@@ -9,17 +9,10 @@ class TaskProvider extends BaseProvider {
   final TaskService taskService;
   final GroupProvider groupProvider;
 
+  /// Loading is driven explicitly by AppProvider.loadAllData, so there's nothing to
+  /// self-trigger here - it just needs to satisfy the BaseProvider contract.
   @override
-  void onInit() {
-    _init();
-  }
-
-  /// Waits for [GroupProvider] to finish restoring the active group before the first
-  /// load, so this doesn't fetch in "all groups" mode just because that's still in flight.
-  Future<void> _init() async {
-    await groupProvider.ready;
-    await loadTasks();
-  }
+  void onInit() {}
 
   @override
   void onDispose() {

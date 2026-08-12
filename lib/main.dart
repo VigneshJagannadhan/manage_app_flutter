@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/providers/app_provider.dart';
 import 'package:manage_app/core/services/auth_service.dart';
 import 'package:manage_app/core/services/expense_service.dart';
 import 'package:manage_app/core/services/group_preference_service.dart';
@@ -40,6 +41,20 @@ class _ManageAppState extends State<ManageApp> {
       GroupProvider(groupService: groupService, groupPreferenceService: groupPreferenceService, authProvider: _authProvider)
         ..onInit();
 
+  late final _taskProvider = TaskProvider(taskService: taskService, groupProvider: _groupProvider)..onInit();
+  late final _expenseProvider = ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider)..onInit();
+  late final _profileProvider = ProfileProvider(profileService: profileService)..onInit();
+
+  late final _appProvider =
+      AppProvider(
+          authProvider: _authProvider,
+          groupProvider: _groupProvider,
+          taskProvider: _taskProvider,
+          expenseProvider: _expenseProvider,
+          profileProvider: _profileProvider,
+        )
+        ..onInit();
+
   @override
   void initState() {
     super.initState();
@@ -65,14 +80,11 @@ class _ManageAppState extends State<ManageApp> {
       providers: [
         ChangeNotifierProvider.value(value: _authProvider),
         ChangeNotifierProvider.value(value: _groupProvider),
-        ChangeNotifierProvider(
-          create: (_) => TaskProvider(taskService: taskService, groupProvider: _groupProvider)..onInit(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider)..onInit(),
-        ),
+        ChangeNotifierProvider.value(value: _taskProvider),
+        ChangeNotifierProvider.value(value: _expenseProvider),
+        ChangeNotifierProvider.value(value: _profileProvider),
+        ChangeNotifierProvider.value(value: _appProvider),
         ChangeNotifierProvider(create: (_) => ThemeProvider(themePreferenceService: themePreferenceService)..onInit()),
-        ChangeNotifierProvider(create: (_) => ProfileProvider(profileService: profileService)..onInit()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (_, themeProvider, _) {

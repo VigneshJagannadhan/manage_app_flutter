@@ -73,9 +73,11 @@ commit summary, kebab-cased).
 
 ## Step 4: Branch, commit, push
 
-1. **Never commit directly to `main`.** If currently on `main`, create and switch
-   to the branch from Step 3 before committing:
+1. **Never commit directly to `main`.** If currently on `main`, pull latest first
+   so the new branch starts from up-to-date code, then create and switch to the
+   branch from Step 3:
    ```
+   git pull origin main
    git checkout -b P#0000/auto-scroll-on-keyboard-open
    ```
 2. Commit with the Step 2 message.
@@ -89,11 +91,42 @@ that branch directly - don't create a new one unless the user asks.
 
 ---
 
+## Step 5: Open a PR to main
+
+After pushing, open a pull request into `main`:
+```
+gh pr create --base main --head <branch-name> --title "<commit message>" --body "<body>"
+```
+- Title: same as the Step 2 commit message.
+- Body: one or two bullet points summarizing the change. If the branch has a
+  real ticket number (not `P#0000`), reference it in the body.
+- If a PR already exists for the branch (continuing prior work), skip this -
+  just push, don't try to create a duplicate.
+- Creation only - never merge the PR.
+
+If the branch has a real ticket number (not `P#0000`), transition that ticket
+to **Resolved** right after the PR is opened (look up the transition ID via
+`getTransitionsForJiraIssue` rather than assuming it - transition IDs are
+workflow-specific). Skip this for `P#0000` branches, since there's no ticket
+to transition.
+
+After opening the PR (and transitioning the ticket, if applicable), switch
+back to `main`:
+```
+git checkout main
+```
+
+---
+
 ## Quick Checklist
 
 - [ ] Triggered by "Let's push this change" (or equivalent), not inferred
 - [ ] Change classified as feat/fix/refactor/chore/docs/style/test
 - [ ] Commit message is `type: summary` only - no body, no Co-Authored-By
 - [ ] Branch name is `P#<ticket>/<slug>` (ticket number if known, else `0000`)
+- [ ] Pulled latest `main` before branching off it
 - [ ] Never committed to `main`
 - [ ] Pushed to remote after committing
+- [ ] PR opened into `main` (skipped only if one already existed)
+- [ ] Ticket transitioned to Resolved (skipped only for `P#0000` branches)
+- [ ] Back on `main` after opening the PR

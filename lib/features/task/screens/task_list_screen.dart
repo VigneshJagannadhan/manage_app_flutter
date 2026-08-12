@@ -65,11 +65,11 @@ class TaskListScreen extends StatelessWidget {
       return _NoGroupsPrompt(onGoToGroups: () => _openGroups(context));
     }
 
-    if (provider.isLoading) {
+    if (provider.isLoading && provider.tasks.isEmpty) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
 
-    if (provider.errorMessage != null) {
+    if (provider.errorMessage != null && provider.tasks.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16),

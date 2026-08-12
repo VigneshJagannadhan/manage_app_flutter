@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/providers/app_provider.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -48,6 +49,8 @@ class _SignInScreenState extends State<SignInScreen> {
     if (!mounted) return;
 
     if (success) {
+      await context.read<AppProvider>().loadAllData();
+      if (!mounted) return;
       navigationService.pushAndRemoveUntil(context, HomeScreen());
     } else if (authProvider.errorMessage != null) {
       ScaffoldMessenger.of(

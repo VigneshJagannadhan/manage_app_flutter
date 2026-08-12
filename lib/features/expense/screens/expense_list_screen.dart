@@ -53,11 +53,11 @@ class ExpenseListScreen extends StatelessWidget {
       return _NoGroupsPrompt(onGoToGroups: () => _openGroups(context));
     }
 
-    if (provider.isLoading) {
+    if (provider.isLoading && provider.expenses.isEmpty) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
 
-    if (provider.errorMessage != null) {
+    if (provider.errorMessage != null && provider.expenses.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16),

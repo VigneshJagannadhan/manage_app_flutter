@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
+import 'package:manage_app/core/providers/app_provider.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
@@ -17,29 +20,40 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  static const _minimumSplashDuration = Duration(seconds: 3);
+  int _loadingTextIndex = 0;
+  Timer? _loadingTextTimer;
 
   @override
   void initState() {
     super.initState();
     _goToHome();
+    _loadingTextTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_loadingTextIndex >= loadingTexts.length - 1) {
+        timer.cancel();
+        return;
+      }
+      setState(() => _loadingTextIndex++);
+    });
+  }
+
+  @override
+  void dispose() {
+    _loadingTextTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _goToHome() async {
-    final stopwatch = Stopwatch()..start();
     await context.read<AuthProvider>().restoreSession();
-    stopwatch.stop();
 
     if (!mounted) return;
-
-    final remainingTime = _minimumSplashDuration - stopwatch.elapsed;
-    if (remainingTime.isNegative == false) {
-      await Future.delayed(remainingTime);
-    }
+    await context.read<AppProvider>().loadAllData();
 
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
-    navigationService.pushReplacement(context, isAuthenticated ? HomeScreen() : const SignInScreen());
+    navigationService.pushReplacement(
+      context,
+      isAuthenticated ? HomeScreen() : const SignInScreen(),
+    );
   }
 
   @override
@@ -51,10 +65,22 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             AppImage.asset(source: AppImages.appLogo, width: 120, height: 120),
             SizedBox(height: 32),
-            CircularProgressIndicator.adaptive(backgroundColor: context.appTheme.primaryColor),
+            CircularProgressIndicator.adaptive(
+              backgroundColor: context.appTheme.primaryColor,
+            ),
+            SizedBox(height: 16),
+            Text(_getLoadingText()),
           ],
         ),
       ),
     );
   }
+
+  String _getLoadingText() => loadingTexts[_loadingTextIndex];
 }
+
+List<String> loadingTexts = [
+  'Starting the server...',
+  'Loading app data...',
+  'Almost there...',
+];
