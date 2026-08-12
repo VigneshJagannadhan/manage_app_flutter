@@ -44,8 +44,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _goToHome() async {
     await context.read<AuthProvider>().restoreSession();
+
     if (!mounted) return;
     await context.read<AppProvider>().loadAllData();
+
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
     navigationService.pushReplacement(

@@ -2,9 +2,27 @@ name: CI
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "test/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "android/**"
+      - "ios/**"
+      - "analysis_options.yaml"
+      - ".github/workflows/ci.yml"
   pull_request:
     branches: ["**"]
+    paths:
+      - "lib/**"
+      - "test/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "android/**"
+      - "ios/**"
+      - "analysis_options.yaml"
+      - ".github/workflows/ci.yml"
 
 jobs:
   analyze-and-test:
