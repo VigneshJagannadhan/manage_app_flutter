@@ -37,16 +37,27 @@ class AppProvider extends BaseProvider {
   bool _isDataLoaded = false;
   bool get isDataLoaded => _isDataLoaded;
 
+  bool _isDataLoading = false;
+  bool get isDataLoading => _isDataLoading;
+
   /// Call once at splash (after [AuthProvider.restoreSession]) and again after every
   /// fresh sign-in/sign-up, so group/task/expense/profile data is populated before the
   /// user reaches Home.
   Future<void> loadAllData() async {
+    _isDataLoading = true;
+    notifyListeners();
+
     _isDataLoaded = false;
     if (authProvider.isAuthenticated) {
       await groupProvider.restoreActiveGroup();
-      await Future.wait([taskProvider.loadTasks(), expenseProvider.loadExpenses(), profileProvider.loadProfile()]);
+      await Future.wait([
+        taskProvider.loadTasks(),
+        expenseProvider.loadExpenses(),
+        profileProvider.loadProfile(),
+      ]);
     }
     _isDataLoaded = true;
+    _isDataLoading = false;
     notifyListeners();
   }
 

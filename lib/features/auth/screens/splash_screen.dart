@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/providers/app_provider.dart';
@@ -18,10 +20,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  int _loadingTextIndex = 0;
+  Timer? _loadingTextTimer;
+
   @override
   void initState() {
     super.initState();
     _goToHome();
+    _loadingTextTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_loadingTextIndex >= loadingTexts.length - 1) {
+        timer.cancel();
+        return;
+      }
+      setState(() => _loadingTextIndex++);
+    });
+  }
+
+  @override
+  void dispose() {
+    _loadingTextTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _goToHome() async {
@@ -30,7 +48,10 @@ class _SplashScreenState extends State<SplashScreen> {
     await context.read<AppProvider>().loadAllData();
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
-    navigationService.pushReplacement(context, isAuthenticated ? HomeScreen() : const SignInScreen());
+    navigationService.pushReplacement(
+      context,
+      isAuthenticated ? HomeScreen() : const SignInScreen(),
+    );
   }
 
   @override
@@ -42,10 +63,22 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             AppImage.asset(source: AppImages.appLogo, width: 120, height: 120),
             SizedBox(height: 32),
-            CircularProgressIndicator.adaptive(backgroundColor: context.appTheme.primaryColor),
+            CircularProgressIndicator.adaptive(
+              backgroundColor: context.appTheme.primaryColor,
+            ),
+            SizedBox(height: 16),
+            Text(_getLoadingText()),
           ],
         ),
       ),
     );
   }
+
+  String _getLoadingText() => loadingTexts[_loadingTextIndex];
 }
+
+List<String> loadingTexts = [
+  'Starting the server...',
+  'Loading app data...',
+  'Almost there...',
+];
