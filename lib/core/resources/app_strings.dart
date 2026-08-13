@@ -199,7 +199,12 @@ class AppStrings {
   static const String joining = 'Joining...';
   static const String couldNotCreateGroup = 'Could not create group. Please try again.';
   static const String couldNotJoinGroup = 'Could not join group. Please try again.';
-  static const String viewInviteCodeTooltip = 'View invite code';
+
+  // group details
+  static const String groupDetailsTooltip = 'Group details';
+  static const String groupRenamed = 'Group renamed';
+  static const String deleteGroup = 'Delete Group';
+  static const String deleteGroupConfirmation = 'This action cannot be undone. All expenses, tasks, and members will be removed.';
 
   // group-scoped task/expense screens
   static const String allGroups = 'All Groups';
