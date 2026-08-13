@@ -49,11 +49,13 @@ class AppProvider extends BaseProvider {
 
     _isDataLoaded = false;
     if (authProvider.isAuthenticated) {
+      // Profile must load first - GroupProvider.restoreActiveGroup falls back to the
+      // profile's server-synced defaultGroupId when there's no local pick yet.
+      await profileProvider.loadProfile();
       await groupProvider.restoreActiveGroup();
       await Future.wait([
         taskProvider.loadTasks(),
         expenseProvider.loadExpenses(),
-        profileProvider.loadProfile(),
       ]);
     }
     _isDataLoaded = true;

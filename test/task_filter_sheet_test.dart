@@ -19,6 +19,8 @@ import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/home/screens/home_screen.dart';
+import 'package:manage_app/features/settings/providers/profile_provider.dart';
+import 'package:manage_app/features/settings/services/profile_service.dart';
 import 'package:manage_app/features/task/models/task_model.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +38,12 @@ class _FakeGroupService extends GroupService {
   Future<List<GroupModel>> listGroups() async => [
     GroupModel(id: 'group-1', name: 'Test Group', inviteCode: 'TESTCODE', createdBy: 'user-1', createdAt: DateTime(2026, 1, 1)),
   ];
+}
+
+class _FakeProfileService extends ProfileService {
+  @override
+  Future<UserModel> getProfile() async =>
+      const UserModel(id: 'user-1', name: 'Test User', email: 'test@example.com');
 }
 
 class _FakeGroupPreferenceService extends GroupPreferenceService {
@@ -91,14 +99,21 @@ class _FakeTaskService extends TaskService {
 Future<void> _pumpHome(WidgetTester tester) async {
   final authProvider = AuthProvider(authService: AuthService(), tokenStorageService: _FakeTokenStorageService())..onInit();
   await authProvider.restoreSession();
+  final profileProvider = ProfileProvider(profileService: _FakeProfileService())..onInit();
   final groupProvider =
-      GroupProvider(groupService: _FakeGroupService(), groupPreferenceService: _FakeGroupPreferenceService(), authProvider: authProvider)
+      GroupProvider(
+          groupService: _FakeGroupService(),
+          groupPreferenceService: _FakeGroupPreferenceService(),
+          authProvider: authProvider,
+          profileProvider: profileProvider,
+        )
         ..onInit();
   final taskProvider = TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider)..onInit();
   final expenseProvider = ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider)..onInit();
 
   // Providers no longer self-load on init - AppProvider.loadAllData drives that from
   // splash. Mirror that sequence here so the fake data actually reaches the widgets.
+  await profileProvider.loadProfile();
   await groupProvider.restoreActiveGroup();
   await Future.wait([taskProvider.loadTasks(), expenseProvider.loadExpenses()]);
 

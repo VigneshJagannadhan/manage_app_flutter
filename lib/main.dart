@@ -34,16 +34,22 @@ class ManageApp extends StatefulWidget {
 
 class _ManageAppState extends State<ManageApp> {
   late final _authProvider = AuthProvider(authService: authService, tokenStorageService: tokenStorageService)..onInit();
+  late final _profileProvider = ProfileProvider(profileService: profileService)..onInit();
 
-  // Depends on _authProvider being constructed first so GroupProvider.onInit() sees
-  // its real isAuthenticated value instead of racing session restoration/login.
+  // Depends on _authProvider being constructed first so GroupProvider.onInit() sees its
+  // real isAuthenticated value instead of racing session restoration/login, and on
+  // _profileProvider for reading/syncing the account's server-side default group.
   late final _groupProvider =
-      GroupProvider(groupService: groupService, groupPreferenceService: groupPreferenceService, authProvider: _authProvider)
+      GroupProvider(
+          groupService: groupService,
+          groupPreferenceService: groupPreferenceService,
+          authProvider: _authProvider,
+          profileProvider: _profileProvider,
+        )
         ..onInit();
 
   late final _taskProvider = TaskProvider(taskService: taskService, groupProvider: _groupProvider)..onInit();
   late final _expenseProvider = ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider)..onInit();
-  late final _profileProvider = ProfileProvider(profileService: profileService)..onInit();
 
   late final _appProvider =
       AppProvider(

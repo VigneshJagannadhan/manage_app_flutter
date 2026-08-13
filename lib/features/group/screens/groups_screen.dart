@@ -7,9 +7,8 @@ import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/group/screens/create_group_screen.dart';
+import 'package:manage_app/features/group/screens/group_details_screen.dart';
 import 'package:manage_app/features/group/screens/join_group_screen.dart';
-import 'package:manage_app/features/group/widgets/invite_code_view.dart';
-import 'package:manage_app/features/shared/widgets/app_bottom_sheet.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_card.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
@@ -40,12 +39,8 @@ class GroupsScreen extends StatelessWidget {
     return navigationService.push(context, const JoinGroupScreen());
   }
 
-  Future<void> _viewInviteCode(BuildContext context, GroupModel group) {
-    return AppBottomSheet.show(
-      context,
-      title: AppStrings.inviteCodeLabel,
-      body: InviteCodeView(group: group),
-    );
+  Future<void> _openGroupDetails(BuildContext context, GroupModel group) {
+    return navigationService.push(context, GroupDetailsScreen(group: group));
   }
 
   @override
@@ -140,7 +135,7 @@ class GroupsScreen extends StatelessWidget {
               group: group,
               isActive: group.id == provider.activeGroupId,
               onTap: () => _switchTo(context, group),
-              onViewInviteCode: () => _viewInviteCode(context, group),
+              onOpenDetails: () => _openGroupDetails(context, group),
             ),
           );
         },
@@ -154,13 +149,13 @@ class _GroupListItem extends StatelessWidget {
     required this.group,
     required this.isActive,
     required this.onTap,
-    required this.onViewInviteCode,
+    required this.onOpenDetails,
   });
 
   final GroupModel group;
   final bool isActive;
   final VoidCallback onTap;
-  final VoidCallback onViewInviteCode;
+  final VoidCallback onOpenDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -203,9 +198,9 @@ class _GroupListItem extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           IconButton(
-            icon: const Icon(Icons.vpn_key_outlined),
-            tooltip: AppStrings.viewInviteCodeTooltip,
-            onPressed: onViewInviteCode,
+            icon: const Icon(Icons.chevron_right),
+            tooltip: AppStrings.groupDetailsTooltip,
+            onPressed: onOpenDetails,
           ),
         ],
       ),

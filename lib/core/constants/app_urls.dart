@@ -12,6 +12,8 @@ class AppUrls {
   static const String joinGroup = '/groups/join';
   static const String profile = '/profile';
   static const String changePassword = '/profile/change-password';
+  static const String defaultGroup = '/profile/default-group';
 
+  static String group(String groupId) => '/groups/$groupId';
   static String groupMembers(String groupId) => '/groups/$groupId/members';
 }

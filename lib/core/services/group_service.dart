@@ -52,6 +52,20 @@ class GroupService {
     return _unwrap(result);
   }
 
+  Future<GroupModel> renameGroup(String groupId, String name) async {
+    final result = await _api.patch<GroupModel>(
+      AppUrls.group(groupId),
+      data: {'name': name},
+      parser: (data) => GroupModel.fromJson(data as Map<String, dynamic>),
+    );
+    return _unwrap(result);
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    final result = await _api.delete<void>(AppUrls.group(groupId), parser: (_) {});
+    return _unwrap(result);
+  }
+
   T _unwrap<T>(ApiResult<T> result) {
     return result.when(success: (data) => data, failure: (failure) => throw GroupServiceException(failure.message));
   }

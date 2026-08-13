@@ -63,6 +63,14 @@ class ProfileProvider extends BaseProvider {
     }
   }
 
+  /// Called from [GroupProvider] as a best-effort background sync whenever the active
+  /// group changes, so no isSaving/errorMessage state is touched here - a failure must
+  /// not surface as an error on the unrelated profile/settings screen.
+  Future<void> setDefaultGroup(String groupId) async {
+    _profile = await profileService.setDefaultGroup(groupId);
+    notifyListeners();
+  }
+
   /// Drops the cached profile so a subsequent sign-in (possibly as a different user)
   /// doesn't briefly show the previous user's data. Call on sign-out too.
   void clearProfile() {

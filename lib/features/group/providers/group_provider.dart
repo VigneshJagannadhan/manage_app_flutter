@@ -5,14 +5,22 @@ import 'package:manage_app/core/services/group_service.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/group/models/group_member_model.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
+import 'package:manage_app/features/settings/providers/profile_provider.dart';
+import 'package:manage_app/features/settings/services/profile_service.dart';
 import 'package:manage_app/features/shared/providers/base_provider.dart';
 
 class GroupProvider extends BaseProvider {
-  GroupProvider({required this.groupService, required this.groupPreferenceService, required this.authProvider});
+  GroupProvider({
+    required this.groupService,
+    required this.groupPreferenceService,
+    required this.authProvider,
+    required this.profileProvider,
+  });
 
   final GroupService groupService;
   final GroupPreferenceService groupPreferenceService;
   final AuthProvider authProvider;
+  final ProfileProvider profileProvider;
 
   bool _wasAuthenticated = false;
 
@@ -77,14 +85,18 @@ class GroupProvider extends BaseProvider {
   }
 
   /// Fetches the account's groups and re-resolves the active one against the persisted
-  /// preference. Called explicitly by AppProvider.loadAllData (splash, sign-in/sign-up) -
-  /// safe to call repeatedly across multiple sign-ins within the same app session.
+  /// preference (falling back to the profile's server-synced default). Called explicitly
+  /// by AppProvider.loadAllData, after profileProvider.loadProfile so the default is
+  /// available - safe to call repeatedly across multiple sign-ins within the same session.
   Future<void> restoreActiveGroup() => _restore();
 
   Future<void> _restore() async {
     await loadGroups();
-    final savedId = await groupPreferenceService.readActiveGroupId();
-    _activeGroupId = _findGroup(savedId)?.id ?? (_groups.isNotEmpty ? _groups.first.id : null);
+    final localId = await groupPreferenceService.readActiveGroupId();
+    // Falls back to the account's server-synced default when there's no local pick yet
+    // (fresh install / new device) - see setActiveGroup, which keeps the two in sync.
+    final defaultId = profileProvider.profile?.defaultGroupId;
+    _activeGroupId = _findGroup(localId)?.id ?? _findGroup(defaultId)?.id ?? (_groups.isNotEmpty ? _groups.first.id : null);
     notifyListeners();
   }
 
@@ -120,6 +132,49 @@ class GroupProvider extends BaseProvider {
     _activeGroupId = groupId;
     notifyListeners();
     await groupPreferenceService.saveActiveGroupId(groupId);
+    if (groupId != null) {
+      unawaited(_syncDefaultGroup(groupId));
+    }
+  }
+
+  /// Best-effort sync of the active group to the server as the account default. Never
+  /// blocks or surfaces an error - a failed sync just means the local switch (already
+  /// applied above) won't be visible as the default on other devices yet.
+  Future<void> _syncDefaultGroup(String groupId) async {
+    try {
+      await profileProvider.setDefaultGroup(groupId);
+    } on ProfileServiceException {
+      // Ignored - see doc comment above.
+    }
+  }
+
+  Future<GroupModel> renameGroup(String groupId, String name) async {
+    final original = _findGroup(groupId);
+    final renamed = await groupService.renameGroup(groupId, name);
+    final updated = renamed.role != null
+        ? renamed
+        : GroupModel(
+            id: renamed.id,
+            name: renamed.name,
+            inviteCode: renamed.inviteCode,
+            createdBy: renamed.createdBy,
+            createdAt: renamed.createdAt,
+            role: original?.role,
+          );
+    _groups = [for (final group in _groups) if (group.id == groupId) updated else group];
+    notifyListeners();
+    return updated;
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    await groupService.deleteGroup(groupId);
+    _groups = _groups.where((group) => group.id != groupId).toList();
+    _membersByGroup.remove(groupId);
+    if (_activeGroupId == groupId) {
+      await setActiveGroup(_groups.isNotEmpty ? _groups.first.id : null);
+    } else {
+      notifyListeners();
+    }
   }
 
   Future<void> loadMembers(String groupId) async {

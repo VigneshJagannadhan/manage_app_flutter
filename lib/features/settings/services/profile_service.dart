@@ -34,6 +34,15 @@ class ProfileService {
     return _unwrap(result);
   }
 
+  Future<UserModel> setDefaultGroup(String groupId) async {
+    final result = await _api.put<UserModel>(
+      AppUrls.defaultGroup,
+      data: {'groupId': groupId},
+      parser: (data) => UserModel.fromJson(data as Map<String, dynamic>),
+    );
+    return _unwrap(result);
+  }
+
   Future<void> changePassword({required String currentPassword, required String newPassword}) async {
     final result = await _api.post<void>(
       AppUrls.changePassword,
