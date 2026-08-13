@@ -67,7 +67,10 @@ class ProfileProvider extends BaseProvider {
   /// group changes, so no isSaving/errorMessage state is touched here - a failure must
   /// not surface as an error on the unrelated profile/settings screen.
   Future<void> setDefaultGroup(String groupId) async {
-    _profile = await profileService.setDefaultGroup(groupId);
+    await profileService.setDefaultGroup(groupId);
+    final current = _profile;
+    if (current == null) return;
+    _profile = current.copyWith(defaultGroupId: groupId);
     notifyListeners();
   }
 

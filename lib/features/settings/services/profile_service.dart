@@ -34,11 +34,13 @@ class ProfileService {
     return _unwrap(result);
   }
 
-  Future<UserModel> setDefaultGroup(String groupId) async {
-    final result = await _api.put<UserModel>(
+  // Response is just {"defaultGroupId": "..."} - not a full profile - so there's nothing
+  // to parse the caller doesn't already know from the groupId it passed in.
+  Future<void> setDefaultGroup(String groupId) async {
+    final result = await _api.put<void>(
       AppUrls.defaultGroup,
       data: {'groupId': groupId},
-      parser: (data) => UserModel.fromJson(data as Map<String, dynamic>),
+      parser: (_) {},
     );
     return _unwrap(result);
   }
