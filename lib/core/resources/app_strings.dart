@@ -93,6 +93,7 @@ class AppStrings {
   static const String allExpensesTitle = 'All Expenses';
   static const String searchExpensesHint = 'Search expenses';
   static const String dateRange = 'Date Range';
+  static const String filter = 'Filter';
   static const String sort = 'Sort';
   static const String sortNewest = 'Newest First';
   static const String sortOldest = 'Oldest First';
@@ -127,6 +128,11 @@ class AppStrings {
   static const String checkingServerHealth = 'Checking...';
   static const String serverDown = 'Server down';
   static const String darkMode = 'Dark Mode';
+  static const String customiseTheApp = 'Customise the App';
+
+  // customise app screen
+  static const String fontStyleLabel = 'Font Style';
+  static const String fontStyleDescription = 'Choose the font used throughout the app.';
 
   // profile
   static const String editProfileTooltip = 'Edit profile';

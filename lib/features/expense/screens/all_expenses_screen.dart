@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/expense_enums.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/expense/screens/expense_detail_screen.dart';
 import 'package:manage_app/features/expense/screens/expense_form_screen.dart';
+import 'package:manage_app/features/expense/widgets/expense_filter_sheet.dart';
+import 'package:manage_app/features/expense/widgets/expense_sort_sheet.dart';
 import 'package:manage_app/features/expense/widgets/expense_tile.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
@@ -52,13 +53,6 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
     return navigationService.push<ExpenseChangeResult>(context, ExpenseDetailScreen(expense: expense));
   }
 
-  static String _sortOptionLabel(ExpenseSortOption option) => switch (option) {
-    ExpenseSortOption.newest => AppStrings.sortNewest,
-    ExpenseSortOption.oldest => AppStrings.sortOldest,
-    ExpenseSortOption.amountHigh => AppStrings.sortAmountHigh,
-    ExpenseSortOption.amountLow => AppStrings.sortAmountLow,
-  };
-
   static String _dateRangeLabel(DateTimeRange? range) {
     if (range == null) return AppStrings.dateRange;
     return '${range.start.formattedShortDate} - ${range.end.formattedShortDate}';
@@ -101,46 +95,25 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    ChoiceChip(
-                      label: const Text(AppStrings.all),
-                      selected: provider.categoryFilter == null,
-                      onSelected: (_) => provider.setCategoryFilter(null),
+                    ActionChip(
+                      avatar: const Icon(Icons.filter_list, size: 16),
+                      label: const Text(AppStrings.filter),
+                      onPressed: () => ExpenseFilterSheet.show(context),
                     ),
-                    for (final category in ExpenseCategory.values) ...[
-                      SizedBox(width: theme.spacingSmall ?? 8),
-                      ChoiceChip(
-                        label: Text(category.name.toTitleCase),
-                        selected: provider.categoryFilter == category,
-                        onSelected: (_) => provider.setCategoryFilter(category),
-                      ),
-                    ],
+                    SizedBox(width: theme.spacingSmall ?? 8),
+                    ActionChip(
+                      avatar: const Icon(Icons.sort, size: 16),
+                      label: const Text(AppStrings.sort),
+                      onPressed: () => ExpenseSortSheet.show(context),
+                    ),
+                    SizedBox(width: theme.spacingSmall ?? 8),
+                    ActionChip(
+                      avatar: const Icon(Icons.calendar_today_outlined, size: 16),
+                      label: Text(_dateRangeLabel(provider.dateRangeFilter)),
+                      onPressed: () => _pickDateRange(context),
+                    ),
                   ],
                 ),
-              ),
-              SizedBox(height: theme.spacingSmall ?? 8),
-              Row(
-                children: [
-                  ActionChip(
-                    avatar: const Icon(Icons.calendar_today_outlined, size: 16),
-                    label: Text(_dateRangeLabel(provider.dateRangeFilter)),
-                    onPressed: () => _pickDateRange(context),
-                  ),
-                  SizedBox(width: theme.spacingSmall ?? 8),
-                  PopupMenuButton<ExpenseSortOption>(
-                    initialValue: provider.sortOption,
-                    onSelected: provider.setSortOption,
-                    itemBuilder: (context) => [
-                      for (final option in ExpenseSortOption.values) PopupMenuItem(value: option, child: Text(_sortOptionLabel(option))),
-                    ],
-                    child: IgnorePointer(
-                      child: ActionChip(
-                        avatar: const Icon(Icons.sort, size: 16),
-                        label: Text(AppStrings.sort),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),

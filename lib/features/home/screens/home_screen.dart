@@ -31,12 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppScaffold(
       body: IndexedStack(index: _selectedIndex, children: _tabs),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.fromLTRB(
-          theme.horizontalMargin ?? 16,
-          0,
-          theme.horizontalMargin ?? 16,
-          0,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16),
         child: Material(
           elevation: theme.elevationLarge ?? 6,
           borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),

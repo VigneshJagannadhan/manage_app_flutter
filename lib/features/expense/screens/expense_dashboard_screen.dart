@@ -32,11 +32,17 @@ class ExpenseDashboardScreen extends StatelessWidget {
     if (context.read<GroupProvider>().activeGroupId == null) {
       return _openGroups(context);
     }
-    return navigationService.push<ExpenseChangeResult>(context, const ExpenseFormScreen());
+    return navigationService.push<ExpenseChangeResult>(
+      context,
+      const ExpenseFormScreen(),
+    );
   }
 
   Future<void> _openExpenseDetail(BuildContext context, ExpenseModel expense) {
-    return navigationService.push<ExpenseChangeResult>(context, ExpenseDetailScreen(expense: expense));
+    return navigationService.push<ExpenseChangeResult>(
+      context,
+      ExpenseDetailScreen(expense: expense),
+    );
   }
 
   Future<void> _openAllExpenses(BuildContext context) {
@@ -46,9 +52,17 @@ class ExpenseDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBar: ScreenAppBar(title: AppStrings.manageYourExpenses, showBackButton: false, actions: [const SettingsAvatarButton()]),
+      appBar: ScreenAppBar(
+        title: AppStrings.manageYourExpenses,
+        showBackButton: false,
+        actions: [const SettingsAvatarButton()],
+      ),
       body: _buildBody(context),
-      floatingActionButton: FloatingActionButton(heroTag: null, onPressed: () => _openCreateExpense(context), child: const AppSvgIcon(SvgIcons.add)),
+      floatingActionButton: FloatingActionButton(
+        heroTag: null,
+        onPressed: () => _openCreateExpense(context),
+        child: const AppSvgIcon(SvgIcons.add),
+      ),
     );
   }
 
@@ -71,9 +85,15 @@ class ExpenseDashboardScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              BodyText.medium(provider.errorMessage!, textAlign: TextAlign.center),
+              BodyText.medium(
+                provider.errorMessage!,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 16),
-              AppButton.secondary(label: AppStrings.retry, onPressed: provider.loadExpenses),
+              AppButton.secondary(
+                label: AppStrings.retry,
+                onPressed: provider.loadExpenses,
+              ),
             ],
           ),
         ),
@@ -82,15 +102,18 @@ class ExpenseDashboardScreen extends StatelessWidget {
 
     return Column(
       children: [
+        SizedBox(height: 16),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SegmentedButton<bool>(
-            segments: const [
-              ButtonSegment(value: false, label: Text(AppStrings.thisGroup)),
-              ButtonSegment(value: true, label: Text(AppStrings.allGroups)),
+            expandedInsets: EdgeInsets.zero,
+            segments: [
+              ButtonSegment(value: false, label: Text(groupProvider.activeGroup?.name ?? AppStrings.thisGroup)),
+              const ButtonSegment(value: true, label: Text(AppStrings.allGroups)),
             ],
             selected: {provider.showAllGroups},
-            onSelectionChanged: (selection) => provider.toggleShowAllGroups(selection.first),
+            onSelectionChanged: (selection) =>
+                provider.toggleShowAllGroups(selection.first),
           ),
         ),
         Expanded(
@@ -101,7 +124,8 @@ class ExpenseDashboardScreen extends StatelessWidget {
                   child: _DashboardContent(
                     provider: provider,
                     onSeeAll: () => _openAllExpenses(context),
-                    onTapExpense: (expense) => _openExpenseDetail(context, expense),
+                    onTapExpense: (expense) =>
+                        _openExpenseDetail(context, expense),
                   ),
                 ),
         ),
@@ -111,7 +135,11 @@ class ExpenseDashboardScreen extends StatelessWidget {
 }
 
 class _DashboardContent extends StatelessWidget {
-  const _DashboardContent({required this.provider, required this.onSeeAll, required this.onTapExpense});
+  const _DashboardContent({
+    required this.provider,
+    required this.onSeeAll,
+    required this.onTapExpense,
+  });
 
   final ExpenseProvider provider;
   final VoidCallback onSeeAll;
@@ -130,13 +158,18 @@ class _DashboardContent extends StatelessWidget {
           nonEssentialAmount: provider.nonEssentialAmountThisMonth,
         ),
         const SizedBox(height: 16),
-        ExpenseCategoryBreakdown(breakdown: provider.categoryBreakdownThisMonth),
+        ExpenseCategoryBreakdown(
+          breakdown: provider.categoryBreakdownThisMonth,
+        ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             TitleText.small(AppStrings.recentLabel),
-            TextButton(onPressed: onSeeAll, child: const Text(AppStrings.seeAll)),
+            TextButton(
+              onPressed: onSeeAll,
+              child: const Text(AppStrings.seeAll),
+            ),
           ],
         ),
         for (final expense in recentExpenses)
@@ -144,7 +177,9 @@ class _DashboardContent extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: ExpenseTile(
               expense: expense,
-              groupName: provider.showAllGroups ? context.read<GroupProvider>().nameForGroup(expense.groupId) : null,
+              groupName: provider.showAllGroups
+                  ? context.read<GroupProvider>().nameForGroup(expense.groupId)
+                  : null,
               onTap: () => onTapExpense(expense),
             ),
           ),
@@ -168,9 +203,15 @@ class _NoGroupsPrompt extends StatelessWidget {
           children: [
             TitleText.medium(AppStrings.noGroupsYet),
             const SizedBox(height: 8),
-            BodyText.medium(AppStrings.noActiveGroupMessage, textAlign: TextAlign.center),
+            BodyText.medium(
+              AppStrings.noActiveGroupMessage,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
-            AppButton.primary(label: AppStrings.goToGroups, onPressed: onGoToGroups),
+            AppButton.primary(
+              label: AppStrings.goToGroups,
+              onPressed: onGoToGroups,
+            ),
           ],
         ),
       ),

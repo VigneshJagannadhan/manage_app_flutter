@@ -27,17 +27,27 @@ class ExpenseSummaryCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final spacing = theme.spacingSmall ?? 8;
     final hasAmount = totalThisMonth > 0;
-    final essentialFlex = hasAmount ? ((essentialAmount / totalThisMonth) * 1000).round().clamp(1, 999) : 1;
-    final nonEssentialFlex = hasAmount ? (1000 - essentialFlex).clamp(1, 999) : 1;
+    final essentialFlex = hasAmount
+        ? ((essentialAmount / totalThisMonth) * 1000).round().clamp(1, 999)
+        : 1;
+    final nonEssentialFlex = hasAmount
+        ? (1000 - essentialFlex).clamp(1, 999)
+        : 1;
 
     return AppCard(
       cardTap: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          LabelText.small(AppStrings.totalThisMonth, color: colorScheme.outline),
+          LabelText.large(
+            AppStrings.totalThisMonth,
+            color: colorScheme.outline,
+          ),
           SizedBox(height: theme.spacingXSmall ?? 4),
-          HeadlineText.large(totalThisMonth.toCurrencyString(), color: colorScheme.primary),
+          HeadlineText.large(
+            totalThisMonth.toCurrencyString(),
+            color: colorScheme.primary,
+          ),
           SizedBox(height: theme.spacingMedium ?? 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(theme.spacingXSmall ?? 4),
@@ -46,8 +56,14 @@ class ExpenseSummaryCard extends StatelessWidget {
               child: hasAmount
                   ? Row(
                       children: [
-                        Expanded(flex: essentialFlex, child: ColoredBox(color: colorScheme.primary)),
-                        Expanded(flex: nonEssentialFlex, child: ColoredBox(color: colorScheme.tertiary)),
+                        Expanded(
+                          flex: essentialFlex,
+                          child: ColoredBox(color: colorScheme.primary),
+                        ),
+                        Expanded(
+                          flex: nonEssentialFlex,
+                          child: ColoredBox(color: colorScheme.tertiary),
+                        ),
                       ],
                     )
                   : ColoredBox(color: colorScheme.surfaceContainerHighest),
@@ -68,7 +84,7 @@ class ExpenseSummaryCard extends StatelessWidget {
               SizedBox(width: spacing),
               Expanded(
                 child: _SplitLegend(
-                  color: colorScheme.tertiary,
+                  color: colorScheme.error,
                   label: AppStrings.nonEssentialLabel,
                   amount: nonEssentialAmount,
                   alignment: CrossAxisAlignment.end,
@@ -83,7 +99,12 @@ class ExpenseSummaryCard extends StatelessWidget {
 }
 
 class _SplitLegend extends StatelessWidget {
-  const _SplitLegend({required this.color, required this.label, required this.amount, required this.alignment});
+  const _SplitLegend({
+    required this.color,
+    required this.label,
+    required this.amount,
+    required this.alignment,
+  });
 
   final Color color;
   final String label;
@@ -94,22 +115,31 @@ class _SplitLegend extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final dot = Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle));
+    final dot = Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
 
     return Column(
       crossAxisAlignment: alignment,
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
-          textDirection: alignment == CrossAxisAlignment.end ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: alignment == CrossAxisAlignment.end
+              ? TextDirection.rtl
+              : TextDirection.ltr,
           children: [
             dot,
             SizedBox(width: theme.spacingXSmall ?? 4),
-            LabelText.small(label, color: colorScheme.outline),
+            LabelText.large(label, color: colorScheme.outline),
           ],
         ),
         SizedBox(height: (theme.spacingXSmall ?? 4) / 2),
-        BodyText.medium(amount.toCurrencyString(), style: const TextStyle(fontWeight: FontWeight.w700)),
+        BodyText.large(
+          amount.toCurrencyString(),
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
       ],
     );
   }
