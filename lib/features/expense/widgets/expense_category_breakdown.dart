@@ -25,16 +25,37 @@ class ExpenseCategoryBreakdown extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ExpenseDonutChart(breakdown: breakdown),
-          SizedBox(width: theme.spacingLarge ?? 24),
           Expanded(
+            child: Center(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final chartSize = constraints.maxWidth.clamp(0.0, 200.0);
+                  return ExpenseDonutChart(
+                    breakdown: breakdown,
+                    size: chartSize,
+                    strokeWidth: chartSize * 0.13,
+                  );
+                },
+              ),
+            ),
+          ),
+          SizedBox(width: 30),
+          SizedBox(
+            width: 120,
             child: breakdown.isEmpty
-                ? BodyText.medium(AppStrings.noExpensesThisMonth, color: colorScheme.outline)
+                ? BodyText.medium(
+                    AppStrings.noExpensesThisMonth,
+                    color: colorScheme.outline,
+                  )
                 : Wrap(
                     spacing: theme.spacingMedium ?? 16,
                     runSpacing: theme.spacingSmall ?? 8,
                     children: [
-                      for (final entry in breakdown.entries) _LegendItem(category: entry.key, share: entry.value),
+                      for (final entry in breakdown.entries)
+                        _LegendItem(
+                          category: entry.key,
+                          share: '${(entry.value * 100).round()}%',
+                        ),
                     ],
                   ),
           ),
@@ -48,7 +69,7 @@ class _LegendItem extends StatelessWidget {
   const _LegendItem({required this.category, required this.share});
 
   final ExpenseCategory category;
-  final double share;
+  final String share;
 
   @override
   Widget build(BuildContext context) {
@@ -63,12 +84,24 @@ class _LegendItem extends StatelessWidget {
           Container(
             width: 10,
             height: 10,
-            decoration: BoxDecoration(color: ExpenseCategoryStyle.colorFor(category), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: ExpenseCategoryStyle.colorFor(category),
+              shape: BoxShape.circle,
+            ),
           ),
           SizedBox(width: theme.spacingXSmall ?? 4),
-          Expanded(child: LabelText.small(category.name.toTitleCase, color: colorScheme.outline, overflow: TextOverflow.ellipsis)),
+          Expanded(
+            child: LabelText.medium(
+              category.name.toTitleCase,
+              color: colorScheme.outline,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           SizedBox(width: theme.spacingXSmall ?? 4),
-          LabelText.small('${(share * 100).round()}%', style: const TextStyle(fontWeight: FontWeight.w700)),
+          LabelText.small(
+            share,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
         ],
       ),
     );
