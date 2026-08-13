@@ -93,6 +93,7 @@ class AppStrings {
   static const String allExpensesTitle = 'All Expenses';
   static const String searchExpensesHint = 'Search expenses';
   static const String dateRange = 'Date Range';
+  static const String filter = 'Filter';
   static const String sort = 'Sort';
   static const String sortNewest = 'Newest First';
   static const String sortOldest = 'Oldest First';

@@ -85,9 +85,10 @@ class ExpenseDashboardScreen extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: SegmentedButton<bool>(
-            segments: const [
-              ButtonSegment(value: false, label: Text(AppStrings.thisGroup)),
-              ButtonSegment(value: true, label: Text(AppStrings.allGroups)),
+            expandedInsets: EdgeInsets.zero,
+            segments: [
+              ButtonSegment(value: false, label: Text(groupProvider.activeGroup?.name ?? AppStrings.thisGroup)),
+              const ButtonSegment(value: true, label: Text(AppStrings.allGroups)),
             ],
             selected: {provider.showAllGroups},
             onSelectionChanged: (selection) => provider.toggleShowAllGroups(selection.first),
