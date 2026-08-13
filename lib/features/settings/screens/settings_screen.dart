@@ -10,6 +10,7 @@ import 'package:manage_app/features/group/screens/groups_screen.dart';
 import 'package:manage_app/features/settings/providers/profile_provider.dart';
 import 'package:manage_app/features/settings/providers/settings_provider.dart';
 import 'package:manage_app/features/settings/providers/theme_provider.dart';
+import 'package:manage_app/features/settings/screens/customise_app_screen.dart';
 import 'package:manage_app/features/settings/screens/profile_edit_screen.dart';
 import 'package:manage_app/features/settings/services/health_service.dart';
 import 'package:manage_app/features/settings/widgets/profile_header.dart';
@@ -67,6 +68,10 @@ class _SettingsBody extends StatelessWidget {
     return navigationService.push(context, const ProfileEditScreen());
   }
 
+  Future<void> _openCustomiseApp(BuildContext context) {
+    return navigationService.push(context, const CustomiseAppScreen());
+  }
+
   String get appVersion => '${AppStrings.appVersion}: ${AppConstants.appVersion}';
 
   @override
@@ -84,6 +89,7 @@ class _SettingsBody extends StatelessWidget {
       children: [
         ProfileHeader(profile: profileProvider.profile, isLoading: profileProvider.isLoading, onEdit: () => _openEditProfile(context)),
         AppButton.primary(label: AppStrings.groups, onPressed: () => _openGroups(context)),
+        AppButton.secondary(label: AppStrings.customiseTheApp, onPressed: () => _openCustomiseApp(context)),
 
         AppButton.destructive(label: AppStrings.logOut, onPressed: isSigningOut ? null : () => _signOut(context)),
 

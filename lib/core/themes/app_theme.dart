@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/resources/app_fonts.dart';
 import 'package:manage_app/core/themes/app_styles.dart';
 import 'package:manage_app/core/themes/constants/app_colors.dart';
 import 'package:manage_app/core/themes/constants/app_elevation.dart';
@@ -56,31 +57,31 @@ class AppThemes {
   /// (SegmentedButton, ChoiceChip, etc.) with [AppStyles] instead of the
   /// Material default typeface, so typography stays consistent without
   /// having to patch each such widget individually.
-  static TextTheme _textTheme(Color color) => TextTheme(
-    displayLarge: AppStyles.displayLarge(color: color),
-    displayMedium: AppStyles.displayMedium(color: color),
-    displaySmall: AppStyles.displaySmall(color: color),
-    headlineLarge: AppStyles.headlineLarge(color: color),
-    headlineMedium: AppStyles.headlineMedium(color: color),
-    headlineSmall: AppStyles.headlineSmall(color: color),
-    titleLarge: AppStyles.titleLarge(color: color),
-    titleMedium: AppStyles.titleMedium(color: color),
-    titleSmall: AppStyles.titleSmall(color: color),
-    bodyLarge: AppStyles.bodyLarge(color: color),
-    bodyMedium: AppStyles.bodyMedium(color: color),
-    bodySmall: AppStyles.bodySmall(color: color),
-    labelLarge: AppStyles.labelLarge(color: color),
-    labelMedium: AppStyles.labelMedium(color: color),
-    labelSmall: AppStyles.labelSmall(color: color),
+  static TextTheme _textTheme(Color color, AppFontOption font) => TextTheme(
+    displayLarge: AppStyles.displayLarge(color: color, font: font),
+    displayMedium: AppStyles.displayMedium(color: color, font: font),
+    displaySmall: AppStyles.displaySmall(color: color, font: font),
+    headlineLarge: AppStyles.headlineLarge(color: color, font: font),
+    headlineMedium: AppStyles.headlineMedium(color: color, font: font),
+    headlineSmall: AppStyles.headlineSmall(color: color, font: font),
+    titleLarge: AppStyles.titleLarge(color: color, font: font),
+    titleMedium: AppStyles.titleMedium(color: color, font: font),
+    titleSmall: AppStyles.titleSmall(color: color, font: font),
+    bodyLarge: AppStyles.bodyLarge(color: color, font: font),
+    bodyMedium: AppStyles.bodyMedium(color: color, font: font),
+    bodySmall: AppStyles.bodySmall(color: color, font: font),
+    labelLarge: AppStyles.labelLarge(color: color, font: font),
+    labelMedium: AppStyles.labelMedium(color: color, font: font),
+    labelSmall: AppStyles.labelSmall(color: color, font: font),
   );
 
   /// Light Theme
-  static ThemeData lightTheme = ThemeData(
+  static ThemeData lightTheme({required AppFontOption font}) => ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
     colorScheme: _lightColorScheme,
     scaffoldBackgroundColor: AppColors.backgroundColor,
-    textTheme: _textTheme(AppColors.textColor),
+    textTheme: _textTheme(AppColors.textColor, font),
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColor)),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
@@ -89,7 +90,10 @@ class AppThemes {
         (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColor : AppColors.outlineColor),
       ),
       labelTextStyle: WidgetStateProperty.resolveWith(
-        (states) => AppStyles.labelMedium(color: states.contains(WidgetState.selected) ? AppColors.primaryColor : AppColors.outlineColor),
+        (states) => AppStyles.labelMedium(
+          color: states.contains(WidgetState.selected) ? AppColors.primaryColor : AppColors.outlineColor,
+          font: font,
+        ),
       ),
     ),
     extensions: [
@@ -97,21 +101,21 @@ class AppThemes {
         primaryColor: AppColors.primaryColor,
         secondaryColor: AppColors.secondaryColor,
         outlineColor: AppColors.outlineColor,
-        displayLarge: AppStyles.displayLarge(color: AppColors.textColor),
-        displayMedium: AppStyles.displayMedium(color: AppColors.textColor),
-        displaySmall: AppStyles.displaySmall(color: AppColors.textColor),
-        headlineLarge: AppStyles.headlineLarge(color: AppColors.textColor),
-        headlineMedium: AppStyles.headlineMedium(color: AppColors.textColor),
-        headlineSmall: AppStyles.headlineSmall(color: AppColors.textColor),
-        titleLarge: AppStyles.titleLarge(color: AppColors.textColor),
-        titleMedium: AppStyles.titleMedium(color: AppColors.textColor),
-        titleSmall: AppStyles.titleSmall(color: AppColors.textColor),
-        bodyLarge: AppStyles.bodyLarge(color: AppColors.textColor),
-        bodyMedium: AppStyles.bodyMedium(color: AppColors.textColor),
-        bodySmall: AppStyles.bodySmall(color: AppColors.textColor),
-        labelLarge: AppStyles.labelLarge(color: AppColors.textColor),
-        labelMedium: AppStyles.labelMedium(color: AppColors.textColor),
-        labelSmall: AppStyles.labelSmall(color: AppColors.textColor),
+        displayLarge: AppStyles.displayLarge(color: AppColors.textColor, font: font),
+        displayMedium: AppStyles.displayMedium(color: AppColors.textColor, font: font),
+        displaySmall: AppStyles.displaySmall(color: AppColors.textColor, font: font),
+        headlineLarge: AppStyles.headlineLarge(color: AppColors.textColor, font: font),
+        headlineMedium: AppStyles.headlineMedium(color: AppColors.textColor, font: font),
+        headlineSmall: AppStyles.headlineSmall(color: AppColors.textColor, font: font),
+        titleLarge: AppStyles.titleLarge(color: AppColors.textColor, font: font),
+        titleMedium: AppStyles.titleMedium(color: AppColors.textColor, font: font),
+        titleSmall: AppStyles.titleSmall(color: AppColors.textColor, font: font),
+        bodyLarge: AppStyles.bodyLarge(color: AppColors.textColor, font: font),
+        bodyMedium: AppStyles.bodyMedium(color: AppColors.textColor, font: font),
+        bodySmall: AppStyles.bodySmall(color: AppColors.textColor, font: font),
+        labelLarge: AppStyles.labelLarge(color: AppColors.textColor, font: font),
+        labelMedium: AppStyles.labelMedium(color: AppColors.textColor, font: font),
+        labelSmall: AppStyles.labelSmall(color: AppColors.textColor, font: font),
         appBorderRadius: appBorderRadius,
         controlHeight: AppSizing.size24,
         verticalMargin: AppSpacing.space8,
@@ -128,12 +132,12 @@ class AppThemes {
   );
 
   /// Dark Theme
-  static ThemeData darkTheme = ThemeData(
+  static ThemeData darkTheme({required AppFontOption font}) => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: _darkColorScheme,
     scaffoldBackgroundColor: AppColors.backgroundColorDark,
-    textTheme: _textTheme(AppColors.textColorDark),
+    textTheme: _textTheme(AppColors.textColorDark, font),
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColorDark)),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
@@ -142,7 +146,10 @@ class AppThemes {
         (states) => IconThemeData(color: states.contains(WidgetState.selected) ? AppColors.primaryColorDark : AppColors.outlineColorDark),
       ),
       labelTextStyle: WidgetStateProperty.resolveWith(
-        (states) => AppStyles.labelMedium(color: states.contains(WidgetState.selected) ? AppColors.primaryColorDark : AppColors.outlineColorDark),
+        (states) => AppStyles.labelMedium(
+          color: states.contains(WidgetState.selected) ? AppColors.primaryColorDark : AppColors.outlineColorDark,
+          font: font,
+        ),
       ),
     ),
     extensions: [
@@ -150,21 +157,21 @@ class AppThemes {
         primaryColor: AppColors.primaryColorDark,
         secondaryColor: AppColors.secondaryColorDark,
         outlineColor: AppColors.outlineColorDark,
-        displayLarge: AppStyles.displayLarge(color: AppColors.textColorDark),
-        displayMedium: AppStyles.displayMedium(color: AppColors.textColorDark),
-        displaySmall: AppStyles.displaySmall(color: AppColors.textColorDark),
-        headlineLarge: AppStyles.headlineLarge(color: AppColors.textColorDark),
-        headlineMedium: AppStyles.headlineMedium(color: AppColors.textColorDark),
-        headlineSmall: AppStyles.headlineSmall(color: AppColors.textColorDark),
-        titleLarge: AppStyles.titleLarge(color: AppColors.textColorDark),
-        titleMedium: AppStyles.titleMedium(color: AppColors.textColorDark),
-        titleSmall: AppStyles.titleSmall(color: AppColors.textColorDark),
-        bodyLarge: AppStyles.bodyLarge(color: AppColors.textColorDark),
-        bodyMedium: AppStyles.bodyMedium(color: AppColors.textColorDark),
-        bodySmall: AppStyles.bodySmall(color: AppColors.textColorDark),
-        labelLarge: AppStyles.labelLarge(color: AppColors.textColorDark),
-        labelMedium: AppStyles.labelMedium(color: AppColors.textColorDark),
-        labelSmall: AppStyles.labelSmall(color: AppColors.textColorDark),
+        displayLarge: AppStyles.displayLarge(color: AppColors.textColorDark, font: font),
+        displayMedium: AppStyles.displayMedium(color: AppColors.textColorDark, font: font),
+        displaySmall: AppStyles.displaySmall(color: AppColors.textColorDark, font: font),
+        headlineLarge: AppStyles.headlineLarge(color: AppColors.textColorDark, font: font),
+        headlineMedium: AppStyles.headlineMedium(color: AppColors.textColorDark, font: font),
+        headlineSmall: AppStyles.headlineSmall(color: AppColors.textColorDark, font: font),
+        titleLarge: AppStyles.titleLarge(color: AppColors.textColorDark, font: font),
+        titleMedium: AppStyles.titleMedium(color: AppColors.textColorDark, font: font),
+        titleSmall: AppStyles.titleSmall(color: AppColors.textColorDark, font: font),
+        bodyLarge: AppStyles.bodyLarge(color: AppColors.textColorDark, font: font),
+        bodyMedium: AppStyles.bodyMedium(color: AppColors.textColorDark, font: font),
+        bodySmall: AppStyles.bodySmall(color: AppColors.textColorDark, font: font),
+        labelLarge: AppStyles.labelLarge(color: AppColors.textColorDark, font: font),
+        labelMedium: AppStyles.labelMedium(color: AppColors.textColorDark, font: font),
+        labelSmall: AppStyles.labelSmall(color: AppColors.textColorDark, font: font),
         appBorderRadius: appBorderRadius,
         controlHeight: AppSizing.size24,
         verticalMargin: AppSpacing.space8,

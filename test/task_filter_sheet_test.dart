@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:manage_app/core/enums/expense_enums.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
+import 'package:manage_app/core/resources/app_fonts.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/auth_service.dart';
 import 'package:manage_app/core/services/expense_service.dart';
@@ -110,7 +111,7 @@ Future<void> _pumpHome(WidgetTester tester) async {
         ChangeNotifierProvider.value(value: taskProvider),
         ChangeNotifierProvider.value(value: expenseProvider),
       ],
-      child: MaterialApp(theme: AppThemes.lightTheme, home: const HomeScreen()),
+      child: MaterialApp(theme: AppThemes.lightTheme(font: AppFontOption.defaultOption), home: const HomeScreen()),
     ),
   );
   await tester.pumpAndSettle();
