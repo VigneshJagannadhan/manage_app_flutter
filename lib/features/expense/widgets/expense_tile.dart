@@ -64,7 +64,17 @@ class ExpenseTile extends StatelessWidget {
                   LabelText.small(groupName!, color: colorScheme.secondary, style: const TextStyle(fontWeight: FontWeight.w700)),
                   SizedBox(height: theme.spacingXSmall ?? 4),
                 ],
-                TitleText.small(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TitleText.small(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                    if (expense.essential) ...[
+                      SizedBox(width: (theme.spacingXSmall ?? 4) / 2),
+                      Icon(Icons.star, size: 16, color: colorScheme.primary),
+                    ],
+                  ],
+                ),
                 if (subtitle != null) ...[
                   SizedBox(height: (theme.spacingXSmall ?? 4) / 2),
                   BodyText.small(subtitle, color: colorScheme.outline, overflow: TextOverflow.ellipsis),

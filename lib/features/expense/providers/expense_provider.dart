@@ -135,13 +135,11 @@ class ExpenseProvider extends BaseProvider {
     return {for (final entry in entries) entry.key: entry.value / total};
   }
 
-  /// Placeholder essential/non-essential split of [totalThisMonth] until the backend
-  /// supports tagging expenses as essential - see ticket to add the field server-side.
-  static const double essentialSharePlaceholder = 0.85;
+  double get essentialAmountThisMonth =>
+      _thisMonthExpenses.where((expense) => expense.essential).fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
 
-  double get essentialAmountThisMonth => totalThisMonth * essentialSharePlaceholder;
-
-  double get nonEssentialAmountThisMonth => totalThisMonth * (1 - essentialSharePlaceholder);
+  double get nonEssentialAmountThisMonth =>
+      _thisMonthExpenses.where((expense) => !expense.essential).fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
 
   void setExpenses(List<ExpenseModel> expenses) {
     _expenses = expenses;
@@ -185,8 +183,15 @@ class ExpenseProvider extends BaseProvider {
     return result;
   }
 
-  Future<ExpenseModel> updateExpense({required String id, String? title, double? amount, ExpenseCategory? category, DateTime? date}) async {
-    final updated = await expenseService.updateExpense(id: id, title: title, amount: amount, category: category, date: date);
+  Future<ExpenseModel> updateExpense({
+    required String id,
+    String? title,
+    double? amount,
+    ExpenseCategory? category,
+    DateTime? date,
+    bool? essential,
+  }) async {
+    final updated = await expenseService.updateExpense(id: id, title: title, amount: amount, category: category, date: date, essential: essential);
     setExpenses([
       for (final expense in _expenses)
         if (expense.id != id) expense,

@@ -161,6 +161,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
               label: AppStrings.payerLabel,
               value: payerLabel,
             ),
+          _DetailRow(
+            icon: Icon(
+              _expense.essential ? Icons.star : Icons.star_border,
+              size: 18,
+              color: colorScheme.outline,
+            ),
+            label: AppStrings.essentialLabel,
+            value: _expense.essential ? AppStrings.yes : AppStrings.no,
+          ),
           SizedBox(height: theme.spacingSmall ?? 8),
           TitleText.small(AppStrings.splitDetailsLabel),
           if (_expense.splits.isEmpty)
