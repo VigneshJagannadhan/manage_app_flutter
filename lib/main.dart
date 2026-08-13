@@ -7,6 +7,7 @@ import 'package:manage_app/core/services/group_service.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/core/services/session_expired_notifier.dart';
 import 'package:manage_app/core/services/task_service.dart';
+import 'package:manage_app/core/services/font_preference_service.dart';
 import 'package:manage_app/core/services/theme_preference_service.dart';
 import 'package:manage_app/core/services/token_storage_service.dart';
 import 'package:manage_app/core/themes/app_theme.dart';
@@ -15,6 +16,7 @@ import 'package:manage_app/features/auth/screens/sign_in_screen.dart';
 import 'package:manage_app/features/auth/screens/splash_screen.dart';
 import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
+import 'package:manage_app/features/settings/providers/font_provider.dart';
 import 'package:manage_app/features/settings/providers/profile_provider.dart';
 import 'package:manage_app/features/settings/providers/theme_provider.dart';
 import 'package:manage_app/features/settings/services/profile_service.dart';
@@ -85,13 +87,14 @@ class _ManageAppState extends State<ManageApp> {
         ChangeNotifierProvider.value(value: _profileProvider),
         ChangeNotifierProvider.value(value: _appProvider),
         ChangeNotifierProvider(create: (_) => ThemeProvider(themePreferenceService: themePreferenceService)..onInit()),
+        ChangeNotifierProvider(create: (_) => FontProvider(fontPreferenceService: fontPreferenceService)..onInit()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (_, themeProvider, _) {
+      child: Consumer2<ThemeProvider, FontProvider>(
+        builder: (_, themeProvider, fontProvider, _) {
           return MaterialApp(
             navigatorKey: navigatorKey,
-            theme: AppThemes.lightTheme,
-            darkTheme: AppThemes.darkTheme,
+            theme: AppThemes.lightTheme(font: fontProvider.font),
+            darkTheme: AppThemes.darkTheme(font: fontProvider.font),
             themeMode: themeProvider.themeMode,
             home: const SplashScreen(),
           );
