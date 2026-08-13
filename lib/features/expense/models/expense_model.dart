@@ -12,6 +12,7 @@ class ExpenseModel {
   // A member's userId. `null` means "me" - defaults to the creator server-side when omitted.
   final String? payerId;
   final List<ExpenseSplit> splits;
+  final bool essential;
 
   ExpenseModel({
     this.id,
@@ -23,6 +24,7 @@ class ExpenseModel {
     this.groupId,
     this.payerId,
     this.splits = const [],
+    this.essential = false,
   });
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class ExpenseModel {
       splits: json['splits'] != null
           ? (json['splits'] as List<dynamic>).map((split) => ExpenseSplit.fromJson(split as Map<String, dynamic>)).toList()
           : const [],
+      essential: json['essential'] as bool? ?? false,
     );
   }
 
@@ -53,10 +56,19 @@ class ExpenseModel {
       if (groupId != null) 'groupId': groupId,
       if (payerId != null) 'payer': {'userId': payerId},
       'splits': splits.map((split) => split.toJson()).toList(),
+      'essential': essential,
     };
   }
 
-  ExpenseModel copyWith({String? title, double? amount, ExpenseCategory? category, DateTime? date, String? payerId, List<ExpenseSplit>? splits}) {
+  ExpenseModel copyWith({
+    String? title,
+    double? amount,
+    ExpenseCategory? category,
+    DateTime? date,
+    String? payerId,
+    List<ExpenseSplit>? splits,
+    bool? essential,
+  }) {
     return ExpenseModel(
       id: id,
       title: title ?? this.title,
@@ -67,6 +79,7 @@ class ExpenseModel {
       groupId: groupId,
       payerId: payerId ?? this.payerId,
       splits: splits ?? this.splits,
+      essential: essential ?? this.essential,
     );
   }
 }

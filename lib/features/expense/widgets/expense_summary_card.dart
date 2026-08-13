@@ -7,9 +7,8 @@ import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
 import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 
-/// "Total this month" figure plus a placeholder essential/non-essential
-/// breakdown bar - see [ExpenseProvider.essentialSharePlaceholder] for why
-/// the split is hardcoded rather than driven by expense data.
+/// "Total this month" figure plus an essential/non-essential breakdown bar,
+/// driven by each expense's `essential` flag.
 class ExpenseSummaryCard extends StatelessWidget {
   const ExpenseSummaryCard({
     super.key,

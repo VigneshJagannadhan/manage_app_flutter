@@ -65,6 +65,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
 
   late ExpenseCategory? _selectedCategory = widget.expense?.category;
   late DateTime? _date = widget.expense?.date ?? DateTime.now();
+  late bool _essential = widget.expense?.essential ?? false;
   bool _isSubmitting = false;
   bool _isDeleting = false;
 
@@ -207,6 +208,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
               amount: amount,
               category: _selectedCategory!,
               date: _date!,
+              essential: _essential,
             )
           : await expenseProvider.createExpense(
               ExpenseModel(
@@ -218,6 +220,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                 groupId: _activeGroupId,
                 payerId: _selectedPayer?.userId,
                 splits: splits,
+                essential: _essential,
               ),
             );
       if (!mounted) return;
@@ -336,6 +339,15 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
               validator: (value) =>
                   value == null ? AppStrings.expenseDateRequired : null,
               onChanged: (value) => _date = value,
+            ),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              title: const Text(AppStrings.essentialLabel),
+              value: _essential,
+              onChanged: _isBusy
+                  ? null
+                  : (checked) => setState(() => _essential = checked ?? false),
             ),
             if (!_isEditing) ..._buildGroupFields(),
             AppButton.primary(

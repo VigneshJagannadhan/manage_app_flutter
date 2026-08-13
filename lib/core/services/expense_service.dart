@@ -33,6 +33,7 @@ class ExpenseService {
     double? amount,
     ExpenseCategory? category,
     DateTime? date,
+    bool? essential,
   }) async {
     final result = await _api.patch<ExpenseModel>(
       '${AppUrls.expenses}/$id',
@@ -41,6 +42,7 @@ class ExpenseService {
         'amount': ?amount,
         'category': ?category?.apiValue,
         'date': ?date?.toIso8601String(),
+        'essential': ?essential,
       },
       parser: (data) => ExpenseModel.fromJson(data as Map<String, dynamic>),
     );

@@ -107,6 +107,8 @@ class AppStrings {
   static const String expenseTitleLabel = 'Title';
   static const String amountLabel = 'Amount';
   static const String categoryLabel = 'Category';
+  static const String yes = 'Yes';
+  static const String no = 'No';
   static const String expenseTitleRequired = 'Title is required';
   static const String amountRequired = 'Amount is required';
   static const String invalidAmount = 'Enter a valid amount';
