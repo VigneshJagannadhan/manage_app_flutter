@@ -81,7 +81,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
 List<String> loadingTexts = [
   'Starting the server...',
-  'Loading app tasks...',
+  'Loading your tasks...',
   'Loading your expenses...',
+  'Loading other data',
   'Almost there...',
+  'Almost almost there...',
+  'Final almost almost there...',
+  'Our server is shit. Please wait...',
 ];

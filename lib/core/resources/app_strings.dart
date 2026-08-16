@@ -122,6 +122,7 @@ class AppStrings {
   static const String expenseDetails = 'Expense Details';
   static const String splitDetailsLabel = 'Split Details';
   static const String noSplitsRecorded = 'No splits recorded for this expense';
+  static const String addSplitLabel = '+ Add Split';
 
   // settings screen
   static const String checkServerHealth = 'Check Server Health';
