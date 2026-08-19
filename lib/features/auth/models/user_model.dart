@@ -4,8 +4,9 @@ class UserModel {
   final String email;
   final String? phone;
   final String? defaultGroupId;
+  final DateTime? createdAt;
 
-  const UserModel({required this.id, required this.name, required this.email, this.phone, this.defaultGroupId});
+  const UserModel({required this.id, required this.name, required this.email, this.phone, this.defaultGroupId, this.createdAt});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -14,12 +15,20 @@ class UserModel {
       email: json['email'] as String,
       phone: json['phone'] as String?,
       defaultGroupId: json['defaultGroupId'] as String?,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : null,
     );
   }
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'email': email, 'phone': phone, 'defaultGroupId': defaultGroupId};
 
   UserModel copyWith({String? defaultGroupId}) {
-    return UserModel(id: id, name: name, email: email, phone: phone, defaultGroupId: defaultGroupId ?? this.defaultGroupId);
+    return UserModel(
+      id: id,
+      name: name,
+      email: email,
+      phone: phone,
+      defaultGroupId: defaultGroupId ?? this.defaultGroupId,
+      createdAt: createdAt,
+    );
   }
 }

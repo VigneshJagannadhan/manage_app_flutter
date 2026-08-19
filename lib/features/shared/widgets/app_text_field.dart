@@ -22,7 +22,8 @@ class AppTextField extends StatefulWidget {
     this.maxLines = 1,
     this.textCapitalization = TextCapitalization.none,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
-  }) : obscureText = false;
+  }) : obscureText = false,
+       _borderless = false;
 
   const AppTextField.password({
     super.key,
@@ -43,7 +44,32 @@ class AppTextField extends StatefulWidget {
        suffixIcon = null,
        keyboardType = TextInputType.visiblePassword,
        maxLines = 1,
-       textCapitalization = TextCapitalization.none;
+       textCapitalization = TextCapitalization.none,
+       _borderless = false;
+
+  /// A borderless, undecorated field that expands to fill its parent - for a full-page
+  /// writing surface (e.g. a journal entry) rather than a form input.
+  const AppTextField.multiline({
+    super.key,
+    this.controller,
+    this.hint,
+    this.onChanged,
+    this.focusNode,
+    this.autofocus = false,
+    this.enabled = true,
+    this.textCapitalization = TextCapitalization.sentences,
+  }) : obscureText = false,
+       label = null,
+       helperText = null,
+       prefixIcon = null,
+       suffixIcon = null,
+       keyboardType = TextInputType.multiline,
+       textInputAction = TextInputAction.newline,
+       validator = null,
+       onFieldSubmitted = null,
+       maxLines = null,
+       autovalidateMode = null,
+       _borderless = true;
 
   final TextEditingController? controller;
   final String? label;
@@ -59,10 +85,11 @@ class AppTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final bool enabled;
   final bool autofocus;
-  final int maxLines;
+  final int? maxLines;
   final TextCapitalization textCapitalization;
   final AutovalidateMode? autovalidateMode;
   final bool obscureText;
+  final bool _borderless;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -88,37 +115,41 @@ class _AppTextFieldState extends State<AppTextField> {
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction,
       maxLines: widget.obscureText ? 1 : widget.maxLines,
+      expands: widget._borderless,
+      textAlignVertical: widget._borderless ? TextAlignVertical.top : null,
       textCapitalization: widget.textCapitalization,
       validator: widget.validator,
       autovalidateMode: widget.autovalidateMode,
       onChanged: widget.onChanged,
       onFieldSubmitted: widget.onFieldSubmitted,
-      decoration: InputDecoration(
-        isDense: isSingleLine,
-        labelText: widget.label,
-        hintText: widget.hint,
-        helperText: widget.helperText,
-        prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
-        suffixIcon: widget.obscureText
-            ? IconButton(
-                icon: Icon(_obscured ? Icons.visibility_off : Icons.visibility),
-                tooltip: _obscured ? AppStrings.showPassword : AppStrings.hidePassword,
-                onPressed: () => setState(() => _obscured = !_obscured),
-              )
-            : widget.suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: borderRadius,
-          borderSide: BorderSide(color: outlineColor),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: borderRadius,
-          borderSide: BorderSide(color: outlineColor),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: borderRadius,
-          borderSide: BorderSide(color: colorScheme.outlineVariant),
-        ),
-      ),
+      decoration: widget._borderless
+          ? InputDecoration.collapsed(hintText: widget.hint)
+          : InputDecoration(
+              isDense: isSingleLine,
+              labelText: widget.label,
+              hintText: widget.hint,
+              helperText: widget.helperText,
+              prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
+              suffixIcon: widget.obscureText
+                  ? IconButton(
+                      icon: Icon(_obscured ? Icons.visibility_off : Icons.visibility),
+                      tooltip: _obscured ? AppStrings.showPassword : AppStrings.hidePassword,
+                      onPressed: () => setState(() => _obscured = !_obscured),
+                    )
+                  : widget.suffixIcon,
+              border: OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: BorderSide(color: outlineColor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: BorderSide(color: outlineColor),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: BorderSide(color: colorScheme.outlineVariant),
+              ),
+            ),
     );
   }
 }

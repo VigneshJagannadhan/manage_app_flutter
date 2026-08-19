@@ -1,4 +1,5 @@
 import 'package:manage_app/core/enums/task_enums.dart';
+import 'package:manage_app/core/extensions/date_time_extensions.dart';
 
 class TaskModel {
   final String? id;
@@ -49,8 +50,8 @@ class TaskModel {
       'description': description,
       if (priority != null) 'priority': priority!.apiValue,
       if (status != null) 'status': status!.apiValue,
-      if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
-      if (dueDate != null) 'dueDate': dueDate!.toIso8601String(),
+      if (createdAt != null) 'createdAt': createdAt!.toServer(),
+      if (dueDate != null) 'dueDate': dueDate!.toServer(),
       if (groupId != null) 'groupId': groupId,
       if (assignedTo != null) 'assignedTo': assignedTo,
     };

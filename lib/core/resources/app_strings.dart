@@ -74,7 +74,6 @@ class AppStrings {
   static const String remindersTab = 'Reminders';
   static const String journalTab = 'Journal';
   static const String remindersComingSoon = 'Reminders are coming soon';
-  static const String journalComingSoon = 'Journal is coming soon';
 
   // expense list
   static const String manageYourExpenses = 'Manage your expenses';
@@ -229,4 +228,14 @@ class AppStrings {
   static const String amountOwedLabel = 'Amount';
   static const String selectAtLeastOneMember = 'Select at least one member to split with';
   static const String splitsMismatchError = 'Split amounts must add up to the total amount';
+
+  // journal
+  static const String writeTodaysEntry = "Write Today's Entry";
+  static const String todaysEntryPrompt = "What's on your mind today?";
+  static const String noEntryLabel = 'No entry';
+  static const String journalEntryHint = 'Start writing...';
+  static const String beginningOfJournal = "That's the beginning of your journal";
+  static const String saved = 'Saved';
+  static const String couldNotSaveEntry = "Couldn't save. Tap to retry.";
+  static const String couldNotLoadJournal = 'Could not load your journal. Please try again.';
 }

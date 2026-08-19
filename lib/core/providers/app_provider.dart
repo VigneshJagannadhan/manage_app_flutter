@@ -2,6 +2,7 @@ import 'package:manage_app/core/services/session_expired_notifier.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
+import 'package:manage_app/features/journal/providers/journal_provider.dart';
 import 'package:manage_app/features/settings/providers/profile_provider.dart';
 import 'package:manage_app/features/shared/providers/base_provider.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
@@ -16,6 +17,7 @@ class AppProvider extends BaseProvider {
     required this.taskProvider,
     required this.expenseProvider,
     required this.profileProvider,
+    required this.journalProvider,
   });
 
   final AuthProvider authProvider;
@@ -23,6 +25,7 @@ class AppProvider extends BaseProvider {
   final TaskProvider taskProvider;
   final ExpenseProvider expenseProvider;
   final ProfileProvider profileProvider;
+  final JournalProvider journalProvider;
 
   @override
   void onInit() {
@@ -56,6 +59,7 @@ class AppProvider extends BaseProvider {
       await Future.wait([
         taskProvider.loadTasks(),
         expenseProvider.loadExpenses(),
+        journalProvider.loadInitial(),
       ]);
     }
     _isDataLoaded = true;
@@ -68,6 +72,7 @@ class AppProvider extends BaseProvider {
   void resetAllData() {
     taskProvider.clearTasks();
     expenseProvider.clearExpenses();
+    journalProvider.clearEntries();
     profileProvider.clearProfile();
     // GroupProvider clears itself reactively via its own AuthProvider listener.
     _isDataLoaded = false;

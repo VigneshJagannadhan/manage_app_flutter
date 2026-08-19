@@ -1,4 +1,5 @@
 import 'package:manage_app/core/enums/expense_enums.dart';
+import 'package:manage_app/core/extensions/date_time_extensions.dart';
 import 'package:manage_app/features/expense/models/expense_split_model.dart';
 
 class ExpenseModel {
@@ -51,8 +52,8 @@ class ExpenseModel {
       'title': title,
       'amount': amount,
       if (category != null) 'category': category!.apiValue,
-      if (date != null) 'date': date!.toIso8601String(),
-      if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
+      if (date != null) 'date': date!.toServer(),
+      if (createdAt != null) 'createdAt': createdAt!.toServer(),
       if (groupId != null) 'groupId': groupId,
       if (payerId != null) 'payer': {'userId': payerId},
       'splits': splits.map((split) => split.toJson()).toList(),

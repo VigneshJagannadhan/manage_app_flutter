@@ -9,6 +9,7 @@ class AppUrls {
   static const String expenses = '/expenses';
   static const String health = '/health';
   static const String groups = '/groups';
+  static const String journals = '/journals';
   static const String joinGroup = '/groups/join';
   static const String profile = '/profile';
   static const String changePassword = '/profile/change-password';
