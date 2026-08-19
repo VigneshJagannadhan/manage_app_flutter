@@ -14,7 +14,9 @@ import 'package:manage_app/features/expense/widgets/expense_category_style.dart'
 import 'package:manage_app/features/group/models/group_member_model.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
+import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
+import 'package:manage_app/features/shared/widgets/info_card.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
@@ -138,82 +140,78 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
             color: colorScheme.primary,
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          Divider(color: colorScheme.outlineVariant),
-          if (category != null)
-            _DetailRow(
-              icon: Icon(Icons.category, size: 18, color: colorScheme.outline),
-              label: AppStrings.categoryLabel,
-              value: categoryName,
-            ),
-          if (_expense.date != null)
-            _DetailRow(
-              icon: Icon(
-                Icons.calendar_today,
-                size: 18,
-                color: colorScheme.outline,
+          Divider(color: colorScheme.outlineVariant, thickness: 0.5),
+          InfoCard(
+            children: [
+              if (category != null)
+                InfoRow(
+                  icon: const Icon(Icons.category),
+                  label: AppStrings.categoryLabel,
+                  value: categoryName,
+                ),
+              if (_expense.date != null)
+                InfoRow(
+                  icon: const Icon(Icons.calendar_today),
+                  label: AppStrings.dateLabel,
+                  value: formattedDate,
+                ),
+              if (payerLabel != null)
+                InfoRow(
+                  icon: const Icon(Icons.person),
+                  label: AppStrings.payerLabel,
+                  value: payerLabel,
+                ),
+              InfoRow(
+                icon: Icon(_expense.essential ? Icons.star : Icons.star_border),
+                label: AppStrings.essentialLabel,
+                value: _expense.essential ? AppStrings.yes : AppStrings.no,
               ),
-              label: AppStrings.dateLabel,
-              value: formattedDate,
-            ),
-          if (payerLabel != null)
-            _DetailRow(
-              icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
-              label: AppStrings.payerLabel,
-              value: payerLabel,
-            ),
-          _DetailRow(
-            icon: Icon(
-              _expense.essential ? Icons.star : Icons.star_border,
-              size: 18,
-              color: colorScheme.outline,
-            ),
-            label: AppStrings.essentialLabel,
-            value: _expense.essential ? AppStrings.yes : AppStrings.no,
+            ],
           ),
           SizedBox(height: theme.spacingSmall ?? 8),
           TitleText.small(AppStrings.splitDetailsLabel),
-          if (_expense.splits.isEmpty)
-            BodyText.medium(
-              AppStrings.noSplitsRecorded,
-              color: colorScheme.outline,
-            )
-          else
-            for (final split in _expense.splits)
-              _SplitRow(
-                label: _memberLabel(split.userId, members, currentUserId),
-                amount: split.amountOwed,
-              ),
+          InfoCard(
+            children: _expense.splits.isEmpty
+                ? [
+                    _SplitsEmptyState(
+                      onAddSplit: null, // Adding splits after creation isn't supported by the API yet.
+                    ),
+                  ]
+                : [
+                    for (final split in _expense.splits)
+                      _SplitRow(
+                        label: _memberLabel(split.userId, members, currentUserId),
+                        amount: split.amountOwed,
+                      ),
+                  ],
+          ),
         ],
       ),
     );
   }
 }
 
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+class _SplitsEmptyState extends StatelessWidget {
+  const _SplitsEmptyState({required this.onAddSplit});
 
-  final Widget icon;
-  final String label;
-  final String value;
+  final VoidCallback? onAddSplit;
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
+    return Column(
       children: [
-        icon,
-        SizedBox(width: theme.spacingSmall ?? 8),
-        BodyText.medium('$label: ', color: colorScheme.outline),
+        Icon(Icons.people_outline, size: 32, color: colorScheme.outline),
+        SizedBox(height: theme.spacingSmall ?? 8),
         BodyText.medium(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          AppStrings.noSplitsRecorded,
+          color: colorScheme.outline,
+          textAlign: TextAlign.center,
         ),
+        SizedBox(height: theme.spacingMedium ?? 16),
+        AppButton.primary(label: AppStrings.addSplitLabel, onPressed: onAddSplit),
       ],
     );
   }

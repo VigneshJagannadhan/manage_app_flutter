@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/date_time_extensions.dart';
+import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -11,6 +12,7 @@ import 'package:manage_app/features/shared/widgets/app_body_column.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
+import 'package:manage_app/features/shared/widgets/info_card.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:manage_app/features/task/models/task_model.dart';
 import 'package:manage_app/features/task/providers/task_provider.dart';
@@ -110,6 +112,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final assigneeName = _resolveAssigneeName(context.watch<GroupProvider>());
+    final priorityColor = TaskPriorityBadge.colorFor(priority, colorScheme);
 
     return AppScaffold(
       appBar: ScreenAppBar(
@@ -121,12 +124,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: theme.spacingMedium ?? 16,
         children: [
-          TaskPriorityBadge(priority: priority, large: true),
-          HeadlineText.small(
-            title,
-            style: TextStyle(
-              decoration: _isCompleted ? TextDecoration.lineThrough : null,
-            ),
+          _PriorityCard(
+            priority: priority,
+            color: priorityColor,
+            title: title,
+            description: description,
+            isCompleted: _isCompleted,
           ),
           if (_isCompleted)
             Row(
@@ -141,27 +144,27 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ),
               ],
             ),
-          BodyText.large(description),
-          Divider(color: colorScheme.outlineVariant),
-          if (assigneeName != null)
-            _DetailRow(
-              icon: Icon(Icons.person, size: 18, color: colorScheme.outline),
-              label: AppStrings.assignedToLabel,
-              value: assigneeName,
-            ),
-          _DetailRow(
-            icon: AppSvgIcon(
-              SvgIcons.calendar,
-              size: 18,
-              color: colorScheme.outline,
-            ),
-            label: AppStrings.due,
-            value: dueDate,
-          ),
-          _DetailRow(
-            icon: Icon(Icons.access_time, size: 18, color: colorScheme.outline),
-            label: AppStrings.created,
-            value: createdAt,
+          InfoCard(
+            children: [
+              if (assigneeName != null)
+                InfoRow(
+                  icon: const Icon(Icons.person),
+                  label: AppStrings.assignedToLabel,
+                  value: assigneeName,
+                ),
+              InfoRow(
+                icon: AppSvgIcon(SvgIcons.calendar),
+                label: AppStrings.due,
+                value: dueDate,
+                // Calls out the due date as the field most tied to priority/urgency.
+                iconColor: priorityColor,
+              ),
+              InfoRow(
+                icon: const Icon(Icons.access_time),
+                label: AppStrings.created,
+                value: createdAt,
+              ),
+            ],
           ),
         ],
       ),
@@ -174,6 +177,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               child: AppButton.secondary(
                 label: AppStrings.edit,
                 onPressed: _isClosing ? null : _editTask,
+                color: priorityColor,
               ),
             ),
             Expanded(
@@ -182,6 +186,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     ? AppStrings.completed
                     : (_isClosing ? AppStrings.closing : AppStrings.closeTask),
                 onPressed: (_isCompleted || _isClosing) ? null : _closeTask,
+                color: priorityColor,
               ),
             ),
           ],
@@ -191,32 +196,67 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 }
 
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
+/// Full-width priority banner: a solid color strip + tinted background,
+/// replacing the plain priority pill so priority is legible at a glance.
+class _PriorityCard extends StatelessWidget {
+  const _PriorityCard({
+    required this.priority,
+    required this.color,
+    required this.title,
+    required this.description,
+    required this.isCompleted,
   });
 
-  final Widget icon;
-  final String label;
-  final String value;
+  final TaskPriority priority;
+  final Color color;
+  final String title;
+  final String description;
+  final bool isCompleted;
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
-      children: [
-        icon,
-        SizedBox(width: theme.spacingSmall ?? 8),
-        BodyText.medium('$label: ', color: colorScheme.outline),
-        BodyText.medium(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(width: 4, color: color),
+            Expanded(
+              child: Container(
+                color: color.withValues(alpha: 0.1),
+                padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: theme.spacingSmall ?? 8,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.flag, size: 14, color: color),
+                        SizedBox(width: theme.spacingXSmall ?? 4),
+                        LabelText.small(
+                          '${priority.name.toTitleCase} Priority'.toUpperCase(),
+                          color: color,
+                          style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.5),
+                        ),
+                      ],
+                    ),
+                    HeadlineText.small(
+                      title,
+                      style: TextStyle(decoration: isCompleted ? TextDecoration.lineThrough : null),
+                    ),
+                    BodyText.medium(description, color: colorScheme.onSurfaceVariant),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
