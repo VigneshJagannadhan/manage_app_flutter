@@ -8,6 +8,7 @@ import 'package:manage_app/core/services/auth_service.dart';
 import 'package:manage_app/core/services/expense_service.dart';
 import 'package:manage_app/core/services/group_preference_service.dart';
 import 'package:manage_app/core/services/group_service.dart';
+import 'package:manage_app/core/services/journal_service.dart';
 import 'package:manage_app/core/services/task_service.dart';
 import 'package:manage_app/core/services/token_storage_service.dart';
 import 'package:manage_app/core/themes/app_theme.dart';
@@ -20,6 +21,8 @@ import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/home/screens/home_screen.dart';
+import 'package:manage_app/features/journal/models/journal_entry_model.dart';
+import 'package:manage_app/features/journal/providers/journal_provider.dart';
 import 'package:manage_app/features/settings/providers/profile_provider.dart';
 import 'package:manage_app/features/settings/services/profile_service.dart';
 import 'package:manage_app/features/task/models/task_model.dart';
@@ -58,6 +61,11 @@ class _FakeGroupPreferenceService extends GroupPreferenceService {
 class _FakeExpenseService extends ExpenseService {
   @override
   Future<List<ExpenseModel>> listExpenses({ExpenseCategory? category, String? groupId}) async => [];
+}
+
+class _FakeJournalService extends JournalService {
+  @override
+  Future<List<JournalEntryModel>> listEntries({required DateTime from, required DateTime to}) async => [];
 }
 
 class _FakeTaskService extends TaskService {
@@ -111,12 +119,13 @@ Future<void> _pumpHome(WidgetTester tester) async {
         ..onInit();
   final taskProvider = TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider)..onInit();
   final expenseProvider = ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider)..onInit();
+  final journalProvider = JournalProvider(journalService: _FakeJournalService(), profileProvider: profileProvider)..onInit();
 
   // Providers no longer self-load on init - AppProvider.loadAllData drives that from
   // splash. Mirror that sequence here so the fake data actually reaches the widgets.
   await profileProvider.loadProfile();
   await groupProvider.restoreActiveGroup();
-  await Future.wait([taskProvider.loadTasks(), expenseProvider.loadExpenses()]);
+  await Future.wait([taskProvider.loadTasks(), expenseProvider.loadExpenses(), journalProvider.loadInitial()]);
 
   await tester.pumpWidget(
     MultiProvider(
@@ -125,6 +134,7 @@ Future<void> _pumpHome(WidgetTester tester) async {
         ChangeNotifierProvider.value(value: groupProvider),
         ChangeNotifierProvider.value(value: taskProvider),
         ChangeNotifierProvider.value(value: expenseProvider),
+        ChangeNotifierProvider.value(value: journalProvider),
       ],
       child: MaterialApp(theme: AppThemes.lightTheme(font: AppFontOption.defaultOption), home: const HomeScreen()),
     ),

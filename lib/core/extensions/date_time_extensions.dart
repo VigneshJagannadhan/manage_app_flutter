@@ -22,6 +22,10 @@ extension DateTimeExtensions on DateTime {
     return '$day $monthName $year : ${hour12.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $amPm';
   }
 
+  /// Canonical serialization for any [DateTime] sent to the backend - the single place this
+  /// format is defined, so every service call stays consistent.
+  String toServer() => toIso8601String();
+
   /// Whether this date falls on the same calendar day as [other].
   bool isSameDate(DateTime other) => year == other.year && month == other.month && day == other.day;
 

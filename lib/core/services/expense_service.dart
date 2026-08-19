@@ -1,5 +1,6 @@
 import 'package:manage_app/core/constants/app_urls.dart';
 import 'package:manage_app/core/enums/expense_enums.dart';
+import 'package:manage_app/core/extensions/date_time_extensions.dart';
 import 'package:manage_app/core/services/api_result.dart';
 import 'package:manage_app/core/services/api_services.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
@@ -41,7 +42,7 @@ class ExpenseService {
         'title': ?title,
         'amount': ?amount,
         'category': ?category?.apiValue,
-        'date': ?date?.toIso8601String(),
+        'date': ?date?.toServer(),
         'essential': ?essential,
       },
       parser: (data) => ExpenseModel.fromJson(data as Map<String, dynamic>),

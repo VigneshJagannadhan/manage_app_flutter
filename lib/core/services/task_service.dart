@@ -1,5 +1,6 @@
 import 'package:manage_app/core/constants/app_urls.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
+import 'package:manage_app/core/extensions/date_time_extensions.dart';
 import 'package:manage_app/core/services/api_result.dart';
 import 'package:manage_app/core/services/api_services.dart';
 import 'package:manage_app/features/task/models/task_model.dart';
@@ -26,8 +27,8 @@ class TaskService {
         'description': task.description,
         'priority': task.priority?.apiValue,
         'groupId': task.groupId,
-        if (task.createdAt != null) 'createdAt': task.createdAt?.toIso8601String(),
-        if (task.dueDate != null) 'dueDate': task.dueDate?.toIso8601String(),
+        if (task.createdAt != null) 'createdAt': task.createdAt?.toServer(),
+        if (task.dueDate != null) 'dueDate': task.dueDate?.toServer(),
         if (task.assignedTo != null) 'assignedTo': task.assignedTo,
       },
       parser: (data) => TaskModel.fromJson(data as Map<String, dynamic>),
@@ -51,8 +52,8 @@ class TaskService {
         'description': ?description,
         'priority': ?priority?.apiValue,
         'status': ?status?.apiValue,
-        'createdAt': ?createdAt?.toIso8601String(),
-        'dueDate': ?dueDate?.toIso8601String(),
+        'createdAt': ?createdAt?.toServer(),
+        'dueDate': ?dueDate?.toServer(),
       },
       parser: (data) => TaskModel.fromJson(data as Map<String, dynamic>),
     );
