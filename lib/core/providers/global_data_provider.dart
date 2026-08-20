@@ -10,8 +10,8 @@ import 'package:manage_app/features/task/providers/task_provider.dart';
 /// Orchestrates the app-wide load/reset lifecycle across the feature providers. Lives in
 /// `core` (rather than alongside a single feature) because it owns no data of its own -
 /// it only coordinates providers that do.
-class AppProvider extends BaseProvider {
-  AppProvider({
+class GlobalDataProvider extends BaseProvider {
+  GlobalDataProvider({
     required this.authProvider,
     required this.groupProvider,
     required this.taskProvider,
