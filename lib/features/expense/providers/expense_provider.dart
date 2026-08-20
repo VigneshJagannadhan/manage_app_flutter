@@ -10,7 +10,7 @@ class ExpenseProvider extends BaseProvider {
   final ExpenseService expenseService;
   final GroupProvider groupProvider;
 
-  /// Loading is driven explicitly by AppProvider.loadAllData, so there's nothing to
+  /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
   /// self-trigger here - it just needs to satisfy the BaseProvider contract.
   @override
   void onInit() {}

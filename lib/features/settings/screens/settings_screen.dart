@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/constants/app_constants.dart';
-import 'package:manage_app/core/providers/app_provider.dart';
+import 'package:manage_app/core/providers/global_data_provider.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/core/themes/constants/app_spacing.dart';
@@ -56,7 +56,7 @@ class _SettingsBody extends StatelessWidget {
   Future<void> _signOut(BuildContext context) async {
     await context.read<AuthProvider>().signOut();
     if (!context.mounted) return;
-    context.read<AppProvider>().resetAllData();
+    context.read<GlobalDataProvider>().resetAllData();
     navigationService.pushAndRemoveUntil(context, const SignInScreen());
   }
 
