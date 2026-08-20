@@ -17,11 +17,21 @@ class AppThemes {
   /// pinned to [AppColors.surfaceColor] instead of falling back to
   /// [ColorScheme.surface] (which is the scaffold background and would make
   /// cards/nav invisible against it).
+  ///
+  /// Same reasoning applies to primaryContainer/secondaryContainer: left
+  /// unset, `secondaryContainer` falls back to `secondary` (the navy accent),
+  /// which made SegmentedButton's selected pill render in a different blue
+  /// than the avatar/FAB. Both containers are pinned to the primary blue so
+  /// every "selected" chip in the app reads as the same accent color.
   static const ColorScheme _lightColorScheme = ColorScheme.light(
     primary: AppColors.primaryColor,
     onPrimary: Colors.white,
+    primaryContainer: AppColors.primaryColor,
+    onPrimaryContainer: Colors.white,
     secondary: AppColors.secondaryColor,
     onSecondary: Colors.white,
+    secondaryContainer: AppColors.primaryColor,
+    onSecondaryContainer: Colors.white,
     surface: AppColors.backgroundColor,
     onSurface: AppColors.textColor,
     outline: AppColors.outlineColor,
@@ -37,8 +47,12 @@ class AppThemes {
   static const ColorScheme _darkColorScheme = ColorScheme.dark(
     primary: AppColors.primaryColorDark,
     onPrimary: Colors.white,
+    primaryContainer: AppColors.primaryColorDark,
+    onPrimaryContainer: Colors.white,
     secondary: AppColors.secondaryColorDark,
     onSecondary: Colors.white,
+    secondaryContainer: AppColors.primaryColorDark,
+    onSecondaryContainer: Colors.white,
     surface: AppColors.backgroundColorDark,
     onSurface: AppColors.textColorDark,
     outline: AppColors.outlineColorDark,
