@@ -13,7 +13,13 @@ import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 
 class TaskTile extends StatelessWidget {
-  const TaskTile({super.key, required this.task, this.groupName, this.onTap, this.onEdit});
+  const TaskTile({
+    super.key,
+    required this.task,
+    this.groupName,
+    this.onTap,
+    this.onEdit,
+  });
 
   final TaskModel task;
   // Shown only in "all groups" mode, where tasks from multiple groups are mixed together.
@@ -21,7 +27,8 @@ class TaskTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
 
-  String get description => task.description ?? AppStrings.noDescriptionProvided;
+  String get description =>
+      task.description ?? AppStrings.noDescriptionProvided;
   String get title => task.title ?? AppStrings.untitledTask;
   TaskPriority get priority => task.priority ?? TaskPriority.medium;
 
@@ -29,56 +36,79 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final priorityColor = TaskPriorityBadge.colorFor(task.priority ?? TaskPriority.medium, colorScheme);
+    final priorityColor = TaskPriorityBadge.colorFor(
+      task.priority ?? TaskPriority.medium,
+      colorScheme,
+    );
+
+    final margin = theme.horizontalMargin ?? 16;
+    const stripeWidth = 10.0;
 
     return AppCard(
       onTap: onTap,
       padding: EdgeInsets.zero,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Solid priority stripe - more noticeable at a glance than the pill alone.
-            Container(width: 10, color: priorityColor),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (groupName != null) ...[
-                      LabelText.small(groupName!, color: colorScheme.secondary, style: const TextStyle(fontWeight: FontWeight.w700)),
-                      SizedBox(height: theme.spacingXSmall ?? 4),
-                    ],
-                    TitleText.medium(title),
-                    SizedBox(height: theme.spacingXSmall ?? 4),
-                    BodyText.medium(description, color: colorScheme.onSurfaceVariant),
-                    SizedBox(height: theme.spacingSmall ?? 8),
-                    if (task.dueDate != null) ...[
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          AppSvgIcon(SvgIcons.calendar, size: 16, color: colorScheme.primary),
-                          SizedBox(width: theme.spacingXSmall ?? 4),
-                          BodyText.medium(
-                            '${AppStrings.due}: ${task.dueDate!.formattedDateTime}',
-                            color: colorScheme.primary,
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: theme.spacingXSmall ?? 4),
-                    ],
-                    BodyText.small(
-                      '${AppStrings.created}: ${task.createdAt?.formattedDateTime}',
-                      color: colorScheme.outline,
-                    ),
-                  ],
-                ),
-              ),
+      child: Stack(
+        children: [
+          // Solid priority stripe - more noticeable at a glance than the pill alone.
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: stripeWidth,
+            child: Container(color: priorityColor),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              stripeWidth + margin,
+              margin,
+              margin,
+              margin,
             ),
-          ],
-        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (groupName != null) ...[
+                  LabelText.small(
+                    groupName!,
+                    color: colorScheme.secondary,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(height: theme.spacingXSmall ?? 4),
+                ],
+                TitleText.medium(title),
+                SizedBox(height: theme.spacingXSmall ?? 4),
+                BodyText.medium(
+                  description,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                SizedBox(height: theme.spacingSmall ?? 8),
+                if (task.dueDate != null) ...[
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AppSvgIcon(
+                        SvgIcons.calendar,
+                        size: 16,
+                        color: colorScheme.primary,
+                      ),
+                      SizedBox(width: theme.spacingXSmall ?? 4),
+                      BodyText.medium(
+                        '${AppStrings.due}: ${task.dueDate!.formattedDateTime}',
+                        color: colorScheme.primary,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: theme.spacingXSmall ?? 4),
+                ],
+                BodyText.small(
+                  '${AppStrings.created}: ${task.createdAt?.formattedDateTime}',
+                  color: colorScheme.outline,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
