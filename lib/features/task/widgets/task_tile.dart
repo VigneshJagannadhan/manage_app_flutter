@@ -40,74 +40,66 @@ class TaskTile extends StatelessWidget {
       task.priority ?? TaskPriority.medium,
       colorScheme,
     );
-
     final margin = theme.horizontalMargin ?? 16;
-    const stripeWidth = 10.0;
 
     return AppCard(
       onTap: onTap,
-      padding: EdgeInsets.zero,
-      child: Stack(
+      padding: EdgeInsets.all(margin),
+      // Bold, fully-saturated priority color fading to near-black. The tile
+      // is now a colored surface in its own right rather than a tinted
+      // neutral card, so text on it below uses fixed light colors instead of
+      // theme-derived ones - those wouldn't contrast reliably against this
+      // background in light mode.
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [priorityColor, Color.lerp(priorityColor, Colors.black, 0.75)!],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Solid priority stripe - more noticeable at a glance than the pill alone.
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: stripeWidth,
-            child: Container(color: priorityColor),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              stripeWidth + margin,
-              margin,
-              margin,
-              margin,
+          if (groupName != null) ...[
+            LabelText.small(
+              groupName!,
+              color: Colors.white.withValues(alpha: 0.85),
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (groupName != null) ...[
-                  LabelText.small(
-                    groupName!,
-                    color: colorScheme.secondary,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(height: theme.spacingXSmall ?? 4),
-                ],
-                TitleText.medium(title),
-                SizedBox(height: theme.spacingXSmall ?? 4),
-                BodyText.medium(
-                  description,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                SizedBox(height: theme.spacingSmall ?? 8),
-                if (task.dueDate != null) ...[
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AppSvgIcon(
-                        SvgIcons.calendar,
-                        size: 16,
-                        color: colorScheme.primary,
-                      ),
-                      SizedBox(width: theme.spacingXSmall ?? 4),
-                      BodyText.medium(
-                        '${AppStrings.due}: ${task.dueDate!.formattedDateTime}',
-                        color: colorScheme.primary,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: theme.spacingXSmall ?? 4),
-                ],
-                BodyText.small(
-                  '${AppStrings.created}: ${task.createdAt?.formattedDateTime}',
-                  color: colorScheme.outline,
-                ),
-              ],
-            ),
+            SizedBox(height: theme.spacingXSmall ?? 4),
+          ],
+          TaskPriorityBadge(priority: priority),
+          SizedBox(height: theme.spacingSmall ?? 8),
+          TitleText.medium(
+            title,
+            color: Colors.white,
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
+          SizedBox(height: theme.spacingXSmall ?? 4),
+          BodyText.medium(description, color: Colors.white.withValues(alpha: 0.72)),
+          if (task.dueDate != null) ...[
+            SizedBox(height: theme.spacingSmall ?? 8),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: theme.spacingSmall ?? 8,
+                vertical: theme.spacingXSmall ?? 4,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const AppSvgIcon(SvgIcons.calendar, size: 16, color: Colors.white),
+                  SizedBox(width: theme.spacingXSmall ?? 4),
+                  BodyText.medium(
+                    '${AppStrings.due}: ${task.dueDate!.formattedDateTime}',
+                    color: Colors.white,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
