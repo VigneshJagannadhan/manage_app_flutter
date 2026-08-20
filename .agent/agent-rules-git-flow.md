@@ -18,16 +18,22 @@ Giving a commit message on request (e.g. "commit message") is a text answer, not
 an instruction to run `git commit`. Never commit as a side effect of being asked
 what the message should be.
 
+**Branch naming note:** the repo's active integration branch is named
+`development` (not `dev`). A stale `dev` branch still exists locally/remotely
+but is behind `development` - never branch from or target it. The shorthand
+trigger below keeps the `-dev` spelling for brevity, but it targets the
+`development` branch.
+
 **Shorthand triggers** - these mean commit, push, and open a PR, and also pin
 the PR's target branch:
-- **"PR -dev"** → commit, push, and open a PR into `dev`.
+- **"PR -dev"** → commit, push, and open a PR into `development`.
 - **"PR -main"** → commit, push, and open a PR into `main` (still from the
   current feature/fix branch, same mechanics as `-dev`, just a different
   base - used to trigger a build).
 
 If the user says "Let's push this change" without `-dev`/`-main`, default the
-PR target to `dev` (Step 5). Normal feature/bugfix work merges into `dev`;
-`main` is only targeted when the intent is to trigger a build.
+PR target to `development` (Step 5). Normal feature/bugfix work merges into
+`development`; `main` is only targeted when the intent is to trigger a build.
 
 ---
 
@@ -87,12 +93,13 @@ commit summary, kebab-cased).
 
 ## Step 4: Branch, commit, push
 
-1. **Never commit directly to `main` or `dev`.** If currently on `main` or
-   `dev`, pull latest `dev` first so the new branch starts from up-to-date
-   code, then create and switch to the branch from Step 3:
+1. **Never commit directly to `main` or `development`.** If currently on
+   `main` or `development`, pull latest `development` first so the new branch
+   starts from up-to-date code, then create and switch to the branch from
+   Step 3:
    ```
-   git checkout dev
-   git pull origin dev
+   git checkout development
+   git pull origin development
    git checkout -b feat/auto-scroll-on-keyboard-open
    ```
 2. Commit with the Step 2 message.
@@ -101,21 +108,22 @@ commit summary, kebab-cased).
    git push -u origin <branch-name>
    ```
 
-If already on a non-`main`, non-`dev` feature branch when triggered, commit
-and push to that branch directly - don't create a new one unless the user
-asks. This applies regardless of whether the PR target is `dev` or `main`.
+If already on a non-`main`, non-`development` feature branch when triggered,
+commit and push to that branch directly - don't create a new one unless the
+user asks. This applies regardless of whether the PR target is `development`
+or `main`.
 
 ---
 
 ## Step 5: Open a PR
 
 Determine the PR base branch from the trigger: `main` if triggered by
-**"PR -main"**, otherwise `dev` (default, including plain "Let's push this
-change" and **"PR -dev"**).
+**"PR -main"**, otherwise `development` (default, including plain "Let's push
+this change" and **"PR -dev"**).
 
 After pushing, open a pull request into that base branch:
 ```
-gh pr create --base <dev|main> --head <branch-name> --title "<commit message>" --body "<body>"
+gh pr create --base <development|main> --head <branch-name> --title "<commit message>" --body "<body>"
 ```
 - Title: same as the Step 2 commit message.
 - Body: one or two bullet points summarizing the change. If the branch has a
@@ -131,9 +139,9 @@ workflow-specific). Skip this for ticketless (`<type>/...`) branches, since
 there's no ticket to transition.
 
 After opening the PR (and transitioning the ticket, if applicable), switch
-back to `dev`:
+back to `development`:
 ```
-git checkout dev
+git checkout development
 ```
 
 ---
@@ -146,10 +154,10 @@ git checkout dev
 - [ ] Commit message is `type: summary` only - no body, no Co-Authored-By
 - [ ] Branch name is `<ticket>/<slug>` if a ticket is known, else
       `<type>/<slug>`
-- [ ] Pulled latest `dev` before branching off it
-- [ ] Never committed to `main` or `dev`
+- [ ] Pulled latest `development` before branching off it
+- [ ] Never committed to `main` or `development`
 - [ ] Pushed to remote after committing
-- [ ] PR opened into `main` (if "PR -main") or `dev` (default / "PR -dev"),
-      skipped only if one already existed
+- [ ] PR opened into `main` (if "PR -main") or `development` (default / "PR
+      -dev"), skipped only if one already existed
 - [ ] Ticket transitioned to Resolved (skipped only for ticketless branches)
-- [ ] Back on `dev` after opening the PR
+- [ ] Back on `development` after opening the PR
