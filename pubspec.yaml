@@ -43,6 +43,9 @@ dependencies:
   google_fonts: ^8.2.1
   share_plus: ^10.1.4
   cached_network_image: ^3.4.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  connectivity_plus: ^6.1.0
   package_info_plus: ^8.1.2
 
 dev_dependencies:

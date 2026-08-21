@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:manage_app/core/providers/app_providers.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/core/services/session_expired_notifier.dart';
 import 'package:manage_app/core/themes/app_theme.dart';
 import 'package:manage_app/features/auth/screens/sign_in_screen.dart';
 import 'package:manage_app/features/auth/screens/splash_screen.dart';
+import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
 import 'package:manage_app/features/settings/providers/font_provider.dart';
 import 'package:manage_app/features/settings/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  try {
+    await journalLocalDataSource.init();
+  } catch (_) {
+    // Corrupted/unreadable box - drop it and continue with an empty local cache rather
+    // than blocking app launch.
+    await Hive.deleteBoxFromDisk(journalLocalDataSource.boxName);
+    await journalLocalDataSource.init();
+  }
   runApp(const ManageApp());
 }
 
