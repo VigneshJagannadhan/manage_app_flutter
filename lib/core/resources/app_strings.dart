@@ -119,9 +119,6 @@ class AppStrings {
 
   // expense detail screen
   static const String expenseDetails = 'Expense Details';
-  static const String splitDetailsLabel = 'Split Details';
-  static const String noSplitsRecorded = 'No splits recorded for this expense';
-  static const String addSplitLabel = '+ Add Split';
 
   // settings screen
   static const String checkServerHealth = 'Check Server Health';
@@ -218,16 +215,11 @@ class AppStrings {
   static const String noActiveGroupMessage = 'You need to create or join a group before adding tasks or expenses.';
   static const String goToGroups = 'Go to Groups';
 
-  // assignee / payer / splits
+  // assignee / payer
   static const String assigneeLabel = 'Assignee';
   static const String assignedToLabel = 'Assigned To';
   static const String youSuffix = ' (You)';
   static const String payerLabel = 'Paid By';
-  static const String splitsLabel = 'Split Between';
-  static const String splitEqually = 'Split Equally';
-  static const String amountOwedLabel = 'Amount';
-  static const String selectAtLeastOneMember = 'Select at least one member to split with';
-  static const String splitsMismatchError = 'Split amounts must add up to the total amount';
 
   // journal
   static const String writeTodaysEntry = "Write Today's Entry";
