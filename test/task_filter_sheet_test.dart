@@ -186,7 +186,7 @@ void main() {
     expect(find.text('Low priority, due tomorrow'), findsOneWidget);
     expect(find.text('Completed task'), findsNothing); // default status filter is Open
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     expect(find.text(AppStrings.filterAndSort), findsOneWidget);
@@ -199,7 +199,7 @@ void main() {
   testWidgets('selecting "All" status shows both open and completed tasks', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     // Status dropdown currently shows "Open" (the default filter); tap it to open the
@@ -225,7 +225,7 @@ void main() {
   testWidgets('date filter chip filters the list down to matching due dates', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text(AppStrings.tomorrow));
@@ -241,7 +241,7 @@ void main() {
   testWidgets('Clear All resets filters back to defaults', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text(AppStrings.tomorrow));
