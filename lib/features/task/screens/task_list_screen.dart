@@ -109,6 +109,7 @@ class TaskListScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     itemCount: tasks.length,
                     itemBuilder: (context, index) => Padding(
+                      key: ValueKey(tasks[index].id),
                       padding: const EdgeInsets.only(bottom: 12),
                       child: TaskTile(
                         task: tasks[index],

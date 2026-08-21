@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/currency_extension.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/shared/widgets/app_card.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
 import 'package:manage_app/features/shared/widgets/text/label_text.dart';
@@ -34,8 +33,8 @@ class ExpenseSummaryCard extends StatelessWidget {
         ? (1000 - essentialFlex).clamp(1, 999)
         : 1;
 
-    return AppCard(
-      cardTap: false,
+    return Padding(
+      padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

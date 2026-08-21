@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/constants/app_constants.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/features/expense/screens/expense_dashboard_screen.dart';
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _tabs = [
     TaskListScreen(),
     ExpenseDashboardScreen(),
-    RemindersScreen(),
+    if (AppConstants.showRemindersTab) RemindersScreen(),
     JournalScreen(),
   ];
 
@@ -51,11 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 selectedIcon: Icon(Icons.account_balance_wallet),
                 label: AppStrings.expensesTab,
               ),
-              NavigationDestination(
-                icon: Icon(Icons.notifications_outlined),
-                selectedIcon: Icon(Icons.notifications),
-                label: AppStrings.remindersTab,
-              ),
+              if (AppConstants.showRemindersTab)
+                NavigationDestination(
+                  icon: Icon(Icons.notifications_outlined),
+                  selectedIcon: Icon(Icons.notifications),
+                  label: AppStrings.remindersTab,
+                ),
               NavigationDestination(
                 icon: Icon(Icons.book_outlined),
                 selectedIcon: Icon(Icons.book),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/constants/app_constants.dart';
 import 'package:manage_app/core/providers/global_data_provider.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -19,6 +18,7 @@ import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -72,8 +72,6 @@ class _SettingsBody extends StatelessWidget {
     return navigationService.push(context, const CustomiseAppScreen());
   }
 
-  String get appVersion => '${AppStrings.appVersion}: ${AppConstants.appVersion}';
-
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SettingsProvider>();
@@ -125,7 +123,16 @@ class _SettingsBody extends StatelessWidget {
           highlightColor: Colors.transparent,
           child: Align(
             alignment: Alignment.center,
-            child: BodyText.small(appVersion, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            child: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                final version = snapshot.data?.version;
+                return BodyText.small(
+                  version == null ? '' : '${AppStrings.appVersion}: $version',
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                );
+              },
+            ),
           ),
         ),
         SizedBox(height: AppSpacing.space20),

@@ -29,9 +29,9 @@ class AppScaffold extends StatelessWidget {
     final navigationBar = bottomNavigationBar;
     return Scaffold(
       appBar: appBar,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.opaque,
+      body: Listener(
+        onPointerDown: (_) => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
         child: SafeArea(
           child: scrollable ? _ScrollableBody(child: body) : body,
         ),
