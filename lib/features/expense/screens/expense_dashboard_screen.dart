@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
@@ -12,9 +11,10 @@ import 'package:manage_app/features/expense/widgets/expense_summary_card.dart';
 import 'package:manage_app/features/expense/widgets/expense_tile.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/group/screens/groups_screen.dart';
+import 'package:manage_app/features/group/widgets/group_scope_toggle.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
+import 'package:manage_app/features/shared/widgets/create_fab.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:manage_app/features/shared/widgets/settings_avatar_button.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
@@ -58,11 +58,7 @@ class ExpenseDashboardScreen extends StatelessWidget {
         actions: [const SettingsAvatarButton()],
       ),
       body: _buildBody(context),
-      floatingActionButton: FloatingActionButton(
-        heroTag: null,
-        onPressed: () => _openCreateExpense(context),
-        child: const AppSvgIcon(SvgIcons.add),
-      ),
+      floatingActionButton: CreateFab(label: AppStrings.createExpense, onPressed: () => _openCreateExpense(context)),
     );
   }
 
@@ -105,15 +101,10 @@ class ExpenseDashboardScreen extends StatelessWidget {
         SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SegmentedButton<bool>(
-            expandedInsets: EdgeInsets.zero,
-            segments: [
-              ButtonSegment(value: false, label: Text(groupProvider.activeGroup?.name ?? AppStrings.thisGroup)),
-              const ButtonSegment(value: true, label: Text(AppStrings.allGroups)),
-            ],
-            selected: {provider.showAllGroups},
-            onSelectionChanged: (selection) =>
-                provider.toggleShowAllGroups(selection.first),
+          child: GroupScopeToggle(
+            activeGroupLabel: groupProvider.activeGroup?.name ?? AppStrings.thisGroup,
+            showAllGroups: provider.showAllGroups,
+            onChanged: provider.toggleShowAllGroups,
           ),
         ),
         Expanded(
@@ -150,7 +141,7 @@ class _DashboardContent extends StatelessWidget {
     final recentExpenses = provider.recentExpenses();
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
       children: [
         ExpenseSummaryCard(
           totalThisMonth: provider.totalThisMonth,
