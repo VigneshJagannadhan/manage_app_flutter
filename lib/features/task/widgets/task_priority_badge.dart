@@ -1,44 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/enums/task_enums.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/features/shared/widgets/text/label_text.dart';
-import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 
-/// Priority pill shared by the task list tile and the task detail screen.
+/// Priority pill shown on the task list tile, overlaid on that tile's
+/// priority-colored gradient background.
 class TaskPriorityBadge extends StatelessWidget {
-  const TaskPriorityBadge({super.key, required this.priority, this.large = false});
+  const TaskPriorityBadge({super.key, required this.priority});
 
   final TaskPriority priority;
-  final bool large;
 
+  // `tertiary` isn't set explicitly in the app's ColorScheme (see AppThemes),
+  // so it falls back to Material's default muted purple instead of a color
+  // that reads as "medium" - `primary` is this app's blue and fits that intent.
   static Color colorFor(TaskPriority priority, ColorScheme colorScheme) => switch (priority) {
     TaskPriority.high => colorScheme.error,
-    TaskPriority.medium => colorScheme.tertiary,
+    TaskPriority.medium => colorScheme.primary,
     TaskPriority.low => colorScheme.outline,
   };
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    final color = colorFor(priority, colorScheme);
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: large ? (theme.spacingMedium ?? 16) : (theme.spacingSmall ?? 8),
-        vertical: large ? (theme.spacingSmall ?? 8) : (theme.spacingXSmall ?? 4) / 2,
+        horizontal: theme.spacingSmall ?? 8,
+        vertical: (theme.spacingXSmall ?? 4) / 2,
       ),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 8)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.flag, size: large ? 20 : 14, color: color),
-          SizedBox(width: (theme.spacingXSmall ?? 4) / 2),
-          large
-              ? TitleText.medium(priority.name.toTitleCase, color: color, style: const TextStyle(fontWeight: FontWeight.w700))
-              : LabelText.small(priority.name.toTitleCase, color: color, style: const TextStyle(fontWeight: FontWeight.w700)),
-        ],
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 8),
+      ),
+      child: LabelText.small(
+        priority.name.toUpperCase(),
+        color: Colors.white,
+        style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.5),
       ),
     );
   }

@@ -37,10 +37,10 @@ class GroupProvider extends BaseProvider {
     _membersByGroup.clear();
   }
 
-  /// Loading the active group on sign-in is AppProvider's job (it explicitly calls
+  /// Loading the active group on sign-in is GlobalDataProvider's job (it explicitly calls
   /// [restoreActiveGroup] from splash and after sign-in/sign-up). This listener only
   /// handles the logout side, so a signed-out account's groups can't linger into the next
-  /// login even if some future auth entry point skips AppProvider.resetAllData.
+  /// login even if some future auth entry point skips GlobalDataProvider.resetAllData.
   void _onAuthChanged() {
     final isAuthenticated = authProvider.isAuthenticated;
     if (isAuthenticated == _wasAuthenticated) return;
@@ -86,7 +86,7 @@ class GroupProvider extends BaseProvider {
 
   /// Fetches the account's groups and re-resolves the active one against the persisted
   /// preference (falling back to the profile's server-synced default). Called explicitly
-  /// by AppProvider.loadAllData, after profileProvider.loadProfile so the default is
+  /// by GlobalDataProvider.loadAllData, after profileProvider.loadProfile so the default is
   /// available - safe to call repeatedly across multiple sign-ins within the same session.
   Future<void> restoreActiveGroup() => _restore();
 
