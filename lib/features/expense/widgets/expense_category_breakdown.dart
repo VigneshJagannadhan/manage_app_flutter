@@ -20,7 +20,7 @@ class ExpenseCategoryBreakdown extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+      padding: EdgeInsets.all(theme.horizontalMargin),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -34,14 +34,14 @@ class ExpenseCategoryBreakdown extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 30),
+          SizedBox(width: theme.spacingLarge),
           SizedBox(
             width: 120,
             child: breakdown.isEmpty
                 ? BodyText.medium(AppStrings.noExpensesThisMonth, color: colorScheme.outline)
                 : Wrap(
-                    spacing: theme.spacingMedium ?? 16,
-                    runSpacing: theme.spacingSmall ?? 8,
+                    spacing: theme.spacingMedium,
+                    runSpacing: theme.spacingSmall,
                     children: [for (final entry in breakdown.entries) _LegendItem(category: entry.key, share: '${(entry.value * 100).round()}%')],
                   ),
           ),
@@ -72,11 +72,11 @@ class _LegendItem extends StatelessWidget {
             height: 10,
             decoration: BoxDecoration(color: ExpenseCategoryStyle.colorFor(category), shape: BoxShape.circle),
           ),
-          SizedBox(width: theme.spacingXSmall ?? 4),
+          SizedBox(width: theme.spacingXSmall),
           Expanded(
             child: LabelText.medium(category.name.toTitleCase, color: colorScheme.outline, overflow: TextOverflow.ellipsis),
           ),
-          SizedBox(width: theme.spacingXSmall ?? 4),
+          SizedBox(width: theme.spacingXSmall),
           LabelText.small(share, style: const TextStyle(fontWeight: FontWeight.w700)),
         ],
       ),

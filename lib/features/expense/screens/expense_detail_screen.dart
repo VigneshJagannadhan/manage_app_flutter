@@ -6,7 +6,6 @@ import 'package:manage_app/core/extensions/date_time_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/core/themes/constants/app_spacing.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/expense/screens/expense_form_screen.dart';
@@ -113,7 +112,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
       scrollable: true,
       body: AppBodyColumn(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: theme.spacingMedium ?? 16,
+        spacing: theme.spacingMedium,
         children: [
           Row(
             children: [
@@ -121,14 +120,12 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
                 width: 48,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    (theme.appBorderRadius ?? 12) - AppSpacing.space4,
-                  ),
+                  borderRadius: BorderRadius.circular(theme.appBorderRadius),
                   color: colorScheme.primary.withValues(alpha: 0.5),
                 ),
                 child: Icon(ExpenseCategoryStyle.iconFor(category), color: Colors.white),
               ),
-              SizedBox(width: theme.spacingMedium ?? 16),
+              SizedBox(width: theme.spacingMedium),
               Expanded(child: HeadlineText.small(title)),
             ],
           ),

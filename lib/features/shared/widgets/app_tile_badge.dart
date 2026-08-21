@@ -17,19 +17,19 @@ class AppTileBadge extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: theme.spacingSmall ?? 8,
-        vertical: (theme.spacingXSmall ?? 4) / 2,
+        horizontal: theme.spacingSmall,
+        vertical: (theme.spacingXSmall) / 2,
       ),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 8),
+        borderRadius: BorderRadius.circular(theme.appBorderRadius),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
             Icon(icon, size: 12, color: Colors.white),
-            SizedBox(width: (theme.spacingXSmall ?? 4) / 2),
+            SizedBox(width: (theme.spacingXSmall) / 2),
           ],
           LabelText.small(
             label.toUpperCase(),

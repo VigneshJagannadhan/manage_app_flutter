@@ -58,17 +58,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     return AppScaffold(
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             AppImage.asset(source: AppImages.appLogo, width: 120, height: 120),
-            SizedBox(height: 32),
+            SizedBox(height: theme.spacingLarge),
             CircularProgressIndicator.adaptive(
-              backgroundColor: context.appTheme.primaryColor,
+              backgroundColor: theme.primaryColor,
             ),
-            SizedBox(height: 16),
+            SizedBox(height: theme.spacingMedium),
             Text(_getLoadingText()),
           ],
         ),

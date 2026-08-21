@@ -37,7 +37,7 @@ class ExpenseTile extends StatelessWidget {
     final theme = context.appTheme;
     final categoryColor = ExpenseCategoryStyle.colorFor(category);
     final dateLabel = _dateLabel;
-    final margin = theme.horizontalMargin ?? 16;
+    final margin = theme.horizontalMargin;
 
     return AppCard(
       onTap: onTap,
@@ -57,7 +57,7 @@ class ExpenseTile extends StatelessWidget {
               if (categoryName.isNotEmpty)
                 AppTileBadge(label: categoryName, icon: ExpenseCategoryStyle.iconFor(category)),
               if (groupName != null) ...[
-                SizedBox(width: theme.spacingSmall ?? 8),
+                SizedBox(width: theme.spacingSmall),
                 Expanded(
                   child: LabelText.small(
                     groupName!,
@@ -70,7 +70,7 @@ class ExpenseTile extends StatelessWidget {
               ],
             ],
           ),
-          SizedBox(height: theme.spacingSmall ?? 8),
+          SizedBox(height: theme.spacingSmall),
           Row(
             children: [
               Expanded(
@@ -82,16 +82,16 @@ class ExpenseTile extends StatelessWidget {
                 ),
               ),
               if (expense.essential) ...[
-                SizedBox(width: theme.spacingXSmall ?? 4),
+                SizedBox(width: theme.spacingXSmall),
                 const Icon(Icons.star, size: 18, color: Colors.white),
               ],
             ],
           ),
           if (dateLabel != null) ...[
-            SizedBox(height: theme.spacingXSmall ?? 4),
+            SizedBox(height: theme.spacingXSmall),
             BodyText.medium(dateLabel, color: Colors.white.withValues(alpha: 0.72)),
           ],
-          SizedBox(height: theme.spacingSmall ?? 8),
+          SizedBox(height: theme.spacingSmall),
           AppTilePill(
             icon: const Icon(Icons.payments_outlined, size: 16, color: Colors.white),
             label: displayAmount,

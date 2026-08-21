@@ -16,10 +16,10 @@ class InfoCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      padding: EdgeInsets.all(theme.spacingMedium ?? 16),
+      padding: EdgeInsets.all(theme.spacingMedium),
       decoration: BoxDecoration(
         border: Border.all(color: colorScheme.outlineVariant, width: 0.5),
-        borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
+        borderRadius: BorderRadius.circular(theme.appBorderRadius),
       ),
       child: Column(
         children: [
@@ -62,11 +62,11 @@ class InfoRow extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: resolvedIconColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 8),
+            borderRadius: BorderRadius.circular(theme.appBorderRadius),
           ),
           child: IconTheme.merge(data: IconThemeData(color: resolvedIconColor, size: 18), child: icon),
         ),
-        SizedBox(width: theme.spacingSmall ?? 8),
+        SizedBox(width: theme.spacingSmall),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

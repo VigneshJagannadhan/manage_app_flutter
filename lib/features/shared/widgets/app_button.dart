@@ -23,8 +23,8 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final outlineColor = theme.outlineColor ?? colorScheme.outline;
-    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 8));
+    final outlineColor = theme.outlineColor;
+    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.appBorderRadius));
 
     final child = Text(label);
     final button = switch (_variant) {
@@ -52,7 +52,7 @@ class AppButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
-      child: SizedBox(width: double.infinity, height: theme.controlHeight ?? 48, child: button),
+      child: SizedBox(width: double.infinity, height: theme.controlHeight, child: button),
     );
   }
 

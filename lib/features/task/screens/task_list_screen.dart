@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -58,6 +59,7 @@ class TaskListScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    final theme = context.appTheme;
     final groupProvider = context.watch<GroupProvider>();
     final provider = context.watch<TaskProvider>();
 
@@ -72,12 +74,12 @@ class TaskListScreen extends StatelessWidget {
     if (provider.errorMessage != null && provider.tasks.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(theme.horizontalMargin),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               BodyText.medium(provider.errorMessage!, textAlign: TextAlign.center),
-              const SizedBox(height: 16),
+              SizedBox(height: theme.spacingMedium),
               AppButton.secondary(label: AppStrings.retry, onPressed: provider.loadTasks),
             ],
           ),
@@ -89,7 +91,7 @@ class TaskListScreen extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.verticalMargin, theme.horizontalMargin, 0),
           child: SegmentedButton<bool>(
             expandedInsets: EdgeInsets.zero,
             segments: [
@@ -106,11 +108,11 @@ class TaskListScreen extends StatelessWidget {
               : RefreshIndicator(
                   onRefresh: provider.loadTasks,
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(theme.horizontalMargin),
                     itemCount: tasks.length,
                     itemBuilder: (context, index) => Padding(
                       key: ValueKey(tasks[index].id),
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.only(bottom: theme.listItemGap),
                       child: TaskTile(
                         task: tasks[index],
                         groupName: provider.showAllGroups ? groupProvider.nameForGroup(tasks[index].groupId) : null,
@@ -133,16 +135,17 @@ class _NoGroupsPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(theme.horizontalMargin),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TitleText.medium(AppStrings.noGroupsYet),
-            const SizedBox(height: 8),
+            SizedBox(height: theme.spacingSmall),
             BodyText.medium(AppStrings.noActiveGroupMessage, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
+            SizedBox(height: theme.spacingMedium),
             AppButton.primary(label: AppStrings.goToGroups, onPressed: onGoToGroups),
           ],
         ),

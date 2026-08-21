@@ -42,12 +42,12 @@ class AppBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final theme = context.appTheme;
-    final margin = theme.horizontalMargin ?? 16;
-    final verticalMargin = theme.verticalMargin ?? 16;
-    final spacingSmall = theme.spacingSmall ?? 8;
+    final margin = theme.horizontalMargin;
+    final verticalMargin = theme.verticalMargin;
+    final spacingSmall = theme.spacingSmall;
 
     return ClipRRect(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(theme.appBorderRadius ?? 20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(theme.radiusSheet)),
       child: Container(
         color: colorScheme.surface,
         child: SafeArea(
@@ -61,7 +61,7 @@ class AppBottomSheet extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 4),
+                  borderRadius: BorderRadius.circular(theme.radiusPill),
                 ),
               ),
               Padding(
