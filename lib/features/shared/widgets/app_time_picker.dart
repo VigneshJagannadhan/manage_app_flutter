@@ -35,8 +35,8 @@ class AppTimePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final borderRadius = BorderRadius.circular(theme.appBorderRadius ?? 8);
-    final outlineColor = theme.outlineColor ?? colorScheme.outline;
+    final borderRadius = BorderRadius.circular(theme.appBorderRadius);
+    final outlineColor = theme.outlineColor;
 
     return FormField<TimeOfDay>(
       initialValue: value,
@@ -47,7 +47,7 @@ class AppTimePicker extends StatelessWidget {
         final selectedLabel = field.value?.format(context);
 
         return SizedBox(
-          height: theme.controlHeight ?? 48,
+          height: theme.controlHeight,
           child: Semantics(
             button: true,
             enabled: enabled,

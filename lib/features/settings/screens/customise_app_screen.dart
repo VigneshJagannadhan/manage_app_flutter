@@ -52,7 +52,7 @@ class _FontOptionCard extends StatelessWidget {
       child: Row(
         children: [
           Icon(isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked, color: colorScheme.primary),
-          SizedBox(width: theme.spacingMedium ?? 16),
+          SizedBox(width: theme.spacingMedium),
           Expanded(
             child: Text(
               option.label,

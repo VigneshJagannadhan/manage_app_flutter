@@ -66,6 +66,9 @@ class AppThemes {
   );
 
   static const appBorderRadius = AppSizing.size12;
+  static const radiusPill = 999.0;
+  static const radiusSheet = AppSizing.size20;
+  static const listItemGap = AppSpacing.space6;
 
   /// Backs every default Material widget that doesn't set an explicit style
   /// (SegmentedButton, ChoiceChip, etc.) with [AppStyles] instead of the
@@ -115,6 +118,7 @@ class AppThemes {
         primaryColor: AppColors.primaryColor,
         secondaryColor: AppColors.secondaryColor,
         outlineColor: AppColors.outlineColor,
+        successColor: AppColors.successColor,
         displayLarge: AppStyles.displayLarge(color: AppColors.textColor, font: font),
         displayMedium: AppStyles.displayMedium(color: AppColors.textColor, font: font),
         displaySmall: AppStyles.displaySmall(color: AppColors.textColor, font: font),
@@ -131,6 +135,8 @@ class AppThemes {
         labelMedium: AppStyles.labelMedium(color: AppColors.textColor, font: font),
         labelSmall: AppStyles.labelSmall(color: AppColors.textColor, font: font),
         appBorderRadius: appBorderRadius,
+        radiusPill: radiusPill,
+        radiusSheet: radiusSheet,
         controlHeight: AppSizing.size24,
         verticalMargin: AppSpacing.space8,
         horizontalMargin: AppSpacing.space8,
@@ -138,6 +144,7 @@ class AppThemes {
         spacingSmall: AppSpacing.small,
         spacingMedium: AppSpacing.medium,
         spacingLarge: AppSpacing.large,
+        listItemGap: listItemGap,
         elevationSmall: AppElevation.small,
         elevationMedium: AppElevation.medium,
         elevationLarge: AppElevation.large,
@@ -171,6 +178,7 @@ class AppThemes {
         primaryColor: AppColors.primaryColorDark,
         secondaryColor: AppColors.secondaryColorDark,
         outlineColor: AppColors.outlineColorDark,
+        successColor: AppColors.successColorDark,
         displayLarge: AppStyles.displayLarge(color: AppColors.textColorDark, font: font),
         displayMedium: AppStyles.displayMedium(color: AppColors.textColorDark, font: font),
         displaySmall: AppStyles.displaySmall(color: AppColors.textColorDark, font: font),
@@ -187,6 +195,8 @@ class AppThemes {
         labelMedium: AppStyles.labelMedium(color: AppColors.textColorDark, font: font),
         labelSmall: AppStyles.labelSmall(color: AppColors.textColorDark, font: font),
         appBorderRadius: appBorderRadius,
+        radiusPill: radiusPill,
+        radiusSheet: radiusSheet,
         controlHeight: AppSizing.size24,
         verticalMargin: AppSpacing.space8,
         horizontalMargin: AppSpacing.space8,
@@ -194,6 +204,7 @@ class AppThemes {
         spacingSmall: AppSpacing.small,
         spacingMedium: AppSpacing.medium,
         spacingLarge: AppSpacing.large,
+        listItemGap: listItemGap,
         elevationSmall: AppElevation.small,
         elevationMedium: AppElevation.medium,
         elevationLarge: AppElevation.large,

@@ -33,15 +33,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppScaffold(
       body: IndexedStack(index: _selectedIndex, children: _tabs),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16),
+        padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin),
         child: Material(
           // NavigationBar reads its own background from `surfaceContainer` -
           // matching that here (instead of the Material default canvasColor)
           // keeps this wrapper invisible instead of showing as a mismatched
           // black frame around the pill.
           color: colorScheme.surfaceContainer,
-          elevation: theme.elevationLarge ?? 6,
-          borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
+          elevation: theme.elevationLarge,
+          borderRadius: BorderRadius.circular(theme.appBorderRadius),
           clipBehavior: Clip.antiAlias,
           child: NavigationBar(
             selectedIndex: _selectedIndex,

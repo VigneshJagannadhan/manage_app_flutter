@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/providers/global_data_provider.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -111,7 +112,7 @@ class _SettingsBody extends StatelessWidget {
           if (result != null)
             BodyText.medium(
               'Status: ${result.status}\nUptime: ${result.uptime.toStringAsFixed(2)}s\nDB: ${result.db}',
-              color: Colors.green.shade700,
+              color: context.appTheme.successColor,
             ),
           if (error != null) BodyText.medium(AppStrings.serverDown, color: Theme.of(context).colorScheme.error),
         ],

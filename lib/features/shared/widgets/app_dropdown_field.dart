@@ -45,9 +45,9 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(theme.appBorderRadius ?? 8);
-    final outlineColor = theme.outlineColor ?? colorScheme.outline;
-    final controlHeight = theme.controlHeight ?? 48;
+    final radius = BorderRadius.circular(theme.appBorderRadius);
+    final outlineColor = theme.outlineColor;
+    final controlHeight = theme.controlHeight;
     final selectedLabel = widget.value != null ? widget.itemLabelBuilder(widget.value as T) : null;
 
     return Column(
@@ -64,7 +64,7 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
             onTap: widget.enabled ? _toggle : null,
             child: Container(
               height: controlHeight,
-              padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16),
+              padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin),
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerHigh,
                 borderRadius: radius,
@@ -94,7 +94,7 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
           alignment: Alignment.topCenter,
           child: _isOpen
               ? Padding(
-                  padding: EdgeInsets.only(top: theme.spacingSmall ?? 8),
+                  padding: EdgeInsets.only(top: theme.spacingSmall),
                   child: _DropdownPanel<T>(
                     items: widget.items,
                     value: widget.value,
@@ -121,15 +121,15 @@ class _DropdownPanel<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final accentColor = theme.secondaryColor ?? colorScheme.secondary;
-    final itemRadius = BorderRadius.circular(theme.appBorderRadius ?? 8);
+    final accentColor = theme.secondaryColor;
+    final itemRadius = BorderRadius.circular(theme.appBorderRadius);
 
     return Material(
       color: colorScheme.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 8),
+      borderRadius: BorderRadius.circular(theme.appBorderRadius),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: EdgeInsets.all(theme.spacingSmall ?? 8),
+        padding: EdgeInsets.all(theme.spacingSmall),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: items.map((item) {
@@ -139,7 +139,7 @@ class _DropdownPanel<T> extends StatelessWidget {
               onTap: () => onSelected(item),
               child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16, vertical: theme.spacingSmall ?? 8),
+                padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin, vertical: theme.spacingSmall),
                 decoration: BoxDecoration(borderRadius: itemRadius, border: isSelected ? Border.all(color: accentColor) : null),
                 child: BodyText.large(itemLabelBuilder(item), color: colorScheme.onSurface),
               ),

@@ -80,7 +80,7 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(theme.horizontalMargin ?? 16, theme.verticalMargin ?? 16, theme.horizontalMargin ?? 16, 0),
+          padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.verticalMargin, theme.horizontalMargin, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -90,7 +90,7 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
                 prefixIcon: Icons.search,
                 onChanged: provider.setSearchQuery,
               ),
-              SizedBox(height: theme.spacingMedium ?? 16),
+              SizedBox(height: theme.spacingMedium),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -100,13 +100,13 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
                       label: const Text(AppStrings.filter),
                       onPressed: () => ExpenseFilterSheet.show(context),
                     ),
-                    SizedBox(width: theme.spacingSmall ?? 8),
+                    SizedBox(width: theme.spacingSmall),
                     ActionChip(
                       avatar: const Icon(Icons.sort, size: 16),
                       label: const Text(AppStrings.sort),
                       onPressed: () => ExpenseSortSheet.show(context),
                     ),
-                    SizedBox(width: theme.spacingSmall ?? 8),
+                    SizedBox(width: theme.spacingSmall),
                     ActionChip(
                       avatar: const Icon(Icons.calendar_today_outlined, size: 16),
                       label: Text(_dateRangeLabel(provider.dateRangeFilter)),
@@ -122,7 +122,7 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
           child: expenses.isEmpty
               ? const Center(child: BodyText.medium(AppStrings.noExpensesYet))
               : ListView.builder(
-                  padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+                  padding: EdgeInsets.all(theme.horizontalMargin),
                   itemCount: expenses.length,
                   itemBuilder: (context, index) {
                     final expense = expenses[index];
@@ -133,14 +133,14 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (showHeader) ...[
-                          if (index != 0) SizedBox(height: theme.spacingSmall ?? 8),
+                          if (index != 0) SizedBox(height: theme.spacingSmall),
                           Padding(
-                            padding: EdgeInsets.only(bottom: theme.spacingSmall ?? 8),
+                            padding: EdgeInsets.only(bottom: theme.spacingSmall),
                             child: LabelText.small(_sectionLabel(date), color: Theme.of(context).colorScheme.outline),
                           ),
                         ],
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: EdgeInsets.only(bottom: theme.listItemGap),
                           child: ExpenseTile(
                             expense: expense,
                             groupName: provider.showAllGroups ? groupProvider.nameForGroup(expense.groupId) : null,

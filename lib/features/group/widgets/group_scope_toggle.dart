@@ -15,14 +15,14 @@ class GroupScopeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final outerRadius = BorderRadius.circular((theme.appBorderRadius ?? 12) * 0.9);
-    final trackPadding = theme.spacingXSmall ?? 4;
-    final innerRadius = BorderRadius.circular(((theme.appBorderRadius ?? 12) * 0.9) - trackPadding);
+    final outerRadius = BorderRadius.circular(theme.appBorderRadius * 0.9);
+    final trackPadding = theme.spacingXSmall;
+    final innerRadius = BorderRadius.circular((theme.appBorderRadius * 0.9) - trackPadding);
 
     return Container(
-      height: theme.controlHeight ?? 48,
+      height: theme.controlHeight,
       padding: EdgeInsets.all(trackPadding),
-      decoration: BoxDecoration(color: colorScheme.surfaceContainer, borderRadius: outerRadius, border: Border.all(color: theme.outlineColor ?? colorScheme.outline)),
+      decoration: BoxDecoration(color: colorScheme.surfaceContainer, borderRadius: outerRadius, border: Border.all(color: theme.outlineColor)),
       child: Stack(
         children: [
           AnimatedAlign(
