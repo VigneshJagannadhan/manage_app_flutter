@@ -78,7 +78,7 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> with WidgetsBin
           actions: [JournalSaveStatusIndicator(status: status, onRetry: _retry)],
         ),
         body: Padding(
-          padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+          padding: EdgeInsets.all(theme.horizontalMargin),
           child: Column(
             children: [
               Expanded(

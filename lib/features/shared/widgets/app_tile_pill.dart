@@ -17,17 +17,17 @@ class AppTilePill extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: theme.spacingSmall ?? 8,
-        vertical: theme.spacingXSmall ?? 4,
+        horizontal: theme.spacingSmall,
+        vertical: theme.spacingXSmall,
       ),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(theme.radiusPill),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[icon!, SizedBox(width: theme.spacingXSmall ?? 4)],
+          if (icon != null) ...[icon!, SizedBox(width: theme.spacingXSmall)],
           BodyText.medium(label, color: Colors.white, style: const TextStyle(fontWeight: FontWeight.w800)),
         ],
       ),

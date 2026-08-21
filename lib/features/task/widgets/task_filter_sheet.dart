@@ -49,8 +49,8 @@ class _TaskFilterSheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<TaskProvider>();
     final theme = context.appTheme;
-    final sectionGap = theme.spacingMedium ?? 16;
-    final fieldGap = theme.spacingSmall ?? 8;
+    final sectionGap = theme.spacingMedium;
+    final fieldGap = theme.spacingSmall;
 
     return SingleChildScrollView(
       child: Column(
@@ -123,7 +123,7 @@ class _TaskFilterSheetFooter extends StatelessWidget {
         Expanded(
           child: AppButton.secondary(label: AppStrings.clearAll, onPressed: () => context.read<TaskProvider>().clearFilters()),
         ),
-        SizedBox(width: theme.spacingSmall ?? 8),
+        SizedBox(width: theme.spacingSmall),
         Expanded(
           child: AppButton.primary(label: AppStrings.apply, onPressed: () => navigationService.pop(context)),
         ),

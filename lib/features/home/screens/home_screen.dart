@@ -32,10 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppScaffold(
       body: IndexedStack(index: _selectedIndex, children: _tabs),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 16),
+        padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin),
         child: Material(
-          elevation: theme.elevationLarge ?? 6,
-          borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
+          elevation: theme.elevationLarge,
+          borderRadius: BorderRadius.circular(theme.appBorderRadius),
           clipBehavior: Clip.antiAlias,
           child: NavigationBar(
             selectedIndex: _selectedIndex,

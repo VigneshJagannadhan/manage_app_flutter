@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_assets.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -67,6 +68,7 @@ class ExpenseDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    final theme = context.appTheme;
     final groupProvider = context.watch<GroupProvider>();
     final provider = context.watch<ExpenseProvider>();
 
@@ -81,7 +83,7 @@ class ExpenseDashboardScreen extends StatelessWidget {
     if (provider.errorMessage != null && provider.expenses.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(theme.horizontalMargin),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -89,7 +91,7 @@ class ExpenseDashboardScreen extends StatelessWidget {
                 provider.errorMessage!,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: theme.spacingMedium),
               AppButton.secondary(
                 label: AppStrings.retry,
                 onPressed: provider.loadExpenses,
@@ -102,9 +104,9 @@ class ExpenseDashboardScreen extends StatelessWidget {
 
     return Column(
       children: [
-        SizedBox(height: 16),
+        SizedBox(height: theme.spacingMedium),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin),
           child: SegmentedButton<bool>(
             expandedInsets: EdgeInsets.zero,
             segments: [
@@ -147,21 +149,22 @@ class _DashboardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     final recentExpenses = provider.recentExpenses();
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(theme.horizontalMargin),
       children: [
         ExpenseSummaryCard(
           totalThisMonth: provider.totalThisMonth,
           essentialAmount: provider.essentialAmountThisMonth,
           nonEssentialAmount: provider.nonEssentialAmountThisMonth,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: theme.spacingMedium),
         ExpenseCategoryBreakdown(
           breakdown: provider.categoryBreakdownThisMonth,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: theme.spacingMedium),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -174,7 +177,7 @@ class _DashboardContent extends StatelessWidget {
         ),
         for (final expense in recentExpenses)
           Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: theme.listItemGap),
             child: ExpenseTile(
               expense: expense,
               groupName: provider.showAllGroups
@@ -195,19 +198,20 @@ class _NoGroupsPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(theme.horizontalMargin),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TitleText.medium(AppStrings.noGroupsYet),
-            const SizedBox(height: 8),
+            SizedBox(height: theme.spacingSmall),
             BodyText.medium(
               AppStrings.noActiveGroupMessage,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: theme.spacingMedium),
             AppButton.primary(
               label: AppStrings.goToGroups,
               onPressed: onGoToGroups,

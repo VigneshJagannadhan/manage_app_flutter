@@ -32,7 +32,7 @@ class _ExpenseFilterSheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<ExpenseProvider>();
     final theme = context.appTheme;
-    final spacing = theme.spacingSmall ?? 8;
+    final spacing = theme.spacingSmall;
 
     return SingleChildScrollView(
       child: Wrap(
@@ -63,7 +63,7 @@ class _ExpenseFilterSheetFooter extends StatelessWidget {
         Expanded(
           child: AppButton.secondary(label: AppStrings.clearAll, onPressed: () => context.read<ExpenseProvider>().setCategoryFilter(null)),
         ),
-        SizedBox(width: theme.spacingSmall ?? 8),
+        SizedBox(width: theme.spacingSmall),
         Expanded(
           child: AppButton.primary(label: AppStrings.apply, onPressed: () => navigationService.pop(context)),
         ),

@@ -102,8 +102,8 @@ class _AppTextFieldState extends State<AppTextField> {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final borderRadius = BorderRadius.circular(theme.appBorderRadius ?? 8);
-    final outlineColor = theme.outlineColor ?? colorScheme.outline;
+    final borderRadius = BorderRadius.circular(theme.appBorderRadius);
+    final outlineColor = theme.outlineColor;
     final isSingleLine = widget.obscureText || widget.maxLines == 1;
 
     return TextFormField(

@@ -41,7 +41,7 @@ class TaskTile extends StatelessWidget {
       task.priority ?? TaskPriority.medium,
       colorScheme,
     );
-    final margin = theme.horizontalMargin ?? 16;
+    final margin = theme.horizontalMargin;
 
     return AppCard(
       onTap: onTap,
@@ -63,7 +63,7 @@ class TaskTile extends StatelessWidget {
             children: [
               TaskPriorityBadge(priority: priority),
               if (groupName != null) ...[
-                SizedBox(width: theme.spacingSmall ?? 8),
+                SizedBox(width: theme.spacingSmall),
                 Expanded(
                   child: LabelText.small(
                     groupName!,
@@ -76,16 +76,16 @@ class TaskTile extends StatelessWidget {
               ],
             ],
           ),
-          SizedBox(height: theme.spacingSmall ?? 8),
+          SizedBox(height: theme.spacingSmall),
           TitleText.medium(
             title,
             color: Colors.white,
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          SizedBox(height: theme.spacingXSmall ?? 4),
+          SizedBox(height: theme.spacingXSmall),
           BodyText.medium(description, color: Colors.white.withValues(alpha: 0.72)),
           if (task.dueDate != null) ...[
-            SizedBox(height: theme.spacingSmall ?? 8),
+            SizedBox(height: theme.spacingSmall),
             AppTilePill(
               icon: const AppSvgIcon(SvgIcons.calendar, size: 16, color: Colors.white),
               label: '${AppStrings.due}: ${task.dueDate!.formattedDateTime}',

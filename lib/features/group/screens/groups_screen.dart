@@ -51,9 +51,9 @@ class GroupsScreen extends StatelessWidget {
       appBar: ScreenAppBar(title: AppStrings.groups),
       body: _buildBody(context),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+        padding: EdgeInsets.all(theme.horizontalMargin),
         child: Row(
-          spacing: theme.spacingMedium ?? 16,
+          spacing: theme.spacingMedium,
           children: [
             Expanded(
               child: AppButton.secondary(
@@ -74,6 +74,7 @@ class GroupsScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    final theme = context.appTheme;
     final provider = context.watch<GroupProvider>();
 
     if (provider.isLoading && provider.groups.isEmpty) {
@@ -83,7 +84,7 @@ class GroupsScreen extends StatelessWidget {
     if (provider.errorMessage != null && provider.groups.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(theme.horizontalMargin),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -91,7 +92,7 @@ class GroupsScreen extends StatelessWidget {
                 provider.errorMessage!,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: theme.spacingMedium),
               AppButton.secondary(
                 label: AppStrings.retry,
                 onPressed: provider.loadGroups,
@@ -106,12 +107,12 @@ class GroupsScreen extends StatelessWidget {
     if (groups.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(theme.horizontalMargin),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TitleText.medium(AppStrings.noGroupsYet),
-              const SizedBox(height: 8),
+              SizedBox(height: theme.spacingSmall),
               BodyText.medium(
                 AppStrings.noGroupsSubtitle,
                 textAlign: TextAlign.center,
@@ -125,12 +126,12 @@ class GroupsScreen extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: provider.loadGroups,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(theme.horizontalMargin),
         itemCount: groups.length,
         itemBuilder: (context, index) {
           final group = groups[index];
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: theme.listItemGap),
             child: _GroupListItem(
               group: group,
               isActive: group.id == provider.activeGroupId,
@@ -177,7 +178,7 @@ class _GroupListItem extends StatelessWidget {
                 : Icons.radio_button_unchecked,
             color: colorScheme.primary,
           ),
-          SizedBox(width: theme.spacingMedium ?? 16),
+          SizedBox(width: theme.spacingMedium),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

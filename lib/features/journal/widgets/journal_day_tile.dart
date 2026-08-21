@@ -27,7 +27,7 @@ class JournalDayTile extends StatelessWidget {
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: theme.spacingXSmall ?? 4,
+        spacing: theme.spacingXSmall,
         children: [
           LabelText.small(
             dateLabel.toUpperCase(),
