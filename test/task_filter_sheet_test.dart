@@ -59,6 +59,24 @@ class _FakeGroupPreferenceService extends GroupPreferenceService {
 
   @override
   Future<void> saveActiveGroupId(String? groupId) async {}
+
+  @override
+  Future<bool> readTasksShowAllGroups() async => true;
+
+  @override
+  Future<void> saveTasksShowAllGroups(bool value) async {}
+
+  @override
+  Future<void> clearTasksShowAllGroups() async {}
+
+  @override
+  Future<bool> readExpensesShowAllGroups() async => true;
+
+  @override
+  Future<void> saveExpensesShowAllGroups(bool value) async {}
+
+  @override
+  Future<void> clearExpensesShowAllGroups() async {}
 }
 
 class _FakeExpenseService extends ExpenseService {
@@ -137,16 +155,20 @@ Future<void> _pumpHome(WidgetTester tester) async {
   final authProvider = AuthProvider(authService: AuthService(), tokenStorageService: _FakeTokenStorageService())..onInit();
   await authProvider.restoreSession();
   final profileProvider = ProfileProvider(profileService: _FakeProfileService())..onInit();
+  final groupPreferenceService = _FakeGroupPreferenceService();
   final groupProvider =
       GroupProvider(
           groupService: _FakeGroupService(),
-          groupPreferenceService: _FakeGroupPreferenceService(),
+          groupPreferenceService: groupPreferenceService,
           authProvider: authProvider,
           profileProvider: profileProvider,
         )
         ..onInit();
-  final taskProvider = TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider)..onInit();
-  final expenseProvider = ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider)..onInit();
+  final taskProvider =
+      TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
+  final expenseProvider =
+      ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider, groupPreferenceService: groupPreferenceService)
+        ..onInit();
   final journalService = _FakeJournalService();
   final journalProvider =
       JournalProvider(
@@ -161,6 +183,7 @@ Future<void> _pumpHome(WidgetTester tester) async {
   // splash. Mirror that sequence here so the fake data actually reaches the widgets.
   await profileProvider.loadProfile();
   await groupProvider.restoreActiveGroup();
+  await Future.wait([taskProvider.restoreShowAllGroups(), expenseProvider.restoreShowAllGroups()]);
   await Future.wait([taskProvider.loadTasks(), expenseProvider.loadExpenses(), journalProvider.loadInitial()]);
 
   await tester.pumpWidget(
