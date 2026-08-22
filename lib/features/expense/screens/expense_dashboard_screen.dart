@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_assets.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
@@ -12,9 +12,10 @@ import 'package:manage_app/features/expense/widgets/expense_summary_card.dart';
 import 'package:manage_app/features/expense/widgets/expense_tile.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/group/screens/groups_screen.dart';
+import 'package:manage_app/features/group/widgets/group_scope_toggle.dart';
 import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
+import 'package:manage_app/features/shared/widgets/create_fab.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
 import 'package:manage_app/features/shared/widgets/settings_avatar_button.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
@@ -58,15 +59,12 @@ class ExpenseDashboardScreen extends StatelessWidget {
         actions: [const SettingsAvatarButton()],
       ),
       body: _buildBody(context),
-      floatingActionButton: FloatingActionButton(
-        heroTag: null,
-        onPressed: () => _openCreateExpense(context),
-        child: const AppSvgIcon(SvgIcons.add),
-      ),
+      floatingActionButton: CreateFab(label: AppStrings.createExpense, onPressed: () => _openCreateExpense(context)),
     );
   }
 
   Widget _buildBody(BuildContext context) {
+    final theme = context.appTheme;
     final groupProvider = context.watch<GroupProvider>();
     final provider = context.watch<ExpenseProvider>();
 
@@ -81,7 +79,7 @@ class ExpenseDashboardScreen extends StatelessWidget {
     if (provider.errorMessage != null && provider.expenses.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(theme.horizontalMargin),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -89,7 +87,7 @@ class ExpenseDashboardScreen extends StatelessWidget {
                 provider.errorMessage!,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: theme.spacingMedium),
               AppButton.secondary(
                 label: AppStrings.retry,
                 onPressed: provider.loadExpenses,
@@ -102,18 +100,13 @@ class ExpenseDashboardScreen extends StatelessWidget {
 
     return Column(
       children: [
-        SizedBox(height: 16),
+        SizedBox(height: theme.spacingMedium),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SegmentedButton<bool>(
-            expandedInsets: EdgeInsets.zero,
-            segments: [
-              ButtonSegment(value: false, label: Text(groupProvider.activeGroup?.name ?? AppStrings.thisGroup)),
-              const ButtonSegment(value: true, label: Text(AppStrings.allGroups)),
-            ],
-            selected: {provider.showAllGroups},
-            onSelectionChanged: (selection) =>
-                provider.toggleShowAllGroups(selection.first),
+          padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin),
+          child: GroupScopeToggle(
+            activeGroupLabel: groupProvider.activeGroup?.name ?? AppStrings.thisGroup,
+            showAllGroups: provider.showAllGroups,
+            onChanged: provider.toggleShowAllGroups,
           ),
         ),
         Expanded(
@@ -147,21 +140,22 @@ class _DashboardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     final recentExpenses = provider.recentExpenses();
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.horizontalMargin, theme.horizontalMargin, 88),
       children: [
         ExpenseSummaryCard(
           totalThisMonth: provider.totalThisMonth,
           essentialAmount: provider.essentialAmountThisMonth,
           nonEssentialAmount: provider.nonEssentialAmountThisMonth,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: theme.spacingMedium),
         ExpenseCategoryBreakdown(
           breakdown: provider.categoryBreakdownThisMonth,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: theme.spacingMedium),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -174,7 +168,7 @@ class _DashboardContent extends StatelessWidget {
         ),
         for (final expense in recentExpenses)
           Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: theme.listItemGap),
             child: ExpenseTile(
               expense: expense,
               groupName: provider.showAllGroups
@@ -195,19 +189,20 @@ class _NoGroupsPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(theme.horizontalMargin),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TitleText.medium(AppStrings.noGroupsYet),
-            const SizedBox(height: 8),
+            SizedBox(height: theme.spacingSmall),
             BodyText.medium(
               AppStrings.noActiveGroupMessage,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: theme.spacingMedium),
             AppButton.primary(
               label: AppStrings.goToGroups,
               onPressed: onGoToGroups,

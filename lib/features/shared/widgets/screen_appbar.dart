@@ -33,7 +33,7 @@ class ScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: onBackPressed ?? () => navigationService.pop(context),
             )
           : null,
-      titleSpacing: showBackButton ? 0 : (theme.horizontalMargin ?? 16),
+      titleSpacing: showBackButton ? 0 : (theme.horizontalMargin),
       title: TitleText.large(title),
       actions: actions,
     );

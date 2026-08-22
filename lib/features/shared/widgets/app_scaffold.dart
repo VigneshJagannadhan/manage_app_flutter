@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+/// Wraps both [body] and [bottomNavigationBar] in [SafeArea] - do not replace
+/// this with a manual `MediaQuery.viewPadding` calculation. `SafeArea` alone
+/// already resolves to the right per-platform bottom inset: near-zero on iOS
+/// gesture nav and Android gesture nav, the home-indicator inset on iOS, and
+/// the larger inset Android reports when 3-button navigation is active - so
+/// content and the floating nav bar clear the system UI on every device
+/// without any platform-specific branching here.
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
@@ -29,9 +36,9 @@ class AppScaffold extends StatelessWidget {
     final navigationBar = bottomNavigationBar;
     return Scaffold(
       appBar: appBar,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.opaque,
+      body: Listener(
+        onPointerDown: (_) => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
         child: SafeArea(
           child: scrollable ? _ScrollableBody(child: body) : body,
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
 import 'package:manage_app/core/extensions/date_time_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
@@ -61,6 +62,7 @@ class _JournalScreenState extends State<JournalScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
+    final theme = context.appTheme;
     final provider = context.watch<JournalProvider>();
 
     if (provider.isLoading && provider.days.isEmpty) {
@@ -70,12 +72,12 @@ class _JournalScreenState extends State<JournalScreen> {
     if (provider.errorMessage != null && provider.days.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(theme.horizontalMargin),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               BodyText.medium(provider.errorMessage!, textAlign: TextAlign.center),
-              const SizedBox(height: 16),
+              SizedBox(height: theme.spacingMedium),
               AppButton.secondary(label: AppStrings.retry, onPressed: provider.loadInitial),
             ],
           ),
@@ -88,7 +90,7 @@ class _JournalScreenState extends State<JournalScreen> {
       onRefresh: provider.loadInitial,
       child: ListView.builder(
         controller: _scrollController,
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(theme.horizontalMargin),
         itemCount: days.length + 1,
         itemBuilder: (context, index) {
           if (index == days.length) {
@@ -97,7 +99,7 @@ class _JournalScreenState extends State<JournalScreen> {
           final slot = days[index];
           final isEmptyToday = slot.date.isToday && slot.entry == null;
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: theme.listItemGap),
             child: isEmptyToday
                 ? CreateTodayCard(onTap: () => _openEntry(slot.date, null))
                 : JournalDayTile(slot: slot, onTap: () => _openEntry(slot.date, slot.entry)),
@@ -116,13 +118,14 @@ class _JournalListFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     if (isLoadingMore) {
-      return const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Center(child: CircularProgressIndicator.adaptive()));
+      return Padding(padding: EdgeInsets.symmetric(vertical: theme.spacingMedium), child: const Center(child: CircularProgressIndicator.adaptive()));
     }
     if (!hasMore) {
       final colorScheme = Theme.of(context).colorScheme;
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: theme.spacingMedium),
         child: Center(child: BodyText.small(AppStrings.beginningOfJournal, color: colorScheme.outline)),
       );
     }

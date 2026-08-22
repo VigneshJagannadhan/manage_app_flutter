@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:manage_app/core/resources/app_fonts.dart';
+import 'package:manage_app/core/extensions/date_time_extensions.dart';
+import 'package:manage_app/core/services/connectivity_service.dart';
 import 'package:manage_app/core/services/journal_service.dart';
 import 'package:manage_app/core/themes/app_theme.dart';
 import 'package:manage_app/features/auth/models/user_model.dart';
+import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
+import 'package:manage_app/features/journal/data/journal_repository.dart';
 import 'package:manage_app/features/journal/models/journal_entry_model.dart';
 import 'package:manage_app/features/journal/providers/journal_provider.dart';
 import 'package:manage_app/features/journal/screens/journal_screen.dart';
@@ -26,6 +30,41 @@ class _FakeJournalService extends JournalService {
   Future<JournalEntryModel> upsertEntry({required DateTime date, required String content}) async {
     return JournalEntryModel(id: 'x', date: date, content: content);
   }
+}
+
+/// In-memory stand-in for the Hive-backed data source, so tests never touch a real
+/// platform channel/box.
+class _FakeJournalLocalDataSource extends JournalLocalDataSource {
+  final Map<DateTime, JournalDraft> _drafts = {};
+
+  @override
+  Future<void> saveDraft(DateTime date, String content) async {
+    _drafts[date] = JournalDraft(content: content, dirty: true, updatedAt: DateTime.now());
+  }
+
+  @override
+  JournalDraft? getDraft(DateTime date) => _drafts[date];
+
+  @override
+  Future<void> markSynced(DateTime date) async {
+    final draft = _drafts[date];
+    if (draft == null) return;
+    _drafts[date] = JournalDraft(content: draft.content, dirty: false, updatedAt: draft.updatedAt);
+  }
+
+  @override
+  List<DateTime> dirtyDates() => _drafts.entries.where((e) => e.value.dirty).map((e) => e.key).toList();
+
+  @override
+  Future<void> clearAll() async => _drafts.clear();
+}
+
+class _FakeConnectivityService extends ConnectivityService {
+  @override
+  Stream<bool> get onConnectivityChanged => const Stream.empty();
+
+  @override
+  Future<bool> get isConnected async => true;
 }
 
 class _FakeProfileService extends ProfileService {
@@ -53,10 +92,13 @@ void main() {
     await profileProvider.loadProfile();
 
     final yesterday = DateTime(today.year, today.month, today.day - 1);
+    final journalService = _FakeJournalService([JournalEntryModel(id: '1', date: yesterday, content: 'Had a good day')]);
     final journalProvider = JournalProvider(
-      journalService: _FakeJournalService([JournalEntryModel(id: '1', date: yesterday, content: 'Had a good day')]),
+      journalService: journalService,
+      repository: JournalRepository(local: _FakeJournalLocalDataSource(), remote: journalService),
+      connectivityService: _FakeConnectivityService(),
       profileProvider: profileProvider,
-    );
+    )..onInit();
     await journalProvider.loadInitial();
 
     await tester.pumpWidget(_wrap(const JournalScreen(), journalProvider: journalProvider));
@@ -78,8 +120,14 @@ void main() {
     await tester.pump();
     expect(find.text("What a day! It's going great."), findsOneWidget);
 
-    // Simulate the debounced autosave firing before back-navigation, then go back.
+    // Past the 800ms local-save debounce - the draft should be written to local storage.
     await tester.pump(const Duration(seconds: 2));
+    expect(journalProvider.statusFor(today.atMidnight), JournalSyncStatus.savedLocally);
+
+    // Past the 5s idle-sync timeout - the draft should now have synced to the server.
+    await tester.pump(const Duration(seconds: 6));
+    expect(journalProvider.statusFor(today.atMidnight), JournalSyncStatus.synced);
+
     await tester.pageBack();
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);

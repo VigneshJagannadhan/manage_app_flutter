@@ -37,7 +37,7 @@ class AppImage extends StatelessWidget {
       ),
     };
 
-    final resolvedRadius = radius ?? context.appTheme.appBorderRadius ?? 8.0;
+    final resolvedRadius = radius ?? context.appTheme.appBorderRadius;
     if (resolvedRadius <= 0) return image;
     return ClipRRect(borderRadius: BorderRadius.circular(resolvedRadius), child: image);
   }
@@ -46,7 +46,7 @@ class AppImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: context.appTheme.outlineColor ?? Colors.red,
+      color: context.appTheme.outlineColor,
       child: Center(child: child),
     );
   }

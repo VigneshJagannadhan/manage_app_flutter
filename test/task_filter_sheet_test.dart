@@ -5,6 +5,7 @@ import 'package:manage_app/core/enums/task_enums.dart';
 import 'package:manage_app/core/resources/app_fonts.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/auth_service.dart';
+import 'package:manage_app/core/services/connectivity_service.dart';
 import 'package:manage_app/core/services/expense_service.dart';
 import 'package:manage_app/core/services/group_preference_service.dart';
 import 'package:manage_app/core/services/group_service.dart';
@@ -21,6 +22,8 @@ import 'package:manage_app/features/expense/providers/expense_provider.dart';
 import 'package:manage_app/features/group/models/group_model.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/home/screens/home_screen.dart';
+import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
+import 'package:manage_app/features/journal/data/journal_repository.dart';
 import 'package:manage_app/features/journal/models/journal_entry_model.dart';
 import 'package:manage_app/features/journal/providers/journal_provider.dart';
 import 'package:manage_app/features/settings/providers/profile_provider.dart';
@@ -66,6 +69,31 @@ class _FakeExpenseService extends ExpenseService {
 class _FakeJournalService extends JournalService {
   @override
   Future<List<JournalEntryModel>> listEntries({required DateTime from, required DateTime to}) async => [];
+}
+
+class _FakeJournalLocalDataSource extends JournalLocalDataSource {
+  @override
+  Future<void> saveDraft(DateTime date, String content) async {}
+
+  @override
+  JournalDraft? getDraft(DateTime date) => null;
+
+  @override
+  Future<void> markSynced(DateTime date) async {}
+
+  @override
+  List<DateTime> dirtyDates() => const [];
+
+  @override
+  Future<void> clearAll() async {}
+}
+
+class _FakeConnectivityService extends ConnectivityService {
+  @override
+  Stream<bool> get onConnectivityChanged => const Stream.empty();
+
+  @override
+  Future<bool> get isConnected async => true;
 }
 
 class _FakeTaskService extends TaskService {
@@ -119,7 +147,15 @@ Future<void> _pumpHome(WidgetTester tester) async {
         ..onInit();
   final taskProvider = TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider)..onInit();
   final expenseProvider = ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider)..onInit();
-  final journalProvider = JournalProvider(journalService: _FakeJournalService(), profileProvider: profileProvider)..onInit();
+  final journalService = _FakeJournalService();
+  final journalProvider =
+      JournalProvider(
+          journalService: journalService,
+          repository: JournalRepository(local: _FakeJournalLocalDataSource(), remote: journalService),
+          connectivityService: _FakeConnectivityService(),
+          profileProvider: profileProvider,
+        )
+        ..onInit();
 
   // Providers no longer self-load on init - AppProvider.loadAllData drives that from
   // splash. Mirror that sequence here so the fake data actually reaches the widgets.
@@ -150,7 +186,7 @@ void main() {
     expect(find.text('Low priority, due tomorrow'), findsOneWidget);
     expect(find.text('Completed task'), findsNothing); // default status filter is Open
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     expect(find.text(AppStrings.filterAndSort), findsOneWidget);
@@ -163,7 +199,7 @@ void main() {
   testWidgets('selecting "All" status shows both open and completed tasks', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     // Status dropdown currently shows "Open" (the default filter); tap it to open the
@@ -189,7 +225,7 @@ void main() {
   testWidgets('date filter chip filters the list down to matching due dates', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text(AppStrings.tomorrow));
@@ -205,7 +241,7 @@ void main() {
   testWidgets('Clear All resets filters back to defaults', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.tune));
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text(AppStrings.tomorrow));

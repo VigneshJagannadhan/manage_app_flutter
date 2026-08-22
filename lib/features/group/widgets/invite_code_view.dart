@@ -35,10 +35,10 @@ class InviteCodeView extends StatelessWidget {
       children: [
         BodyText.medium(AppStrings.shareThisCode, textAlign: TextAlign.center),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? 24, vertical: theme.spacingLarge ?? 24),
+          padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin, vertical: theme.spacingLarge),
           decoration: BoxDecoration(
             color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
+            borderRadius: BorderRadius.circular(theme.appBorderRadius),
           ),
           child: HeadlineText.medium(
             group.inviteCode,
@@ -47,7 +47,7 @@ class InviteCodeView extends StatelessWidget {
           ),
         ),
         Row(
-          spacing: theme.spacingMedium ?? 16,
+          spacing: theme.spacingMedium,
           children: [
             Expanded(
               child: AppButton.secondary(label: AppStrings.copy, onPressed: () => _copyCode(context)),

@@ -5,7 +5,6 @@ import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/features/expense/widgets/expense_category_style.dart';
 import 'package:manage_app/features/expense/widgets/expense_donut_chart.dart';
-import 'package:manage_app/features/shared/widgets/app_card.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 
@@ -20,8 +19,8 @@ class ExpenseCategoryBreakdown extends StatelessWidget {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AppCard(
-      cardTap: false,
+    return Padding(
+      padding: EdgeInsets.all(theme.horizontalMargin),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -30,33 +29,20 @@ class ExpenseCategoryBreakdown extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final chartSize = constraints.maxWidth.clamp(0.0, 200.0);
-                  return ExpenseDonutChart(
-                    breakdown: breakdown,
-                    size: chartSize,
-                    strokeWidth: chartSize * 0.13,
-                  );
+                  return ExpenseDonutChart(breakdown: breakdown, size: chartSize, strokeWidth: chartSize * 0.13);
                 },
               ),
             ),
           ),
-          SizedBox(width: 30),
+          SizedBox(width: theme.spacingLarge),
           SizedBox(
             width: 120,
             child: breakdown.isEmpty
-                ? BodyText.medium(
-                    AppStrings.noExpensesThisMonth,
-                    color: colorScheme.outline,
-                  )
+                ? BodyText.medium(AppStrings.noExpensesThisMonth, color: colorScheme.outline)
                 : Wrap(
-                    spacing: theme.spacingMedium ?? 16,
-                    runSpacing: theme.spacingSmall ?? 8,
-                    children: [
-                      for (final entry in breakdown.entries)
-                        _LegendItem(
-                          category: entry.key,
-                          share: '${(entry.value * 100).round()}%',
-                        ),
-                    ],
+                    spacing: theme.spacingMedium,
+                    runSpacing: theme.spacingSmall,
+                    children: [for (final entry in breakdown.entries) _LegendItem(category: entry.key, share: '${(entry.value * 100).round()}%')],
                   ),
           ),
         ],
@@ -84,24 +70,14 @@ class _LegendItem extends StatelessWidget {
           Container(
             width: 10,
             height: 10,
-            decoration: BoxDecoration(
-              color: ExpenseCategoryStyle.colorFor(category),
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: ExpenseCategoryStyle.colorFor(category), shape: BoxShape.circle),
           ),
-          SizedBox(width: theme.spacingXSmall ?? 4),
+          SizedBox(width: theme.spacingXSmall),
           Expanded(
-            child: LabelText.medium(
-              category.name.toTitleCase,
-              color: colorScheme.outline,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: LabelText.medium(category.name.toTitleCase, color: colorScheme.outline, overflow: TextOverflow.ellipsis),
           ),
-          SizedBox(width: theme.spacingXSmall ?? 4),
-          LabelText.small(
-            share,
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
+          SizedBox(width: theme.spacingXSmall),
+          LabelText.small(share, style: const TextStyle(fontWeight: FontWeight.w700)),
         ],
       ),
     );

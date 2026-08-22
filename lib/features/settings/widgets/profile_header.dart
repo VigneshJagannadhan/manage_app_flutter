@@ -35,7 +35,7 @@ class ProfileHeader extends StatelessWidget {
             backgroundColor: colorScheme.primaryContainer,
             child: TitleText.large(_initials, color: colorScheme.onPrimaryContainer),
           ),
-          SizedBox(width: theme.spacingMedium ?? 16),
+          SizedBox(width: theme.spacingMedium),
           Expanded(
             child: isLoading && profile == null
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator.adaptive(strokeWidth: 2))

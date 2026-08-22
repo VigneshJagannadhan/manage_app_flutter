@@ -26,12 +26,12 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    final content = Padding(padding: padding ?? EdgeInsets.all(theme.horizontalMargin ?? 16), child: child);
+    final content = Padding(padding: padding ?? EdgeInsets.all(theme.horizontalMargin), child: child);
 
     var card = Card(
       color: gradient != null ? Colors.transparent : null,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12)),
-      elevation: elevation ?? theme.elevationSmall ?? 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.appBorderRadius)),
+      elevation: elevation ?? theme.elevationSmall,
       clipBehavior: clipBehavior,
       child: DecoratedBox(
         decoration: BoxDecoration(gradient: gradient),

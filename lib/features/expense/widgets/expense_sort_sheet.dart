@@ -29,7 +29,7 @@ class _ExpenseSortSheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<ExpenseProvider>();
     final theme = context.appTheme;
-    final spacing = theme.spacingSmall ?? 8;
+    final spacing = theme.spacingSmall;
 
     return SingleChildScrollView(
       child: Wrap(

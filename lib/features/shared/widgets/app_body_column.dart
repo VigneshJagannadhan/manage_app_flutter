@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/themes/constants/app_spacing.dart';
 
 class AppBodyColumn extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
@@ -32,7 +31,7 @@ class AppBodyColumn extends StatelessWidget {
     var child = Padding(
       padding:
           padding ??
-          EdgeInsets.symmetric(horizontal: theme.horizontalMargin ?? AppSpacing.space8, vertical: theme.verticalMargin ?? AppSpacing.space8),
+          EdgeInsets.symmetric(horizontal: theme.horizontalMargin, vertical: theme.verticalMargin),
       child: Column(
         spacing: spacing,
         mainAxisAlignment: mainAxisAlignment,

@@ -7,6 +7,8 @@ import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/expense/widgets/expense_category_style.dart';
 import 'package:manage_app/features/shared/widgets/app_card.dart';
+import 'package:manage_app/features/shared/widgets/app_tile_badge.dart';
+import 'package:manage_app/features/shared/widgets/app_tile_pill.dart';
 import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 import 'package:manage_app/features/shared/widgets/text/title_text.dart';
@@ -24,66 +26,76 @@ class ExpenseTile extends StatelessWidget {
   String get categoryName => category?.name.toTitleCase ?? '';
   String get displayAmount => expense.amount.toCurrencyString();
 
-  String? get _subtitle {
+  String? get _dateLabel {
     final date = expense.date;
-    final dateLabel = date == null ? null : (date.isToday ? date.formattedTime : date.formattedShortDate);
-    return switch ((categoryName.isEmpty, dateLabel)) {
-      (true, null) => null,
-      (true, final d?) => d,
-      (false, null) => categoryName,
-      (false, final d?) => '$categoryName · $d',
-    };
+    if (date == null) return null;
+    return date.isToday ? date.formattedTime : date.formattedShortDate;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     final categoryColor = ExpenseCategoryStyle.colorFor(category);
-    final subtitle = _subtitle;
+    final dateLabel = _dateLabel;
+    final margin = theme.horizontalMargin;
 
     return AppCard(
       onTap: onTap,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      padding: EdgeInsets.all(margin),
+      // Mirrors TaskTile's gradient-surface treatment so the two tile types
+      // read as one design language rather than two unrelated styles.
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [categoryColor, Color.lerp(categoryColor, Colors.black, 0.75)!],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(theme.spacingSmall ?? 8), color: categoryColor.withValues(alpha: 0.16)),
-            child: Icon(ExpenseCategoryStyle.iconFor(category), size: 22, color: categoryColor),
-          ),
-          SizedBox(width: theme.spacingMedium ?? 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (groupName != null) ...[
-                  LabelText.small(groupName!, color: colorScheme.secondary, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  SizedBox(height: theme.spacingXSmall ?? 4),
-                ],
-                Row(
-                  children: [
-                    Expanded(
-                      child: TitleText.small(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    ),
-                    if (expense.essential) ...[
-                      SizedBox(width: (theme.spacingXSmall ?? 4) / 2),
-                      Icon(Icons.star, size: 16, color: colorScheme.primary),
-                    ],
-                  ],
+          Row(
+            children: [
+              if (categoryName.isNotEmpty)
+                AppTileBadge(label: categoryName, icon: ExpenseCategoryStyle.iconFor(category)),
+              if (groupName != null) ...[
+                SizedBox(width: theme.spacingSmall),
+                Expanded(
+                  child: LabelText.small(
+                    groupName!,
+                    textAlign: TextAlign.right,
+                    overflow: TextOverflow.ellipsis,
+                    color: Colors.white.withValues(alpha: 0.85),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
                 ),
-                if (subtitle != null) ...[
-                  SizedBox(height: (theme.spacingXSmall ?? 4) / 2),
-                  BodyText.small(subtitle, color: colorScheme.outline, overflow: TextOverflow.ellipsis),
-                ],
               ],
-            ),
+            ],
           ),
-          SizedBox(width: theme.spacingSmall ?? 8),
-          TitleText.small(displayAmount, color: colorScheme.primary, style: const TextStyle(fontWeight: FontWeight.w700)),
+          SizedBox(height: theme.spacingSmall),
+          Row(
+            children: [
+              Expanded(
+                child: TitleText.medium(
+                  title,
+                  color: Colors.white,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+              if (expense.essential) ...[
+                SizedBox(width: theme.spacingXSmall),
+                const Icon(Icons.star, size: 18, color: Colors.white),
+              ],
+            ],
+          ),
+          if (dateLabel != null) ...[
+            SizedBox(height: theme.spacingXSmall),
+            BodyText.medium(dateLabel, color: Colors.white.withValues(alpha: 0.72)),
+          ],
+          SizedBox(height: theme.spacingSmall),
+          AppTilePill(
+            icon: const Icon(Icons.payments_outlined, size: 16, color: Colors.white),
+            label: displayAmount,
+          ),
         ],
       ),
     );

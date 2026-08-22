@@ -122,7 +122,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       scrollable: true,
       body: AppBodyColumn(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: theme.spacingMedium ?? 16,
+        spacing: theme.spacingMedium,
         children: [
           _PriorityCard(
             priority: priority,
@@ -136,7 +136,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.check_circle, size: 18, color: colorScheme.primary),
-                SizedBox(width: theme.spacingXSmall ?? 4),
+                SizedBox(width: theme.spacingXSmall),
                 LabelText.large(
                   AppStrings.completed,
                   color: colorScheme.primary,
@@ -169,9 +169,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         ],
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+        padding: EdgeInsets.all(theme.horizontalMargin),
         child: Row(
-          spacing: theme.spacingMedium ?? 16,
+          spacing: theme.spacingMedium,
           children: [
             Expanded(
               child: AppButton.secondary(
@@ -219,7 +219,7 @@ class _PriorityCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(theme.appBorderRadius ?? 12),
+      borderRadius: BorderRadius.circular(theme.appBorderRadius),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -228,16 +228,16 @@ class _PriorityCard extends StatelessWidget {
             Expanded(
               child: Container(
                 color: color.withValues(alpha: 0.1),
-                padding: EdgeInsets.all(theme.horizontalMargin ?? 16),
+                padding: EdgeInsets.all(theme.horizontalMargin),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: theme.spacingSmall ?? 8,
+                  spacing: theme.spacingSmall,
                   children: [
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.flag, size: 14, color: color),
-                        SizedBox(width: theme.spacingXSmall ?? 4),
+                        SizedBox(width: theme.spacingXSmall),
                         LabelText.small(
                           '${priority.name.toTitleCase} Priority'.toUpperCase(),
                           color: color,

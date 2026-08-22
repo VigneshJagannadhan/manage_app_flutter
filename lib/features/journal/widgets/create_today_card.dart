@@ -19,7 +19,7 @@ class CreateTodayCard extends StatelessWidget {
       cardTap: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: theme.spacingSmall ?? 8,
+        spacing: theme.spacingSmall,
         children: [
           TitleText.medium(AppStrings.todaysEntryPrompt),
           AppButton.primary(label: AppStrings.writeTodaysEntry, onPressed: onTap),

@@ -6,7 +6,6 @@ import 'package:manage_app/core/extensions/date_time_extensions.dart';
 import 'package:manage_app/core/extensions/string_extensions.dart';
 import 'package:manage_app/core/resources/app_strings.dart';
 import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/core/themes/constants/app_spacing.dart';
 import 'package:manage_app/features/auth/providers/auth_provider.dart';
 import 'package:manage_app/features/expense/models/expense_model.dart';
 import 'package:manage_app/features/expense/screens/expense_form_screen.dart';
@@ -14,13 +13,10 @@ import 'package:manage_app/features/expense/widgets/expense_category_style.dart'
 import 'package:manage_app/features/group/models/group_member_model.dart';
 import 'package:manage_app/features/group/providers/group_provider.dart';
 import 'package:manage_app/features/shared/widgets/app_body_column.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
 import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
 import 'package:manage_app/features/shared/widgets/info_card.dart';
 import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
 import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
-import 'package:manage_app/features/shared/widgets/text/title_text.dart';
 import 'package:provider/provider.dart';
 
 class ExpenseDetailScreen extends StatefulWidget {
@@ -116,7 +112,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
       scrollable: true,
       body: AppBodyColumn(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: theme.spacingMedium ?? 16,
+        spacing: theme.spacingMedium,
         children: [
           Row(
             children: [
@@ -124,14 +120,12 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
                 width: 48,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    (theme.appBorderRadius ?? 12) - AppSpacing.space4,
-                  ),
+                  borderRadius: BorderRadius.circular(theme.appBorderRadius),
                   color: colorScheme.primary.withValues(alpha: 0.5),
                 ),
                 child: Icon(ExpenseCategoryStyle.iconFor(category), color: Colors.white),
               ),
-              SizedBox(width: theme.spacingMedium ?? 16),
+              SizedBox(width: theme.spacingMedium),
               Expanded(child: HeadlineText.small(title)),
             ],
           ),
@@ -168,71 +162,8 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
               ),
             ],
           ),
-          SizedBox(height: theme.spacingSmall ?? 8),
-          TitleText.small(AppStrings.splitDetailsLabel),
-          InfoCard(
-            children: _expense.splits.isEmpty
-                ? [
-                    _SplitsEmptyState(
-                      onAddSplit: null, // Adding splits after creation isn't supported by the API yet.
-                    ),
-                  ]
-                : [
-                    for (final split in _expense.splits)
-                      _SplitRow(
-                        label: _memberLabel(split.userId, members, currentUserId),
-                        amount: split.amountOwed,
-                      ),
-                  ],
-          ),
         ],
       ),
-    );
-  }
-}
-
-class _SplitsEmptyState extends StatelessWidget {
-  const _SplitsEmptyState({required this.onAddSplit});
-
-  final VoidCallback? onAddSplit;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.appTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      children: [
-        Icon(Icons.people_outline, size: 32, color: colorScheme.outline),
-        SizedBox(height: theme.spacingSmall ?? 8),
-        BodyText.medium(
-          AppStrings.noSplitsRecorded,
-          color: colorScheme.outline,
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: theme.spacingMedium ?? 16),
-        AppButton.primary(label: AppStrings.addSplitLabel, onPressed: onAddSplit),
-      ],
-    );
-  }
-}
-
-class _SplitRow extends StatelessWidget {
-  const _SplitRow({required this.label, required this.amount});
-
-  final String label;
-  final double amount;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: BodyText.medium(label)),
-        BodyText.medium(
-          amount.toCurrencyString(),
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ],
     );
   }
 }
