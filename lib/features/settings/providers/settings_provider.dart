@@ -1,6 +1,6 @@
-import 'package:manage_app/features/settings/models/health_check_model.dart';
-import 'package:manage_app/features/settings/services/health_service.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/features/settings/models/health_check_model.dart';
+import 'package:huddle/features/settings/services/health_service.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class SettingsProvider extends BaseProvider {
   SettingsProvider({required this.healthService});

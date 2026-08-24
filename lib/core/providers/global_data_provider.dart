@@ -1,11 +1,11 @@
-import 'package:manage_app/core/services/session_expired_notifier.dart';
-import 'package:manage_app/features/auth/providers/auth_provider.dart';
-import 'package:manage_app/features/expense/providers/expense_provider.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/settings/providers/profile_provider.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
-import 'package:manage_app/features/task/providers/task_provider.dart';
+import 'package:huddle/core/services/session_expired_notifier.dart';
+import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/expense/providers/expense_provider.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
+import 'package:huddle/features/task/providers/task_provider.dart';
 
 /// Orchestrates the app-wide load/reset lifecycle across the feature providers. Lives in
 /// `core` (rather than alongside a single feature) because it owns no data of its own -

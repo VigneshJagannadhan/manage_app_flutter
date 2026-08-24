@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/features/expense/widgets/expense_category_style.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/features/expense/widgets/expense_category_style.dart';
 
 /// Ring chart showing each category's share of the total, colored via
 /// [ExpenseCategoryStyle.colorFor]. [breakdown] values are fractions of 1.

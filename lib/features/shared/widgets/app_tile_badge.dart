@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 
 /// Small translucent-white tag overlaid on a gradient tile surface (e.g.
 /// [TaskTile], [ExpenseTile]) - used to call out a short classifier like

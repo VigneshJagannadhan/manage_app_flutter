@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
 
 /// Icon + color mapping for [ExpenseCategory], shared by the expense tile,
 /// category breakdown chart/legend, and category filter chips.

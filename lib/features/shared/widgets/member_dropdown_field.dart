@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/group/models/group_member_model.dart';
-import 'package:manage_app/features/shared/widgets/app_dropdown_field.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/group/models/group_member_model.dart';
+import 'package:huddle/features/shared/widgets/app_dropdown_field.dart';
 
 /// Single-select picker over a group's members - used for the task assignee and the
 /// expense payer, both of which need "who in this group" with a "(You)" hint for self.

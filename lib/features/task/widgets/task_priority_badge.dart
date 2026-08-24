@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/features/shared/widgets/app_tile_badge.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/features/shared/widgets/app_tile_badge.dart';
 
 /// Priority pill shown on the task list tile, overlaid on that tile's
 /// priority-colored gradient background.

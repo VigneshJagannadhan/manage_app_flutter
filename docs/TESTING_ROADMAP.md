@@ -1,4 +1,4 @@
-# Testing Roadmap for manage_app
+# Testing Roadmap for Huddle
 
 ## Context
 

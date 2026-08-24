@@ -1,6 +1,6 @@
-import 'package:manage_app/core/services/journal_service.dart';
-import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
-import 'package:manage_app/features/journal/models/journal_entry_model.dart';
+import 'package:huddle/core/services/journal_service.dart';
+import 'package:huddle/features/journal/data/journal_local_data_source.dart';
+import 'package:huddle/features/journal/models/journal_entry_model.dart';
 
 /// Sits between [JournalProvider] and the two data sources - pure data-access
 /// operations only, no timers/scheduling policy (that lives in the provider).

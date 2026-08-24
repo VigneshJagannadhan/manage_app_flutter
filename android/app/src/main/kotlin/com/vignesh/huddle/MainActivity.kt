@@ -1,4 +1,4 @@
-package com.vignesh.manageapp
+package com.vignesh.huddle
 
 import io.flutter.embedding.android.FlutterActivity
 

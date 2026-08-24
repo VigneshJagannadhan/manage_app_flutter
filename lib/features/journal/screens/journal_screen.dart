@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/features/journal/models/journal_entry_model.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/journal/screens/journal_entry_screen.dart';
-import 'package:manage_app/features/journal/widgets/create_today_card.dart';
-import 'package:manage_app/features/journal/widgets/journal_day_tile.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
-import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
-import 'package:manage_app/features/shared/widgets/settings_avatar_button.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/journal/models/journal_entry_model.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/journal/screens/journal_entry_screen.dart';
+import 'package:huddle/features/journal/widgets/create_today_card.dart';
+import 'package:huddle/features/journal/widgets/journal_day_tile.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
+import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/shared/widgets/screen_appbar.dart';
+import 'package:huddle/features/shared/widgets/settings_avatar_button.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
 import 'package:provider/provider.dart';
 
 class JournalScreen extends StatefulWidget {

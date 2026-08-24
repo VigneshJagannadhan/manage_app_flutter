@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_assets.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/shared/widgets/app_card.dart';
-import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
-import 'package:manage_app/features/shared/widgets/app_tile_pill.dart';
-import 'package:manage_app/features/task/models/task_model.dart';
-import 'package:manage_app/features/task/widgets/task_priority_badge.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
-import 'package:manage_app/features/shared/widgets/text/title_text.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_assets.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/shared/widgets/app_card.dart';
+import 'package:huddle/features/shared/widgets/app_svg_icon.dart';
+import 'package:huddle/features/shared/widgets/app_tile_pill.dart';
+import 'package:huddle/features/task/models/task_model.dart';
+import 'package:huddle/features/task/widgets/task_priority_badge.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/features/shared/widgets/text/title_text.dart';
 
 class TaskTile extends StatelessWidget {
   const TaskTile({

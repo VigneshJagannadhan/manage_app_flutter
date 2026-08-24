@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/services/group_preference_service.dart';
-import 'package:manage_app/core/services/task_service.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
-import 'package:manage_app/features/task/models/task_model.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/core/services/task_service.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
+import 'package:huddle/features/task/models/task_model.dart';
 
 class TaskProvider extends BaseProvider {
   TaskProvider({required this.taskService, required this.groupProvider, required this.groupPreferenceService});

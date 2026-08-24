@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:manage_app/core/services/group_preference_service.dart';
-import 'package:manage_app/core/services/group_service.dart';
-import 'package:manage_app/features/auth/providers/auth_provider.dart';
-import 'package:manage_app/features/group/models/group_member_model.dart';
-import 'package:manage_app/features/group/models/group_model.dart';
-import 'package:manage_app/features/settings/providers/profile_provider.dart';
-import 'package:manage_app/features/settings/services/profile_service.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/core/services/group_service.dart';
+import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/group/models/group_member_model.dart';
+import 'package:huddle/features/group/models/group_model.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
+import 'package:huddle/features/settings/services/profile_service.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class GroupProvider extends BaseProvider {
   GroupProvider({

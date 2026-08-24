@@ -1,6 +1,6 @@
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/features/expense/models/expense_split_model.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/features/expense/models/expense_split_model.dart';
 
 class ExpenseModel {
   final String? id;

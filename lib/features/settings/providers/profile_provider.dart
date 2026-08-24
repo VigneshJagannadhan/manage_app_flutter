@@ -1,7 +1,7 @@
-import 'package:manage_app/core/services/session_expired_notifier.dart';
-import 'package:manage_app/features/auth/models/user_model.dart';
-import 'package:manage_app/features/settings/services/profile_service.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/services/session_expired_notifier.dart';
+import 'package:huddle/features/auth/models/user_model.dart';
+import 'package:huddle/features/settings/services/profile_service.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class ProfileProvider extends BaseProvider {
   ProfileProvider({required this.profileService});

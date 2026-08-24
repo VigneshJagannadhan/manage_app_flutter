@@ -1,5 +1,5 @@
-import 'package:manage_app/features/auth/models/token_pair_model.dart';
-import 'package:manage_app/features/auth/models/user_model.dart';
+import 'package:huddle/features/auth/models/token_pair_model.dart';
+import 'package:huddle/features/auth/models/user_model.dart';
 
 /// Response shape shared by the signup and signin endpoints.
 class AuthSessionModel {

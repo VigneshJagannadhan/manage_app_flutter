@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
 
 class AppBodyColumn extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;

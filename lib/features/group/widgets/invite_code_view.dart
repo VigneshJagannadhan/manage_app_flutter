@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/group/models/group_model.dart';
-import 'package:manage_app/features/shared/widgets/app_body_column.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/headline_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/group/models/group_model.dart';
+import 'package:huddle/features/shared/widgets/app_body_column.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/headline_text.dart';
 import 'package:share_plus/share_plus.dart' show Share;
 
 class InviteCodeView extends StatelessWidget {
@@ -21,7 +21,7 @@ class InviteCodeView extends StatelessWidget {
   }
 
   Future<void> _shareCode() {
-    return Share.share('Join my group "${group.name}" on TaskEasy with invite code: ${group.inviteCode}');
+    return Share.share('Join my group "${group.name}" on Huddle with invite code: ${group.inviteCode}');
   }
 
   @override

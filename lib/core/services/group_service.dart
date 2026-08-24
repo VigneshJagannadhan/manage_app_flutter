@@ -1,8 +1,8 @@
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/services/api_result.dart';
-import 'package:manage_app/core/services/api_services.dart';
-import 'package:manage_app/features/group/models/group_member_model.dart';
-import 'package:manage_app/features/group/models/group_model.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/services/api_result.dart';
+import 'package:huddle/core/services/api_services.dart';
+import 'package:huddle/features/group/models/group_member_model.dart';
+import 'package:huddle/features/group/models/group_model.dart';
 
 class GroupServiceException implements Exception {
   GroupServiceException(this.message);

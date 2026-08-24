@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:manage_app/core/resources/app_fonts.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/services/connectivity_service.dart';
-import 'package:manage_app/core/services/journal_service.dart';
-import 'package:manage_app/core/themes/app_theme.dart';
-import 'package:manage_app/features/auth/models/user_model.dart';
-import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
-import 'package:manage_app/features/journal/data/journal_repository.dart';
-import 'package:manage_app/features/journal/models/journal_entry_model.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/journal/screens/journal_screen.dart';
-import 'package:manage_app/features/journal/widgets/create_today_card.dart';
-import 'package:manage_app/features/journal/widgets/journal_day_tile.dart';
-import 'package:manage_app/features/settings/providers/profile_provider.dart';
-import 'package:manage_app/features/settings/services/profile_service.dart';
+import 'package:huddle/core/resources/app_fonts.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/services/connectivity_service.dart';
+import 'package:huddle/core/services/journal_service.dart';
+import 'package:huddle/core/themes/app_theme.dart';
+import 'package:huddle/features/auth/models/user_model.dart';
+import 'package:huddle/features/journal/data/journal_local_data_source.dart';
+import 'package:huddle/features/journal/data/journal_repository.dart';
+import 'package:huddle/features/journal/models/journal_entry_model.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/journal/screens/journal_screen.dart';
+import 'package:huddle/features/journal/widgets/create_today_card.dart';
+import 'package:huddle/features/journal/widgets/journal_day_tile.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
+import 'package:huddle/features/settings/services/profile_service.dart';
 import 'package:provider/provider.dart';
 
 class _FakeJournalService extends JournalService {

@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
 
 /// A locally-cached draft for one calendar day - `dirty` means it hasn't been
 /// confirmed synced to the server yet.

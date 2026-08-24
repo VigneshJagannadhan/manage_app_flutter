@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/string_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/features/expense/providers/expense_provider.dart';
-import 'package:manage_app/features/shared/widgets/app_bottom_sheet.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/string_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/expense/providers/expense_provider.dart';
+import 'package:huddle/features/shared/widgets/app_bottom_sheet.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:provider/provider.dart';
 
 class ExpenseFilterSheet {

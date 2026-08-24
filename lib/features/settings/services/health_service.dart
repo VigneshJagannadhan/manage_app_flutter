@@ -1,6 +1,6 @@
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/services/api_services.dart';
-import 'package:manage_app/features/settings/models/health_check_model.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/services/api_services.dart';
+import 'package:huddle/features/settings/models/health_check_model.dart';
 
 class HealthServiceException implements Exception {
   HealthServiceException(this.message);

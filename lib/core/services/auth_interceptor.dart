@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/services/session_expired_notifier.dart';
-import 'package:manage_app/core/services/token_storage_service.dart';
-import 'package:manage_app/features/auth/models/token_pair_model.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/services/session_expired_notifier.dart';
+import 'package:huddle/core/services/token_storage_service.dart';
+import 'package:huddle/features/auth/models/token_pair_model.dart';
 
 const _retriedKey = 'authInterceptorRetried';
 

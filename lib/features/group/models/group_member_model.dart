@@ -1,4 +1,4 @@
-import 'package:manage_app/core/enums/group_enums.dart';
+import 'package:huddle/core/enums/group_enums.dart';
 
 class GroupMemberModel {
   final String userId;

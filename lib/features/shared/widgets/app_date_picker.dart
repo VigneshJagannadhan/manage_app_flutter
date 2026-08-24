@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_assets.dart';
-import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_assets.dart';
+import 'package:huddle/features/shared/widgets/app_svg_icon.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
 
 class AppDatePicker extends StatelessWidget {
   const AppDatePicker({
