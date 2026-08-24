@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/features/settings/screens/settings_screen.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/settings/screens/settings_screen.dart';
 
 class SettingsAvatarButton extends StatelessWidget {
   const SettingsAvatarButton({super.key});

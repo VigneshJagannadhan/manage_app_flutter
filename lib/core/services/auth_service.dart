@@ -1,8 +1,8 @@
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/services/api_result.dart';
-import 'package:manage_app/core/services/api_services.dart';
-import 'package:manage_app/features/auth/models/auth_session_model.dart';
-import 'package:manage_app/features/auth/models/token_pair_model.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/services/api_result.dart';
+import 'package:huddle/core/services/api_services.dart';
+import 'package:huddle/features/auth/models/auth_session_model.dart';
+import 'package:huddle/features/auth/models/token_pair_model.dart';
 
 class AuthServiceException implements Exception {
   AuthServiceException(this.message);

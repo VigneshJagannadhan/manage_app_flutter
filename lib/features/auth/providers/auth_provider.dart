@@ -1,9 +1,9 @@
-import 'package:manage_app/core/services/auth_service.dart';
-import 'package:manage_app/core/services/session_expired_notifier.dart';
-import 'package:manage_app/core/services/token_storage_service.dart';
-import 'package:manage_app/features/auth/models/auth_session_model.dart';
-import 'package:manage_app/features/auth/models/user_model.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/services/auth_service.dart';
+import 'package:huddle/core/services/session_expired_notifier.dart';
+import 'package:huddle/core/services/token_storage_service.dart';
+import 'package:huddle/features/auth/models/auth_session_model.dart';
+import 'package:huddle/features/auth/models/user_model.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class AuthProvider extends BaseProvider {
   AuthProvider({required this.authService, required this.tokenStorageService});

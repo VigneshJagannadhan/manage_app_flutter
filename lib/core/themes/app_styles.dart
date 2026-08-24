@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_fonts.dart';
+import 'package:huddle/core/resources/app_fonts.dart';
 
 /// Material 3 typography scale, built on [createStyle] so the font family
 /// can be swapped in one place if needed.

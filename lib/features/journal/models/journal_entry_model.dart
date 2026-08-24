@@ -1,4 +1,4 @@
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
 
 class JournalEntryModel {
   final String? id;

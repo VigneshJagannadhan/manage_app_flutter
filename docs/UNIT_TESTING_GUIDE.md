@@ -116,7 +116,7 @@ find later.
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
+import 'package:huddle/core/enums/task_enums.dart';
 ```
 
 **Step 3** - write one test per behavior. Looking at the source, `TaskPriorityApi`
@@ -191,8 +191,8 @@ golden path):
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/features/task/models/task_model.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/features/task/models/task_model.dart';
 
 void main() {
   group('TaskModel.fromJson', () {
@@ -359,8 +359,8 @@ Add it first: `fvm flutter pub add --dev mocktail`.
 
 ```dart
 import 'package:mocktail/mocktail.dart';
-import 'package:manage_app/core/services/task_service.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
+import 'package:huddle/core/services/task_service.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
 
 class MockTaskService extends Mock implements TaskService {}
 class MockGroupProvider extends Mock implements GroupProvider {}
@@ -465,11 +465,11 @@ Target: [lib/features/task/providers/task_provider.dart](../lib/features/task/pr
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/services/task_service.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/task/models/task_model.dart';
-import 'package:manage_app/features/task/providers/task_provider.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/services/task_service.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/task/models/task_model.dart';
+import 'package:huddle/features/task/providers/task_provider.dart';
 
 class MockTaskService extends Mock implements TaskService {}
 class MockGroupProvider extends Mock implements GroupProvider {}

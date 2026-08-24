@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_fonts.dart';
-import 'package:manage_app/core/themes/app_styles.dart';
-import 'package:manage_app/core/themes/constants/app_colors.dart';
-import 'package:manage_app/core/themes/constants/app_elevation.dart';
-import 'package:manage_app/core/themes/constants/app_sizing.dart';
-import 'package:manage_app/core/themes/constants/app_spacing.dart';
-import 'package:manage_app/core/themes/theme_extensions/app_theme.dart';
+import 'package:huddle/core/resources/app_fonts.dart';
+import 'package:huddle/core/themes/app_styles.dart';
+import 'package:huddle/core/themes/constants/app_colors.dart';
+import 'package:huddle/core/themes/constants/app_elevation.dart';
+import 'package:huddle/core/themes/constants/app_sizing.dart';
+import 'package:huddle/core/themes/constants/app_spacing.dart';
+import 'package:huddle/core/themes/theme_extensions/app_theme.dart';
 
 class AppThemes {
   /// Explicit color schemes built from [AppColors] instead of

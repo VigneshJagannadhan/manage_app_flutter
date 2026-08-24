@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/string_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/expense/widgets/expense_category_style.dart';
-import 'package:manage_app/features/expense/widgets/expense_donut_chart.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/string_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/expense/widgets/expense_category_style.dart';
+import 'package:huddle/features/expense/widgets/expense_donut_chart.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 
 /// Donut chart + legend showing each category's share of this month's spend.
 class ExpenseCategoryBreakdown extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/features/shared/widgets/text/app_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/features/shared/widgets/text/app_text.dart';
 
 enum _HeadlineTextSize { large, medium, small }
 

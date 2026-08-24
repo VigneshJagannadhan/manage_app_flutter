@@ -1,4 +1,4 @@
 storePassword=changeme
 keyPassword=changeme
 keyAlias=upload
-storeFile=/absolute/path/to/manage_app-release.jks
+storeFile=/absolute/path/to/huddle-release.jks

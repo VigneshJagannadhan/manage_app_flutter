@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/providers/global_data_provider.dart';
-import 'package:manage_app/core/services/auth_service.dart';
-import 'package:manage_app/core/services/connectivity_service.dart';
-import 'package:manage_app/core/services/expense_service.dart';
-import 'package:manage_app/core/services/group_preference_service.dart';
-import 'package:manage_app/core/services/group_service.dart';
-import 'package:manage_app/core/services/journal_service.dart';
-import 'package:manage_app/core/services/task_service.dart';
-import 'package:manage_app/core/services/font_preference_service.dart';
-import 'package:manage_app/core/services/theme_preference_service.dart';
-import 'package:manage_app/core/services/token_storage_service.dart';
-import 'package:manage_app/features/auth/providers/auth_provider.dart';
-import 'package:manage_app/features/expense/providers/expense_provider.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
-import 'package:manage_app/features/journal/data/journal_repository.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/settings/providers/font_provider.dart';
-import 'package:manage_app/features/settings/providers/profile_provider.dart';
-import 'package:manage_app/features/settings/providers/theme_provider.dart';
-import 'package:manage_app/features/settings/services/profile_service.dart';
-import 'package:manage_app/features/task/providers/task_provider.dart';
+import 'package:huddle/core/providers/global_data_provider.dart';
+import 'package:huddle/core/services/auth_service.dart';
+import 'package:huddle/core/services/connectivity_service.dart';
+import 'package:huddle/core/services/expense_service.dart';
+import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/core/services/group_service.dart';
+import 'package:huddle/core/services/journal_service.dart';
+import 'package:huddle/core/services/task_service.dart';
+import 'package:huddle/core/services/font_preference_service.dart';
+import 'package:huddle/core/services/theme_preference_service.dart';
+import 'package:huddle/core/services/token_storage_service.dart';
+import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/expense/providers/expense_provider.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/journal/data/journal_local_data_source.dart';
+import 'package:huddle/features/journal/data/journal_repository.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/settings/providers/font_provider.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
+import 'package:huddle/features/settings/providers/theme_provider.dart';
+import 'package:huddle/features/settings/services/profile_service.dart';
+import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:provider/provider.dart';
 
 /// Constructs every app-wide provider and exposes them to [child] via [MultiProvider].
@@ -51,8 +51,10 @@ class _AppProvidersState extends State<AppProviders> {
         )
         ..onInit();
 
-  late final _taskProvider = TaskProvider(taskService: taskService, groupProvider: _groupProvider)..onInit();
-  late final _expenseProvider = ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider)..onInit();
+  late final _taskProvider =
+      TaskProvider(taskService: taskService, groupProvider: _groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
+  late final _expenseProvider =
+      ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
   late final _journalRepository = JournalRepository(local: journalLocalDataSource, remote: journalService);
   late final _journalProvider =
       JournalProvider(

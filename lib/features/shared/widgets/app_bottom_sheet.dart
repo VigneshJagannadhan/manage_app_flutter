@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_assets.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
-import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
-import 'package:manage_app/features/shared/widgets/text/title_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_assets.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
+import 'package:huddle/features/shared/widgets/app_svg_icon.dart';
+import 'package:huddle/features/shared/widgets/text/title_text.dart';
 
 class AppBottomSheet extends StatelessWidget {
   const AppBottomSheet({super.key, this.icon, required this.title, required this.body, this.buttonLabel, this.onButtonPressed, this.footer})

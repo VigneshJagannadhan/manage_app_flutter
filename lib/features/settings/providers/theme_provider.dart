@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/services/theme_preference_service.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/services/theme_preference_service.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class ThemeProvider extends BaseProvider {
   ThemeProvider({required this.themePreferenceService});

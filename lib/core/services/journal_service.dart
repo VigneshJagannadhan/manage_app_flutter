@@ -1,8 +1,8 @@
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/services/api_result.dart';
-import 'package:manage_app/core/services/api_services.dart';
-import 'package:manage_app/features/journal/models/journal_entry_model.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/services/api_result.dart';
+import 'package:huddle/core/services/api_services.dart';
+import 'package:huddle/features/journal/models/journal_entry_model.dart';
 
 class JournalServiceException implements Exception {
   JournalServiceException(this.message);

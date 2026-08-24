@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 
 /// A bordered "grouped info card" - visually separates related [InfoRow]s,
 /// with a thin divider between each child.

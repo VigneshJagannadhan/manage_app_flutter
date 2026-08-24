@@ -1,13 +1,17 @@
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/services/task_service.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
-import 'package:manage_app/features/task/models/task_model.dart';
+import 'dart:async';
+
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/core/services/task_service.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
+import 'package:huddle/features/task/models/task_model.dart';
 
 class TaskProvider extends BaseProvider {
-  TaskProvider({required this.taskService, required this.groupProvider});
+  TaskProvider({required this.taskService, required this.groupProvider, required this.groupPreferenceService});
   final TaskService taskService;
   final GroupProvider groupProvider;
+  final GroupPreferenceService groupPreferenceService;
 
   /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
   /// self-trigger here - it just needs to satisfy the BaseProvider contract.
@@ -48,12 +52,28 @@ class TaskProvider extends BaseProvider {
   DateTime? _customDate;
   DateTime? get customDate => _customDate;
 
-  bool _showAllGroups = false;
+  bool _showAllGroups = true;
   bool get showAllGroups => _showAllGroups;
+
+  /// Reads the last-picked group scope from local storage. Must complete before
+  /// [loadTasks] so the very first load after sign-in respects it - see
+  /// GlobalDataProvider.loadAllData.
+  Future<void> restoreShowAllGroups() async {
+    _showAllGroups = await groupPreferenceService.readTasksShowAllGroups();
+    notifyListeners();
+  }
 
   void toggleShowAllGroups(bool value) {
     _showAllGroups = value;
+    unawaited(groupPreferenceService.saveTasksShowAllGroups(value));
     loadTasks();
+  }
+
+  /// Resets the group-scope choice back to "all groups" and wipes the persisted
+  /// preference, so it doesn't linger into the next account signed in on this device.
+  void resetShowAllGroupsPreference() {
+    _showAllGroups = true;
+    unawaited(groupPreferenceService.clearTasksShowAllGroups());
   }
 
   void setTaskStatusFilter(TaskStatus? status) {

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:manage_app/core/services/api_client.dart';
-import 'package:manage_app/core/services/api_result.dart';
+import 'package:huddle/core/services/api_client.dart';
+import 'package:huddle/core/services/api_result.dart';
 
 class ApiServices {
   ApiServices({ApiClient? apiClient}) : _dio = (apiClient ?? ApiClient()).dio;

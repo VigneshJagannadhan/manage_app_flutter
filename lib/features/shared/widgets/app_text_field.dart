@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField({

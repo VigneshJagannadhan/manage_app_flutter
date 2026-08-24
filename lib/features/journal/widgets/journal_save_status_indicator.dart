@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 
 /// Small appbar-action status readout for the journal editor's autosave - there's no
 /// manual save button, so this is the only feedback the user gets that a write landed.

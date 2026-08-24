@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
 
 /// Two-way toggle between the active group and "All Groups", with a sliding
 /// selection indicator instead of the instant-swap look of [SegmentedButton].

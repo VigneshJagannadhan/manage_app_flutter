@@ -1,4 +1,4 @@
-import 'package:manage_app/core/resources/app_strings.dart';
+import 'package:huddle/core/resources/app_strings.dart';
 
 final _phonePattern = RegExp(r'^\+?[0-9]{7,15}$');
 

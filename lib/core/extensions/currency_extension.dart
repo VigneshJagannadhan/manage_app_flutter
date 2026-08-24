@@ -1,4 +1,4 @@
-import 'package:manage_app/core/resources/app_strings.dart';
+import 'package:huddle/core/resources/app_strings.dart';
 
 extension CurrencyExtension on double? {
   String toCurrencyString() {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
 
 /// "`promptText` `actionText`" row used under sign-in/sign-up forms to
 /// switch between the two screens.

@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/resources/app_fonts.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/auth_service.dart';
-import 'package:manage_app/core/services/connectivity_service.dart';
-import 'package:manage_app/core/services/expense_service.dart';
-import 'package:manage_app/core/services/group_preference_service.dart';
-import 'package:manage_app/core/services/group_service.dart';
-import 'package:manage_app/core/services/journal_service.dart';
-import 'package:manage_app/core/services/task_service.dart';
-import 'package:manage_app/core/services/token_storage_service.dart';
-import 'package:manage_app/core/themes/app_theme.dart';
-import 'package:manage_app/features/auth/models/auth_session_model.dart';
-import 'package:manage_app/features/auth/models/token_pair_model.dart';
-import 'package:manage_app/features/auth/models/user_model.dart';
-import 'package:manage_app/features/auth/providers/auth_provider.dart';
-import 'package:manage_app/features/expense/models/expense_model.dart';
-import 'package:manage_app/features/expense/providers/expense_provider.dart';
-import 'package:manage_app/features/group/models/group_model.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/home/screens/home_screen.dart';
-import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
-import 'package:manage_app/features/journal/data/journal_repository.dart';
-import 'package:manage_app/features/journal/models/journal_entry_model.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/settings/providers/profile_provider.dart';
-import 'package:manage_app/features/settings/services/profile_service.dart';
-import 'package:manage_app/features/task/models/task_model.dart';
-import 'package:manage_app/features/task/providers/task_provider.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/resources/app_fonts.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/auth_service.dart';
+import 'package:huddle/core/services/connectivity_service.dart';
+import 'package:huddle/core/services/expense_service.dart';
+import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/core/services/group_service.dart';
+import 'package:huddle/core/services/journal_service.dart';
+import 'package:huddle/core/services/task_service.dart';
+import 'package:huddle/core/services/token_storage_service.dart';
+import 'package:huddle/core/themes/app_theme.dart';
+import 'package:huddle/features/auth/models/auth_session_model.dart';
+import 'package:huddle/features/auth/models/token_pair_model.dart';
+import 'package:huddle/features/auth/models/user_model.dart';
+import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/expense/models/expense_model.dart';
+import 'package:huddle/features/expense/providers/expense_provider.dart';
+import 'package:huddle/features/group/models/group_model.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/home/screens/home_screen.dart';
+import 'package:huddle/features/journal/data/journal_local_data_source.dart';
+import 'package:huddle/features/journal/data/journal_repository.dart';
+import 'package:huddle/features/journal/models/journal_entry_model.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
+import 'package:huddle/features/settings/services/profile_service.dart';
+import 'package:huddle/features/task/models/task_model.dart';
+import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:provider/provider.dart';
 
 class _FakeTokenStorageService extends TokenStorageService {
@@ -59,6 +59,24 @@ class _FakeGroupPreferenceService extends GroupPreferenceService {
 
   @override
   Future<void> saveActiveGroupId(String? groupId) async {}
+
+  @override
+  Future<bool> readTasksShowAllGroups() async => true;
+
+  @override
+  Future<void> saveTasksShowAllGroups(bool value) async {}
+
+  @override
+  Future<void> clearTasksShowAllGroups() async {}
+
+  @override
+  Future<bool> readExpensesShowAllGroups() async => true;
+
+  @override
+  Future<void> saveExpensesShowAllGroups(bool value) async {}
+
+  @override
+  Future<void> clearExpensesShowAllGroups() async {}
 }
 
 class _FakeExpenseService extends ExpenseService {
@@ -137,16 +155,20 @@ Future<void> _pumpHome(WidgetTester tester) async {
   final authProvider = AuthProvider(authService: AuthService(), tokenStorageService: _FakeTokenStorageService())..onInit();
   await authProvider.restoreSession();
   final profileProvider = ProfileProvider(profileService: _FakeProfileService())..onInit();
+  final groupPreferenceService = _FakeGroupPreferenceService();
   final groupProvider =
       GroupProvider(
           groupService: _FakeGroupService(),
-          groupPreferenceService: _FakeGroupPreferenceService(),
+          groupPreferenceService: groupPreferenceService,
           authProvider: authProvider,
           profileProvider: profileProvider,
         )
         ..onInit();
-  final taskProvider = TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider)..onInit();
-  final expenseProvider = ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider)..onInit();
+  final taskProvider =
+      TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
+  final expenseProvider =
+      ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider, groupPreferenceService: groupPreferenceService)
+        ..onInit();
   final journalService = _FakeJournalService();
   final journalProvider =
       JournalProvider(
@@ -161,6 +183,7 @@ Future<void> _pumpHome(WidgetTester tester) async {
   // splash. Mirror that sequence here so the fake data actually reaches the widgets.
   await profileProvider.loadProfile();
   await groupProvider.restoreActiveGroup();
+  await Future.wait([taskProvider.restoreShowAllGroups(), expenseProvider.restoreShowAllGroups()]);
   await Future.wait([taskProvider.loadTasks(), expenseProvider.loadExpenses(), journalProvider.loadInitial()]);
 
   await tester.pumpWidget(

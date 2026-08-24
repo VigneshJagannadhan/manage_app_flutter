@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_fonts.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/settings/providers/font_provider.dart';
-import 'package:manage_app/features/shared/widgets/app_body_column.dart';
-import 'package:manage_app/features/shared/widgets/app_card.dart';
-import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_fonts.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/settings/providers/font_provider.dart';
+import 'package:huddle/features/shared/widgets/app_body_column.dart';
+import 'package:huddle/features/shared/widgets/app_card.dart';
+import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/shared/widgets/screen_appbar.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 class CustomiseAppScreen extends StatelessWidget {

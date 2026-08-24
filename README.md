@@ -1,4 +1,4 @@
-# TaskEasy (`manage_app`)
+# Huddle
 
 A Flutter app for managing tasks, splitting group expenses, keeping a daily
 journal, and (soon) reminders — built around shared "groups" of people who
@@ -51,7 +51,7 @@ throughout so you can jump straight to source.
 ```
                           ┌─────────────────────────────┐
                           │           main.dart          │
-                          │  runApp(ManageApp)            │
+                          │  runApp(HuddleApp)            │
                           └───────────────┬──────────────┘
                                           │
                           ┌───────────────▼──────────────┐
@@ -141,7 +141,7 @@ from `core/services/`).
 (no `WidgetsFlutterBinding.ensureInitialized()`, no preloaded secure-storage
 read). All async initialization happens **after** the widget tree is mounted:
 
-1. **`runApp(const ManageApp())`** — `ManageApp` is a `StatefulWidget`. In
+1. **`runApp(const HuddleApp())`** — `HuddleApp` is a `StatefulWidget`. In
    `initState()` it subscribes to the global `sessionExpiredNotifier`
    (a bare event-bus `ChangeNotifier`, see [Auth token lifecycle](#auth-token-lifecycle)),
    so a forced logout from anywhere in the app (even from inside a Dio
@@ -165,7 +165,7 @@ read). All async initialization happens **after** the widget tree is mounted:
    recreate them; `ThemeProvider`/`FontProvider` use `create:` since they're
    fine being constructed lazily by the framework.
 3. **`MaterialApp`** is rebuilt by a `Consumer2<ThemeProvider, FontProvider>`
-   at the root of `ManageApp.build()`, wired with `navigatorKey`,
+   at the root of `HuddleApp.build()`, wired with `navigatorKey`,
    `theme`/`darkTheme` built by `AppThemes.lightTheme/darkTheme(font: ...)`,
    and `home: const SplashScreen()`.
 4. **`SplashScreen`** does the actual work, in this exact order:
@@ -299,7 +299,7 @@ same event:
 
 | Listener | Reaction |
 |---|---|
-| `ManageApp` (main.dart) | Forces navigation to `SignInScreen` via the global `navigatorKey`, clearing the stack |
+| `HuddleApp` (main.dart) | Forces navigation to `SignInScreen` via the global `navigatorKey`, clearing the stack |
 | `AuthProvider` | Nulls `_currentUser` in memory (storage was already cleared by the interceptor) |
 | `GlobalDataProvider` | Wipes in-memory task/expense/journal/profile state |
 

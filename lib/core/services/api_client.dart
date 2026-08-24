@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/services/auth_interceptor.dart';
-import 'package:manage_app/core/services/token_storage_service.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/services/auth_interceptor.dart';
+import 'package:huddle/core/services/token_storage_service.dart';
 
 class ApiClient {
   ApiClient({TokenStorageService? storageService}) : dio = Dio(BaseOptions(baseUrl: _baseUrl, contentType: 'application/json')) {

@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/services/expense_service.dart';
-import 'package:manage_app/features/expense/models/expense_model.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/services/expense_service.dart';
+import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/features/expense/models/expense_model.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class ExpenseProvider extends BaseProvider {
-  ExpenseProvider({required this.expenseService, required this.groupProvider});
+  ExpenseProvider({required this.expenseService, required this.groupProvider, required this.groupPreferenceService});
   final ExpenseService expenseService;
   final GroupProvider groupProvider;
+  final GroupPreferenceService groupPreferenceService;
 
   /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
   /// self-trigger here - it just needs to satisfy the BaseProvider contract.
@@ -29,8 +33,23 @@ class ExpenseProvider extends BaseProvider {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  bool _showAllGroups = false;
+  bool _showAllGroups = true;
   bool get showAllGroups => _showAllGroups;
+
+  /// Reads the last-picked group scope from local storage. Must complete before
+  /// [loadExpenses] so the very first load after sign-in respects it - see
+  /// GlobalDataProvider.loadAllData.
+  Future<void> restoreShowAllGroups() async {
+    _showAllGroups = await groupPreferenceService.readExpensesShowAllGroups();
+    notifyListeners();
+  }
+
+  /// Resets the group-scope choice back to "all groups" and wipes the persisted
+  /// preference, so it doesn't linger into the next account signed in on this device.
+  void resetShowAllGroupsPreference() {
+    _showAllGroups = true;
+    unawaited(groupPreferenceService.clearExpensesShowAllGroups());
+  }
 
   // All Expenses screen filters/sort - client-side only, applied on top of the loaded [_expenses].
   String _searchQuery = '';
@@ -47,6 +66,7 @@ class ExpenseProvider extends BaseProvider {
 
   void toggleShowAllGroups(bool value) {
     _showAllGroups = value;
+    unawaited(groupPreferenceService.saveExpensesShowAllGroups(value));
     loadExpenses();
   }
 
