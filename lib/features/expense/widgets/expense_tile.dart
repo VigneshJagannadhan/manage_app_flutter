@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/currency_extension.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/extensions/string_extensions.dart';
-import 'package:manage_app/features/expense/models/expense_model.dart';
-import 'package:manage_app/features/expense/widgets/expense_category_style.dart';
-import 'package:manage_app/features/shared/widgets/app_card.dart';
-import 'package:manage_app/features/shared/widgets/app_tile_badge.dart';
-import 'package:manage_app/features/shared/widgets/app_tile_pill.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
-import 'package:manage_app/features/shared/widgets/text/title_text.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/currency_extension.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/extensions/string_extensions.dart';
+import 'package:huddle/features/expense/models/expense_model.dart';
+import 'package:huddle/features/expense/widgets/expense_category_style.dart';
+import 'package:huddle/features/shared/widgets/app_card.dart';
+import 'package:huddle/features/shared/widgets/app_tile_badge.dart';
+import 'package:huddle/features/shared/widgets/app_tile_pill.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/features/shared/widgets/text/title_text.dart';
 
 class ExpenseTile extends StatelessWidget {
   const ExpenseTile({super.key, required this.expense, this.groupName, this.onTap});

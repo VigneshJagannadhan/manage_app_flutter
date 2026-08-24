@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/group_enums.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/group_service.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/features/group/models/group_model.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/group/widgets/invite_code_view.dart';
-import 'package:manage_app/features/shared/widgets/app_body_column.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
-import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/shared/widgets/app_text_field.dart';
-import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/enums/group_enums.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/group_service.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/group/models/group_model.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/group/widgets/invite_code_view.dart';
+import 'package:huddle/features/shared/widgets/app_body_column.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
+import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/shared/widgets/app_text_field.dart';
+import 'package:huddle/features/shared/widgets/screen_appbar.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 class GroupDetailsScreen extends StatefulWidget {

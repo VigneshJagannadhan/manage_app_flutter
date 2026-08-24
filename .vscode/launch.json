@@ -2,12 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "manage_app",
+            "name": "huddle",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "manage_app (Android device - LAN backend)",
+            "name": "huddle (Android device - LAN backend)",
             "request": "launch",
             "type": "dart",
             "toolArgs": [

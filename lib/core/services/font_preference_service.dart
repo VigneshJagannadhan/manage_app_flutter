@@ -1,4 +1,4 @@
-import 'package:manage_app/core/resources/app_fonts.dart';
+import 'package:huddle/core/resources/app_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Persists the user's chosen font style across app restarts.

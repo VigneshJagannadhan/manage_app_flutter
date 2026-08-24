@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:manage_app/features/auth/models/auth_session_model.dart';
-import 'package:manage_app/features/auth/models/token_pair_model.dart';
-import 'package:manage_app/features/auth/models/user_model.dart';
+import 'package:huddle/features/auth/models/auth_session_model.dart';
+import 'package:huddle/features/auth/models/token_pair_model.dart';
+import 'package:huddle/features/auth/models/user_model.dart';
 
 /// Persists the signed-in session (tokens + user) in the platform secure store
 /// (Keychain on iOS, Keystore-backed EncryptedSharedPreferences on Android).

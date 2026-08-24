@@ -1,7 +1,7 @@
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/services/api_result.dart';
-import 'package:manage_app/core/services/api_services.dart';
-import 'package:manage_app/features/auth/models/user_model.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/services/api_result.dart';
+import 'package:huddle/core/services/api_services.dart';
+import 'package:huddle/features/auth/models/user_model.dart';
 
 class ProfileServiceException implements Exception {
   ProfileServiceException(this.message);

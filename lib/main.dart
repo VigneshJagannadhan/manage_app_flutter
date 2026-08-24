@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:manage_app/core/providers/app_providers.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/core/services/session_expired_notifier.dart';
-import 'package:manage_app/core/themes/app_theme.dart';
-import 'package:manage_app/features/auth/screens/sign_in_screen.dart';
-import 'package:manage_app/features/auth/screens/splash_screen.dart';
-import 'package:manage_app/features/journal/data/journal_local_data_source.dart';
-import 'package:manage_app/features/settings/providers/font_provider.dart';
-import 'package:manage_app/features/settings/providers/theme_provider.dart';
+import 'package:huddle/core/providers/app_providers.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/core/services/session_expired_notifier.dart';
+import 'package:huddle/core/themes/app_theme.dart';
+import 'package:huddle/features/auth/screens/sign_in_screen.dart';
+import 'package:huddle/features/auth/screens/splash_screen.dart';
+import 'package:huddle/features/journal/data/journal_local_data_source.dart';
+import 'package:huddle/features/settings/providers/font_provider.dart';
+import 'package:huddle/features/settings/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -22,17 +22,17 @@ void main() async {
     await Hive.deleteBoxFromDisk(journalLocalDataSource.boxName);
     await journalLocalDataSource.init();
   }
-  runApp(const ManageApp());
+  runApp(const HuddleApp());
 }
 
-class ManageApp extends StatefulWidget {
-  const ManageApp({super.key});
+class HuddleApp extends StatefulWidget {
+  const HuddleApp({super.key});
 
   @override
-  State<ManageApp> createState() => _ManageAppState();
+  State<HuddleApp> createState() => _HuddleAppState();
 }
 
-class _ManageAppState extends State<ManageApp> {
+class _HuddleAppState extends State<HuddleApp> {
   @override
   void initState() {
     super.initState();

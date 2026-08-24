@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/journal/models/journal_entry_model.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/journal/widgets/journal_save_status_indicator.dart';
-import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/shared/widgets/app_text_field.dart';
-import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/journal/models/journal_entry_model.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/journal/widgets/journal_save_status_indicator.dart';
+import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/shared/widgets/app_text_field.dart';
+import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:provider/provider.dart';
 
 /// The "inner journal page" - a fully editable, borderless textfield for one calendar day.

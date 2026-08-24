@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/expense_enums.dart';
-import 'package:manage_app/core/services/expense_service.dart';
-import 'package:manage_app/core/services/group_preference_service.dart';
-import 'package:manage_app/features/expense/models/expense_model.dart';
-import 'package:manage_app/features/group/providers/group_provider.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/services/expense_service.dart';
+import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/features/expense/models/expense_model.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class ExpenseProvider extends BaseProvider {
   ExpenseProvider({required this.expenseService, required this.groupProvider, required this.groupPreferenceService});

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/constants/app_constants.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/expense/screens/expense_dashboard_screen.dart';
-import 'package:manage_app/features/journal/screens/journal_screen.dart';
-import 'package:manage_app/features/reminders/screens/reminders_screen.dart';
-import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/task/screens/task_list_screen.dart';
+import 'package:huddle/core/constants/app_constants.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/expense/screens/expense_dashboard_screen.dart';
+import 'package:huddle/features/journal/screens/journal_screen.dart';
+import 'package:huddle/features/reminders/screens/reminders_screen.dart';
+import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/task/screens/task_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

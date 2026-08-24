@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/services/connectivity_service.dart';
-import 'package:manage_app/core/services/journal_service.dart';
-import 'package:manage_app/features/journal/data/journal_repository.dart';
-import 'package:manage_app/features/journal/models/journal_entry_model.dart';
-import 'package:manage_app/features/settings/providers/profile_provider.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/services/connectivity_service.dart';
+import 'package:huddle/core/services/journal_service.dart';
+import 'package:huddle/features/journal/data/journal_repository.dart';
+import 'package:huddle/features/journal/models/journal_entry_model.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 /// One day in the journal feed - either backed by an [entry], or `null` for a day the
 /// user never wrote anything for.

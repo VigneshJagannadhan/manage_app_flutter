@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/features/auth/providers/auth_provider.dart';
-import 'package:manage_app/features/auth/validators/auth_validators.dart';
-import 'package:manage_app/features/settings/providers/profile_provider.dart';
-import 'package:manage_app/features/settings/screens/change_password_screen.dart';
-import 'package:manage_app/features/settings/validators/profile_validators.dart';
-import 'package:manage_app/features/shared/widgets/app_body_column.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
-import 'package:manage_app/features/shared/widgets/app_scaffold.dart';
-import 'package:manage_app/features/shared/widgets/app_text_field.dart';
-import 'package:manage_app/features/shared/widgets/screen_appbar.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/auth/validators/auth_validators.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
+import 'package:huddle/features/settings/screens/change_password_screen.dart';
+import 'package:huddle/features/settings/validators/profile_validators.dart';
+import 'package:huddle/features/shared/widgets/app_body_column.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
+import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/shared/widgets/app_text_field.dart';
+import 'package:huddle/features/shared/widgets/screen_appbar.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 class ProfileEditScreen extends StatefulWidget {

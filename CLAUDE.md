@@ -1,4 +1,4 @@
-# Project Instructions - manage_app
+# Project Instructions - huddle
 
 This file is loaded automatically by Claude Code for this project. It points
 to the project-specific standards files kept in `.agent/`.

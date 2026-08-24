@@ -1,5 +1,5 @@
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
 
 class TaskModel {
   final String? id;

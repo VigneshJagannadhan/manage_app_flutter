@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/resources/app_assets.dart';
-import 'package:manage_app/features/shared/widgets/app_svg_icon.dart';
+import 'package:huddle/core/resources/app_assets.dart';
+import 'package:huddle/features/shared/widgets/app_svg_icon.dart';
 
 /// Labelled extended FAB used for the primary "create" action on a tab's
 /// root screen - a plain icon-only FAB reads as generic, the label makes the

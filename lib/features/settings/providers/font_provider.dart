@@ -1,6 +1,6 @@
-import 'package:manage_app/core/resources/app_fonts.dart';
-import 'package:manage_app/core/services/font_preference_service.dart';
-import 'package:manage_app/features/shared/providers/base_provider.dart';
+import 'package:huddle/core/resources/app_fonts.dart';
+import 'package:huddle/core/services/font_preference_service.dart';
+import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class FontProvider extends BaseProvider {
   FontProvider({required this.fontPreferenceService});

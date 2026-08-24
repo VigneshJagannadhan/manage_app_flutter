@@ -1,9 +1,9 @@
-import 'package:manage_app/core/constants/app_urls.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/services/api_result.dart';
-import 'package:manage_app/core/services/api_services.dart';
-import 'package:manage_app/features/task/models/task_model.dart';
+import 'package:huddle/core/constants/app_urls.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/services/api_result.dart';
+import 'package:huddle/core/services/api_services.dart';
+import 'package:huddle/features/task/models/task_model.dart';
 
 class TaskServiceException implements Exception {
   TaskServiceException(this.message);

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/enums/task_enums.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/string_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/core/services/navigation_service.dart';
-import 'package:manage_app/features/shared/widgets/app_bottom_sheet.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
-import 'package:manage_app/features/shared/widgets/app_date_picker.dart';
-import 'package:manage_app/features/shared/widgets/app_dropdown_field.dart';
-import 'package:manage_app/features/task/providers/task_provider.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/string_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/shared/widgets/app_bottom_sheet.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
+import 'package:huddle/features/shared/widgets/app_date_picker.dart';
+import 'package:huddle/features/shared/widgets/app_dropdown_field.dart';
+import 'package:huddle/features/task/providers/task_provider.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
 class TaskFilterSheet {

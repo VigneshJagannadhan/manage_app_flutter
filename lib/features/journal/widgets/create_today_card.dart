@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/shared/widgets/app_button.dart';
-import 'package:manage_app/features/shared/widgets/app_card.dart';
-import 'package:manage_app/features/shared/widgets/text/title_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
+import 'package:huddle/features/shared/widgets/app_card.dart';
+import 'package:huddle/features/shared/widgets/text/title_text.dart';
 
 /// Prompt shown in place of a tile when today has no entry yet.
 class CreateTodayCard extends StatelessWidget {

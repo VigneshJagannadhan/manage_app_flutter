@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:manage_app/core/extensions/build_context_theme_extensions.dart';
-import 'package:manage_app/core/extensions/date_time_extensions.dart';
-import 'package:manage_app/core/resources/app_strings.dart';
-import 'package:manage_app/features/journal/providers/journal_provider.dart';
-import 'package:manage_app/features/shared/widgets/app_card.dart';
-import 'package:manage_app/features/shared/widgets/text/body_text.dart';
-import 'package:manage_app/features/shared/widgets/text/label_text.dart';
+import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/shared/widgets/app_card.dart';
+import 'package:huddle/features/shared/widgets/text/body_text.dart';
+import 'package:huddle/features/shared/widgets/text/label_text.dart';
 
 /// One row in the journal feed for a day that isn't today-with-no-entry (that case gets
 /// [CreateTodayCard] instead). Renders either a content preview or a muted "missing" state -
