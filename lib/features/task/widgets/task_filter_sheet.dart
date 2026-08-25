@@ -12,16 +12,65 @@ import 'package:manage_app/features/task/providers/task_provider.dart';
 import 'package:manage_app/features/shared/widgets/text/label_text.dart';
 import 'package:provider/provider.dart';
 
+/// Staged copy of the task filters shown in [TaskFilterSheet], edited locally by
+/// the pills/dropdowns and only pushed into [TaskProvider] when Apply is pressed -
+/// selecting an option must not filter the underlying list until then.
+class _TaskFilterDraft extends ChangeNotifier {
+  _TaskFilterDraft.from(TaskProvider provider)
+    : status = provider.taskStatusFilter,
+      priority = provider.priorityFilter,
+      sortOption = provider.sortOption,
+      dateFilterOption = provider.dateFilterOption,
+      customDate = provider.customDate;
+
+  TaskStatus? status;
+  TaskPriority? priority;
+  TaskSortOption sortOption;
+  TaskDateFilterOption dateFilterOption;
+  DateTime? customDate;
+
+  void setStatus(TaskStatus? value) {
+    status = value;
+    notifyListeners();
+  }
+
+  void setPriority(TaskPriority? value) {
+    priority = value;
+    notifyListeners();
+  }
+
+  void setSortOption(TaskSortOption value) {
+    sortOption = value;
+    notifyListeners();
+  }
+
+  void setDateFilter(TaskDateFilterOption option, {DateTime? customDate}) {
+    dateFilterOption = option;
+    this.customDate = option == TaskDateFilterOption.custom ? customDate : null;
+    notifyListeners();
+  }
+
+  void resetToDefaults() {
+    status = TaskStatus.open;
+    priority = null;
+    sortOption = TaskSortOption.dueDate;
+    dateFilterOption = TaskDateFilterOption.all;
+    customDate = null;
+    notifyListeners();
+  }
+}
+
 class TaskFilterSheet {
   const TaskFilterSheet._();
 
   static Future<void> show(BuildContext context) {
+    final draft = _TaskFilterDraft.from(context.read<TaskProvider>());
     return AppBottomSheet.show<void>(
       context,
       title: AppStrings.filterAndSort,
       icon: Icons.tune,
-      body: const _TaskFilterSheetBody(),
-      footer: const _TaskFilterSheetFooter(),
+      body: ChangeNotifierProvider<_TaskFilterDraft>.value(value: draft, child: const _TaskFilterSheetBody()),
+      footer: ChangeNotifierProvider<_TaskFilterDraft>.value(value: draft, child: const _TaskFilterSheetFooter()),
     );
   }
 }
@@ -47,7 +96,7 @@ class _TaskFilterSheetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<TaskProvider>();
+    final draft = context.watch<_TaskFilterDraft>();
     final theme = context.appTheme;
     final sectionGap = theme.spacingMedium;
     final fieldGap = theme.spacingSmall;
@@ -62,8 +111,8 @@ class _TaskFilterSheetBody extends StatelessWidget {
           AppDropdownField<TaskStatus?>(
             items: const [null, TaskStatus.open, TaskStatus.completed],
             itemLabelBuilder: _statusLabel,
-            value: provider.taskStatusFilter,
-            onChanged: provider.setTaskStatusFilter,
+            value: draft.status,
+            onChanged: draft.setStatus,
           ),
           SizedBox(height: sectionGap),
           LabelText.large(AppStrings.priorityLabel),
@@ -71,8 +120,8 @@ class _TaskFilterSheetBody extends StatelessWidget {
           AppDropdownField<TaskPriority?>(
             items: const [null, TaskPriority.low, TaskPriority.medium, TaskPriority.high],
             itemLabelBuilder: _priorityLabel,
-            value: provider.priorityFilter,
-            onChanged: provider.setPriorityFilter,
+            value: draft.priority,
+            onChanged: draft.setPriority,
           ),
           SizedBox(height: sectionGap),
           LabelText.large(AppStrings.sortByLabel),
@@ -80,8 +129,8 @@ class _TaskFilterSheetBody extends StatelessWidget {
           AppDropdownField<TaskSortOption>(
             items: TaskSortOption.values,
             itemLabelBuilder: _sortOptionLabel,
-            value: provider.sortOption,
-            onChanged: provider.setSortOption,
+            value: draft.sortOption,
+            onChanged: draft.setSortOption,
           ),
           SizedBox(height: sectionGap),
           LabelText.large(AppStrings.dateLabel),
@@ -92,17 +141,17 @@ class _TaskFilterSheetBody extends StatelessWidget {
             children: TaskDateFilterOption.values.map((option) {
               return ChoiceChip(
                 label: Text(_dateFilterLabel(option)),
-                selected: provider.dateFilterOption == option,
-                onSelected: (_) => provider.setDateFilter(option),
+                selected: draft.dateFilterOption == option,
+                onSelected: (_) => draft.setDateFilter(option),
               );
             }).toList(),
           ),
-          if (provider.dateFilterOption == TaskDateFilterOption.custom) ...[
+          if (draft.dateFilterOption == TaskDateFilterOption.custom) ...[
             SizedBox(height: fieldGap),
             AppDatePicker(
-              value: provider.customDate,
+              value: draft.customDate,
               hint: AppStrings.customDate,
-              onChanged: (date) => provider.setDateFilter(TaskDateFilterOption.custom, customDate: date),
+              onChanged: (date) => draft.setDateFilter(TaskDateFilterOption.custom, customDate: date),
             ),
           ],
         ],
@@ -121,11 +170,24 @@ class _TaskFilterSheetFooter extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: AppButton.secondary(label: AppStrings.clearAll, onPressed: () => context.read<TaskProvider>().clearFilters()),
+          child: AppButton.secondary(label: AppStrings.clearAll, onPressed: () => context.read<_TaskFilterDraft>().resetToDefaults()),
         ),
         SizedBox(width: theme.spacingSmall),
         Expanded(
-          child: AppButton.primary(label: AppStrings.apply, onPressed: () => navigationService.pop(context)),
+          child: AppButton.primary(
+            label: AppStrings.apply,
+            onPressed: () {
+              final draft = context.read<_TaskFilterDraft>();
+              context.read<TaskProvider>().applyFilters(
+                status: draft.status,
+                priority: draft.priority,
+                sortOption: draft.sortOption,
+                dateFilterOption: draft.dateFilterOption,
+                customDate: draft.customDate,
+              );
+              navigationService.pop(context);
+            },
+          ),
         ),
       ],
     );

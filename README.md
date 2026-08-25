@@ -779,9 +779,6 @@ Documented plainly so they're not mistaken for intended behavior:
   the hardcoded production `AppUrls.baseUrl` regardless of build flavor —
   there's no actual environment-based base-URL switching wired up despite
   the scaffolding suggesting there should be.
-- **Version drift.** `AppConstants.appVersion` is hardcoded to `'1.0.0'`,
-  while `pubspec.yaml` reports `0.10.0+15` — these are two independent,
-  unsynchronized sources of truth for the app version.
 - **`AppScaffold` uses a raw `GestureDetector`** (tap-outside to dismiss the
   keyboard) — this conflicts with this project's own standing rule against
   `GestureDetector` usage. It's a small, contained, always-loaded shared

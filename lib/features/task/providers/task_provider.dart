@@ -61,21 +61,25 @@ class TaskProvider extends BaseProvider {
     loadTasks();
   }
 
-  void setPriorityFilter(TaskPriority? priority) {
+  /// Commits a full set of filter/sort selections at once - used by [TaskFilterSheet]'s
+  /// Apply button so picking individual pills/dropdowns doesn't filter the list until then.
+  /// [customDate] is only kept when [dateFilterOption] is [TaskDateFilterOption.custom].
+  void applyFilters({
+    required TaskStatus? status,
+    required TaskPriority? priority,
+    required TaskSortOption sortOption,
+    required TaskDateFilterOption dateFilterOption,
+    DateTime? customDate,
+  }) {
     _priorityFilter = priority;
-    notifyListeners();
-  }
-
-  void setSortOption(TaskSortOption option) {
-    _sortOption = option;
-    notifyListeners();
-  }
-
-  /// [customDate] is only kept when [option] is [TaskDateFilterOption.custom].
-  void setDateFilter(TaskDateFilterOption option, {DateTime? customDate}) {
-    _dateFilterOption = option;
-    _customDate = option == TaskDateFilterOption.custom ? customDate : null;
-    notifyListeners();
+    _sortOption = sortOption;
+    _dateFilterOption = dateFilterOption;
+    _customDate = dateFilterOption == TaskDateFilterOption.custom ? customDate : null;
+    if (status != _taskStatusFilter) {
+      setTaskStatusFilter(status);
+    } else {
+      notifyListeners();
+    }
   }
 
   void clearFilters() {
