@@ -19,10 +19,10 @@ an instruction to run `git commit`. Never commit as a side effect of being asked
 what the message should be.
 
 **Branch naming note:** the repo's active integration branch is named
-`development` (not `dev`). A stale `dev` branch still exists locally/remotely
-but is behind `development` - never branch from or target it. The shorthand
-trigger below keeps the `-dev` spelling for brevity, but it targets the
-`development` branch.
+`development` (not `dev`). The old stale `dev` branch has been deleted -
+`development` is the only integration branch, so there's nothing to
+disambiguate against anymore. The shorthand trigger below keeps the `-dev`
+spelling for brevity, but it targets the `development` branch.
 
 **Shorthand triggers** - these mean commit, push, and open a PR, and also pin
 the PR's target branch:

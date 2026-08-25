@@ -100,6 +100,7 @@ class AppThemes {
     scaffoldBackgroundColor: AppColors.backgroundColor,
     textTheme: _textTheme(AppColors.textColor, font),
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColor)),
+    chipTheme: ChipThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(appBorderRadius))),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
       overlayColor: WidgetStateProperty.all(Colors.transparent),
@@ -160,6 +161,7 @@ class AppThemes {
     scaffoldBackgroundColor: AppColors.backgroundColorDark,
     textTheme: _textTheme(AppColors.textColorDark, font),
     filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: AppColors.primaryColorDark)),
+    chipTheme: ChipThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(appBorderRadius))),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: Colors.transparent,
       overlayColor: WidgetStateProperty.all(Colors.transparent),
