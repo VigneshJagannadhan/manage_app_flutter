@@ -50,6 +50,11 @@ jobs:
             | sed 's/^/- /' > release_notes.txt
           cat release_notes.txt
 
+          # Play Store wants per-locale "what's new" text (500 char cap) rather
+          # than a free-form file, so mirror the same notes into that layout.
+          mkdir -p distribution/whatsnew
+          cut -c1-500 release_notes.txt > distribution/whatsnew/whatsnew-en-US
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.44.4
@@ -70,20 +75,23 @@ jobs:
 
       - run: flutter pub get
 
-      - name: Build release APK
+      - name: Build release binaries
         run: |
+          flutter build appbundle --release \
+            --build-name=${{ steps.tag_version.outputs.new_version }} \
+            --build-number=${{ github.run_number }}
           flutter build apk --release \
             --build-name=${{ steps.tag_version.outputs.new_version }} \
             --build-number=${{ github.run_number }}
 
-      - name: Upload to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+      - name: Upload to Play Store internal testing
+        uses: r0adkll/upload-google-play@v1
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          groups: testers
-          file: build/app/outputs/flutter-apk/app-release.apk
-          releaseNotesFile: release_notes.txt
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: com.vignesh.huddle
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          whatsNewDirectory: distribution/whatsnew
 
       # Only runs if build + upload above succeeded - keeps pubspec.yaml's version in sync
       # with what was actually shipped, and gives the release tag a commit to point at.

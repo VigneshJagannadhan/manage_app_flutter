@@ -219,7 +219,7 @@ void main() {
     expect(find.text(AppStrings.dateLabel), findsOneWidget);
   });
 
-  testWidgets('selecting "All" status shows both open and completed tasks', (tester) async {
+  testWidgets('selecting "All" status only applies once Apply is pressed', (tester) async {
     await _pumpHome(tester);
 
     await tester.tap(find.byIcon(Icons.filter_list_rounded));
@@ -235,17 +235,18 @@ void main() {
     await tester.tap(allOption);
     await tester.pumpAndSettle();
 
+    // Picking the pill must not touch the provider yet - only Apply commits it.
     final provider = tester.element(find.byType(HomeScreen)).read<TaskProvider>();
-    expect(provider.taskStatusFilter, isNull, reason: 'status filter should be null (both) after selecting All');
-    expect(provider.tasks.map((t) => t.title), contains('Completed task'));
+    expect(provider.taskStatusFilter, TaskStatus.open, reason: 'selecting a filter should stage it, not apply it immediately');
 
-    await tester.tap(find.byTooltip(AppStrings.closeTooltip));
+    await tester.tap(find.text(AppStrings.apply));
     await tester.pumpAndSettle();
 
+    expect(provider.taskStatusFilter, isNull, reason: 'status filter should be null (both) after pressing Apply');
     expect(find.text('Completed task'), findsOneWidget);
   });
 
-  testWidgets('date filter chip filters the list down to matching due dates', (tester) async {
+  testWidgets('date filter chip only filters the list once Apply is pressed', (tester) async {
     await _pumpHome(tester);
 
     await tester.tap(find.byIcon(Icons.filter_list_rounded));
@@ -254,14 +255,25 @@ void main() {
     await tester.tap(find.text(AppStrings.tomorrow));
     await tester.pumpAndSettle();
 
+    // Closing without Apply must discard the staged pill selection.
     await tester.tap(find.byTooltip(AppStrings.closeTooltip));
+    await tester.pumpAndSettle();
+
+    expect(find.text('High priority, due today'), findsOneWidget);
+    expect(find.text('Low priority, due tomorrow'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.filter_list_rounded));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(AppStrings.tomorrow));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(AppStrings.apply));
     await tester.pumpAndSettle();
 
     expect(find.text('High priority, due today'), findsNothing);
     expect(find.text('Low priority, due tomorrow'), findsOneWidget);
   });
 
-  testWidgets('Clear All resets filters back to defaults', (tester) async {
+  testWidgets('Clear All stages defaults, applied only once Apply is pressed', (tester) async {
     await _pumpHome(tester);
 
     await tester.tap(find.byIcon(Icons.filter_list_rounded));
@@ -273,6 +285,11 @@ void main() {
     await tester.pumpAndSettle();
 
     final provider = tester.element(find.byType(HomeScreen)).read<TaskProvider>();
+    expect(provider.dateFilterOption, TaskDateFilterOption.all, reason: 'Clear All should not touch the provider until Apply is pressed');
+
+    await tester.tap(find.text(AppStrings.apply));
+    await tester.pumpAndSettle();
+
     expect(provider.dateFilterOption, TaskDateFilterOption.all);
     expect(provider.priorityFilter, isNull);
     expect(provider.sortOption, TaskSortOption.dueDate);
