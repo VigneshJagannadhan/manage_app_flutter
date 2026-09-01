@@ -17,10 +17,10 @@ class TaskModel {
   TaskModel({
     this.id,
     required this.title,
-    required this.description,
+    this.description,
     required this.priority,
     this.status = TaskStatus.open,
-    required this.createdAt,
+    this.createdAt,
     this.dueDate,
     this.groupId,
     this.createdBy,
@@ -31,11 +31,11 @@ class TaskModel {
     return TaskModel(
       id: json['_id'] as String?,
       title: json['title'] as String,
-      description: json['description'] as String,
+      description: json['description'] as String?,
       priority: TaskPriorityApi.fromApiValue(json['priority'] as String),
       // Falls back to `open` for responses from before the backend added this field.
       status: json['status'] != null ? TaskStatusApi.fromApiValue(json['status'] as String) : TaskStatus.open,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : null,
       dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate'] as String) : null,
       groupId: json['groupId'] as String?,
       createdBy: json['createdBy'] as String?,
@@ -47,7 +47,7 @@ class TaskModel {
   Map<String, dynamic> toJson() {
     return {
       'title': title,
-      'description': description,
+      if (description != null) 'description': description,
       if (priority != null) 'priority': priority!.apiValue,
       if (status != null) 'status': status!.apiValue,
       if (createdAt != null) 'createdAt': createdAt!.toServer(),

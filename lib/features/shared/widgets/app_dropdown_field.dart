@@ -66,7 +66,6 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
               height: controlHeight,
               padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHigh,
                 borderRadius: radius,
                 border: Border.all(color: widget.enabled ? outlineColor : colorScheme.outlineVariant),
               ),

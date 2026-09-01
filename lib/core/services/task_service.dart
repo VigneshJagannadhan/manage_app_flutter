@@ -24,8 +24,8 @@ class TaskService {
       AppUrls.tasks,
       data: {
         'title': task.title,
-        'description': task.description,
         'priority': task.priority?.apiValue,
+        'description': ?task.description,
         'groupId': task.groupId,
         if (task.createdAt != null) 'createdAt': task.createdAt?.toServer(),
         if (task.dueDate != null) 'dueDate': task.dueDate?.toServer(),
