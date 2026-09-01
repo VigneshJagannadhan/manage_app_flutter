@@ -18,7 +18,7 @@ class LocalNotificationService {
 
   Future<void> initialize() async {
     tz_data.initializeTimeZones();
-    final localTimezone = await FlutterTimezone.getLocalTimezone();
+    final localTimezone = await getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(localTimezone));
 
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -42,6 +42,11 @@ class LocalNotificationService {
       sound: true,
     );
   }
+
+  /// The device's current IANA time zone (e.g. "Asia/Kolkata") - kept in sync with the
+  /// backend by [NotificationPreferencesProvider] so `scheduledAt` times it computes for
+  /// journal/expense reminders land on the user's actual wall-clock time.
+  Future<String> getLocalTimezone() => FlutterTimezone.getLocalTimezone();
 
   /// Handles the case where the app was launched by tapping a notification while fully
   /// terminated - the local-notification equivalent of `getInitialMessage()` for FCM.

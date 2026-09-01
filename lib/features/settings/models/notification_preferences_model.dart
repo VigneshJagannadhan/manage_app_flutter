@@ -6,6 +6,7 @@ class NotificationPreferencesModel {
     this.expenseRemindersEnabled = true,
     this.journalReminderTime,
     this.expenseReminderTime,
+    this.timezone,
   });
 
   final bool generalRemindersEnabled;
@@ -15,6 +16,9 @@ class NotificationPreferencesModel {
   // "HH:mm", 24h. No equivalent field for general (ad hoc) or task (due-date driven) reminders.
   final String? journalReminderTime;
   final String? expenseReminderTime;
+  // IANA time zone name (e.g. "Asia/Kolkata") the backend uses to interpret the reminder times
+  // above. Kept in sync with the device's zone by [NotificationPreferencesProvider].
+  final String? timezone;
 
   factory NotificationPreferencesModel.fromJson(Map<String, dynamic> json) {
     return NotificationPreferencesModel(
@@ -24,6 +28,7 @@ class NotificationPreferencesModel {
       expenseRemindersEnabled: json['expenseReminderEnabled'] as bool? ?? true,
       journalReminderTime: json['journalReminderTime'] as String?,
       expenseReminderTime: json['expenseReminderTime'] as String?,
+      timezone: json['timezone'] as String?,
     );
   }
 
@@ -34,6 +39,7 @@ class NotificationPreferencesModel {
     bool? expenseRemindersEnabled,
     String? journalReminderTime,
     String? expenseReminderTime,
+    String? timezone,
   }) {
     return NotificationPreferencesModel(
       generalRemindersEnabled: generalRemindersEnabled ?? this.generalRemindersEnabled,
@@ -42,6 +48,7 @@ class NotificationPreferencesModel {
       expenseRemindersEnabled: expenseRemindersEnabled ?? this.expenseRemindersEnabled,
       journalReminderTime: journalReminderTime ?? this.journalReminderTime,
       expenseReminderTime: expenseReminderTime ?? this.expenseReminderTime,
+      timezone: timezone ?? this.timezone,
     );
   }
 }

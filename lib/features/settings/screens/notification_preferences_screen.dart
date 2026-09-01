@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
 import 'package:huddle/core/providers/notification_schedule_provider.dart';
 import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/local_notification_service.dart';
 import 'package:huddle/features/settings/providers/notification_preferences_provider.dart';
 import 'package:huddle/features/settings/services/notification_preferences_service.dart';
 import 'package:huddle/features/shared/widgets/app_body_column.dart';
@@ -25,6 +26,7 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
           NotificationPreferencesProvider(
               notificationPreferencesService: notificationPreferencesService,
               notificationScheduleProvider: context.read<NotificationScheduleProvider>(),
+              localNotificationService: localNotificationService,
             )
             ..onInit()
             ..loadPreferences(),
