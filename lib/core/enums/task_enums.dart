@@ -34,6 +34,3 @@ extension TaskStatusApi on TaskStatus {
 
 /// Client-side sort applied to the task list. Not sent to the API.
 enum TaskSortOption { dueDate, priority }
-
-/// Client-side due-date filter applied to the task list. Not sent to the API.
-enum TaskDateFilterOption { all, today, tomorrow, custom }

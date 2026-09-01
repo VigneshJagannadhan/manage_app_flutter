@@ -3,6 +3,7 @@ class AppStrings {
   static const String manageYourTasks = 'Manage your tasks';
   static const String taskDetails = 'Task Details';
   static const String completed = 'Completed';
+  static const String closed = 'Closed';
   static const String due = 'Due';
   static const String created = 'Created';
   static const String edit = 'Edit';
@@ -23,8 +24,6 @@ class AppStrings {
   static const String dateLabel = 'Date';
   static const String all = 'All';
   static const String today = 'Today';
-  static const String tomorrow = 'Tomorrow';
-  static const String customDate = 'Custom Date';
   static const String apply = 'Apply';
   static const String clearAll = 'Clear All';
 

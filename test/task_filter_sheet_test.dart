@@ -30,6 +30,7 @@ import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/settings/services/profile_service.dart';
 import 'package:huddle/features/task/models/task_model.dart';
 import 'package:huddle/features/task/providers/task_provider.dart';
+import 'package:huddle/features/shared/widgets/app_dropdown_field.dart';
 import 'package:provider/provider.dart';
 
 class _FakeTokenStorageService extends TokenStorageService {
@@ -114,6 +115,30 @@ class _FakeConnectivityService extends ConnectivityService {
   Future<bool> get isConnected async => true;
 }
 
+/// Monday of the calendar week containing [date] - mirrors the week window
+/// [TaskDateCarousel] computes internally.
+DateTime _startOfWeek(DateTime date) {
+  final atMidnight = DateTime(date.year, date.month, date.day);
+  return atMidnight.subtract(Duration(days: atMidnight.weekday - DateTime.monday));
+}
+
+/// A day guaranteed to fall in the same week as today but not be today itself -
+/// used so tests don't depend on which real-world weekday they happen to run on.
+DateTime _otherDayInCurrentWeek() {
+  final today = DateTime.now();
+  final weekStart = _startOfWeek(today);
+  final todayMidnight = DateTime(today.year, today.month, today.day);
+  return todayMidnight.isAtSameMomentAs(weekStart) ? weekStart.add(const Duration(days: 1)) : weekStart;
+}
+
+const _weekdayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+/// The accessibility label [TaskDateCarousel] gives the day cell for [date].
+String _dayCellLabel(DateTime date, {bool hasPendingTask = false}) {
+  final base = '${_weekdayLetters[date.weekday - 1]} ${date.day}';
+  return hasPendingTask ? '$base, has pending tasks' : base;
+}
+
 class _FakeTaskService extends TaskService {
   @override
   Future<List<TaskModel>> listTasks({TaskStatus? status, String? groupId}) async {
@@ -129,12 +154,12 @@ class _FakeTaskService extends TaskService {
       ),
       TaskModel(
         id: '2',
-        title: 'Low priority, due tomorrow',
+        title: 'Low priority, due another day',
         description: '',
         priority: TaskPriority.low,
         status: TaskStatus.open,
         createdAt: DateTime(2026, 1, 2),
-        dueDate: DateTime.now().add(const Duration(days: 1)),
+        dueDate: _otherDayInCurrentWeek(),
       ),
       TaskModel(
         id: '3',
@@ -205,9 +230,12 @@ void main() {
   testWidgets('filter icon opens the filter & sort sheet', (tester) async {
     await _pumpHome(tester);
 
+    // Default selected day is today, so the other task's day is out of scope;
+    // the completed task has no due date so it shows regardless of selected day.
+    // Default status filter is "both", so open and closed tasks show together.
     expect(find.text('High priority, due today'), findsOneWidget);
-    expect(find.text('Low priority, due tomorrow'), findsOneWidget);
-    expect(find.text('Completed task'), findsNothing); // default status filter is Open
+    expect(find.text('Low priority, due another day'), findsNothing);
+    expect(find.text('Completed task'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
@@ -216,61 +244,46 @@ void main() {
     expect(find.text(AppStrings.statusLabel), findsOneWidget);
     expect(find.text(AppStrings.priorityLabel), findsOneWidget);
     expect(find.text(AppStrings.sortByLabel), findsOneWidget);
-    expect(find.text(AppStrings.dateLabel), findsOneWidget);
   });
 
-  testWidgets('selecting "All" status only applies once Apply is pressed', (tester) async {
+  testWidgets('selecting "Open" status only applies once Apply is pressed', (tester) async {
     await _pumpHome(tester);
 
     await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
-    // Status dropdown currently shows "Open" (the default filter); tap it to open the
-    // panel, then pick "All" from the list of options.
-    await tester.tap(find.text('Open'));
+    // Status dropdown shows no text when its value is "All" (null); open it by
+    // type, then pick "Open" from the list of options.
+    await tester.tap(find.byType(AppDropdownField<TaskStatus?>));
     await tester.pumpAndSettle();
-    final allOption = find.text(AppStrings.all).first;
-    await tester.ensureVisible(allOption);
+    final openOption = find.text('Open').last;
+    await tester.ensureVisible(openOption);
     await tester.pumpAndSettle();
-    await tester.tap(allOption);
+    await tester.tap(openOption);
     await tester.pumpAndSettle();
 
     // Picking the pill must not touch the provider yet - only Apply commits it.
     final provider = tester.element(find.byType(HomeScreen)).read<TaskProvider>();
-    expect(provider.taskStatusFilter, TaskStatus.open, reason: 'selecting a filter should stage it, not apply it immediately');
+    expect(provider.taskStatusFilter, isNull, reason: 'selecting a filter should stage it, not apply it immediately');
 
     await tester.tap(find.text(AppStrings.apply));
     await tester.pumpAndSettle();
 
-    expect(provider.taskStatusFilter, isNull, reason: 'status filter should be null (both) after pressing Apply');
-    expect(find.text('Completed task'), findsOneWidget);
+    expect(provider.taskStatusFilter, TaskStatus.open, reason: 'status filter should be Open after pressing Apply');
+    expect(find.text('Completed task'), findsNothing);
   });
 
-  testWidgets('date filter chip only filters the list once Apply is pressed', (tester) async {
+  testWidgets('tapping a day in the calendar carousel scopes the list to that day', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.filter_list_rounded));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text(AppStrings.tomorrow));
-    await tester.pumpAndSettle();
-
-    // Closing without Apply must discard the staged pill selection.
-    await tester.tap(find.byTooltip(AppStrings.closeTooltip));
-    await tester.pumpAndSettle();
-
     expect(find.text('High priority, due today'), findsOneWidget);
-    expect(find.text('Low priority, due tomorrow'), findsOneWidget);
+    expect(find.text('Low priority, due another day'), findsNothing);
 
-    await tester.tap(find.byIcon(Icons.filter_list_rounded));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(AppStrings.tomorrow));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(AppStrings.apply));
+    await tester.tap(find.bySemanticsLabel(_dayCellLabel(_otherDayInCurrentWeek(), hasPendingTask: true)));
     await tester.pumpAndSettle();
 
     expect(find.text('High priority, due today'), findsNothing);
-    expect(find.text('Low priority, due tomorrow'), findsOneWidget);
+    expect(find.text('Low priority, due another day'), findsOneWidget);
   });
 
   testWidgets('Clear All stages defaults, applied only once Apply is pressed', (tester) async {
@@ -279,20 +292,28 @@ void main() {
     await tester.tap(find.byIcon(Icons.filter_list_rounded));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(AppStrings.tomorrow));
+    // Priority dropdown shows no text when its value is "All" (null); open it by type and stage "High".
+    await tester.tap(find.byType(AppDropdownField<TaskPriority?>));
     await tester.pumpAndSettle();
+    final highOption = find.text('High').last;
+    await tester.ensureVisible(highOption);
+    await tester.pumpAndSettle();
+    await tester.tap(highOption);
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text(AppStrings.clearAll));
     await tester.pumpAndSettle();
 
+    expect(find.text('High'), findsNothing, reason: 'Clear All should reset the staged priority back to All');
+
     final provider = tester.element(find.byType(HomeScreen)).read<TaskProvider>();
-    expect(provider.dateFilterOption, TaskDateFilterOption.all, reason: 'Clear All should not touch the provider until Apply is pressed');
+    expect(provider.priorityFilter, isNull, reason: 'Clear All should not touch the provider until Apply is pressed');
 
     await tester.tap(find.text(AppStrings.apply));
     await tester.pumpAndSettle();
 
-    expect(provider.dateFilterOption, TaskDateFilterOption.all);
     expect(provider.priorityFilter, isNull);
     expect(provider.sortOption, TaskSortOption.dueDate);
-    expect(provider.taskStatusFilter, TaskStatus.open);
+    expect(provider.taskStatusFilter, isNull);
   });
 }

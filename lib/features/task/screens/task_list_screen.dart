@@ -14,6 +14,7 @@ import 'package:huddle/features/task/models/task_model.dart';
 import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:huddle/features/task/screens/task_detail_screen.dart';
 import 'package:huddle/features/task/screens/task_form_screen.dart';
+import 'package:huddle/features/task/widgets/task_date_carousel.dart';
 import 'package:huddle/features/task/widgets/task_filter_sheet.dart';
 import 'package:huddle/features/task/widgets/task_tile.dart';
 import 'package:huddle/features/shared/widgets/text/body_text.dart';
@@ -89,6 +90,14 @@ class TaskListScreen extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.verticalMargin, theme.horizontalMargin, 0),
+          child: TaskDateCarousel(
+            selectedDate: provider.selectedDate,
+            onDateSelected: provider.setSelectedDate,
+            datesWithPendingTasks: provider.datesWithPendingTasks,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.spacingMedium, theme.horizontalMargin, 0),
           child: Row(
             children: [
               Expanded(
