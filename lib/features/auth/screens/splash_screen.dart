@@ -1,10 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
 import 'package:huddle/core/providers/global_data_provider.dart';
+import 'package:huddle/core/providers/notification_schedule_provider.dart';
 import 'package:huddle/core/resources/app_assets.dart';
+import 'package:huddle/core/services/local_notification_service.dart';
 import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/core/services/notification_deep_link_router.dart';
 import 'package:huddle/features/auth/providers/auth_provider.dart';
 import 'package:huddle/features/auth/screens/sign_in_screen.dart';
 import 'package:huddle/features/home/screens/home_screen.dart';
@@ -50,10 +52,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
-    navigationService.pushReplacement(
+    if (isAuthenticated) unawaited(context.read<NotificationScheduleProvider>().refresh());
+
+    if (!mounted) return;
+    await navigationService.pushReplacement(
       context,
       isAuthenticated ? HomeScreen() : const SignInScreen(),
     );
+
+    final launchPayload = await localNotificationService.consumeLaunchPayload();
+    if (launchPayload != null) await notificationDeepLinkRouter.handleTapPayload(launchPayload);
   }
 
   @override
