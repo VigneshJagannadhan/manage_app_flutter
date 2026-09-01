@@ -3,16 +3,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:huddle/core/enums/expense_enums.dart';
 import 'package:huddle/core/services/expense_service.dart';
-import 'package:huddle/core/services/group_preference_service.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class ExpenseProvider extends BaseProvider {
-  ExpenseProvider({required this.expenseService, required this.groupProvider, required this.groupPreferenceService});
+  ExpenseProvider({
+    required this.expenseService,
+    required this.groupProvider,
+    required this.profileProvider,
+  });
   final ExpenseService expenseService;
   final GroupProvider groupProvider;
-  final GroupPreferenceService groupPreferenceService;
+  final ProfileProvider profileProvider;
 
   /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
   /// self-trigger here - it just needs to satisfy the BaseProvider contract.
@@ -33,22 +37,16 @@ class ExpenseProvider extends BaseProvider {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  bool _showAllGroups = true;
-  bool get showAllGroups => _showAllGroups;
+  /// Month the dashboard summary/breakdown/recent list are scoped to - always starts on the
+  /// current month for a fresh app session (deliberately not persisted).
+  DateTime _selectedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+  DateTime get selectedMonth => _selectedMonth;
 
-  /// Reads the last-picked group scope from local storage. Must complete before
-  /// [loadExpenses] so the very first load after sign-in respects it - see
-  /// GlobalDataProvider.loadAllData.
-  Future<void> restoreShowAllGroups() async {
-    _showAllGroups = await groupPreferenceService.readExpensesShowAllGroups();
-    notifyListeners();
-  }
-
-  /// Resets the group-scope choice back to "all groups" and wipes the persisted
-  /// preference, so it doesn't linger into the next account signed in on this device.
-  void resetShowAllGroupsPreference() {
-    _showAllGroups = true;
-    unawaited(groupPreferenceService.clearExpensesShowAllGroups());
+  /// Lower bound for [ExpenseFilterSheet]'s month stepper - falls back to the current month
+  /// when the profile hasn't loaded `createdAt` yet, mirrors [TaskProvider.accountCreatedDate].
+  DateTime get earliestSelectableMonth {
+    final createdAt = profileProvider.profile?.createdAt ?? DateTime.now();
+    return DateTime(createdAt.year, createdAt.month);
   }
 
   // All Expenses screen filters/sort - client-side only, applied on top of the loaded [_expenses].
@@ -64,10 +62,20 @@ class ExpenseProvider extends BaseProvider {
   ExpenseSortOption _sortOption = ExpenseSortOption.newest;
   ExpenseSortOption get sortOption => _sortOption;
 
-  void toggleShowAllGroups(bool value) {
-    _showAllGroups = value;
-    unawaited(groupPreferenceService.saveExpensesShowAllGroups(value));
-    loadExpenses();
+  /// Commits the viewed month staged in [ExpenseFilterSheet] - used by its Apply button.
+  /// The sheet commits the group scope to [groupProvider] (see [GroupProvider.setGroupScope])
+  /// before calling this. [groupScopeChanged] is passed in rather than derived here because
+  /// "did the scope change" also depends on which specific group is now active, which this
+  /// provider doesn't track - only the caller, which holds both [GroupProvider] and this
+  /// provider, can tell (mirrors [TaskProvider.applyFilters]). Changing the month is
+  /// client-side only (no reload needed), so only a group scope change triggers [loadExpenses].
+  void applyDashboardFilters({required bool groupScopeChanged, required DateTime selectedMonth}) {
+    _selectedMonth = DateTime(selectedMonth.year, selectedMonth.month);
+    if (groupScopeChanged) {
+      loadExpenses();
+    } else {
+      notifyListeners();
+    }
   }
 
   void setSearchQuery(String value) {
@@ -131,23 +139,20 @@ class ExpenseProvider extends BaseProvider {
     return sorted.take(limit).toList();
   }
 
-  List<ExpenseModel> get _thisMonthExpenses {
-    final now = DateTime.now();
-    return _expenses.where((expense) {
-      final date = expense.date;
-      return date != null && date.year == now.year && date.month == now.month;
-    }).toList();
-  }
+  List<ExpenseModel> get _selectedMonthExpenses => _expenses.where((expense) {
+    final date = expense.date;
+    return date != null && date.year == _selectedMonth.year && date.month == _selectedMonth.month;
+  }).toList();
 
-  double get totalThisMonth => _thisMonthExpenses.fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
+  double get totalForSelectedMonth => _selectedMonthExpenses.fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
 
-  /// Share of [totalThisMonth] contributed by each category present this month, keyed by category
-  /// and sorted from largest to smallest share.
-  Map<ExpenseCategory, double> get categoryBreakdownThisMonth {
-    final total = totalThisMonth;
+  /// Share of [totalForSelectedMonth] contributed by each category present in [selectedMonth],
+  /// keyed by category and sorted from largest to smallest share.
+  Map<ExpenseCategory, double> get categoryBreakdownForSelectedMonth {
+    final total = totalForSelectedMonth;
     if (total <= 0) return {};
     final totals = <ExpenseCategory, double>{};
-    for (final expense in _thisMonthExpenses) {
+    for (final expense in _selectedMonthExpenses) {
       final category = expense.category ?? ExpenseCategory.other;
       totals[category] = (totals[category] ?? 0) + (expense.amount ?? 0);
     }
@@ -155,11 +160,11 @@ class ExpenseProvider extends BaseProvider {
     return {for (final entry in entries) entry.key: entry.value / total};
   }
 
-  double get essentialAmountThisMonth =>
-      _thisMonthExpenses.where((expense) => expense.essential).fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
+  double get essentialAmountForSelectedMonth =>
+      _selectedMonthExpenses.where((expense) => expense.essential).fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
 
-  double get nonEssentialAmountThisMonth =>
-      _thisMonthExpenses.where((expense) => !expense.essential).fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
+  double get nonEssentialAmountForSelectedMonth =>
+      _selectedMonthExpenses.where((expense) => !expense.essential).fold(0.0, (sum, expense) => sum + (expense.amount ?? 0));
 
   void setExpenses(List<ExpenseModel> expenses) {
     _expenses = expenses;
@@ -183,7 +188,7 @@ class ExpenseProvider extends BaseProvider {
     try {
       final result = await expenseService.listExpenses(
         category: category,
-        groupId: _showAllGroups ? null : groupProvider.activeGroupId,
+        groupId: groupProvider.showAllGroups ? null : groupProvider.activeGroupId,
       );
       setExpenses(result);
     } on ExpenseServiceException catch (e) {

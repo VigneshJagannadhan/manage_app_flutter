@@ -48,7 +48,11 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
     final radius = BorderRadius.circular(theme.appBorderRadius);
     final outlineColor = theme.outlineColor;
     final controlHeight = theme.controlHeight;
-    final selectedLabel = widget.value != null ? widget.itemLabelBuilder(widget.value as T) : null;
+    // `value != null` can't tell "nothing picked yet" apart from a legitimately selected `null`
+    // item (e.g. a nullable T where null itself means "All") - checking membership in `items`
+    // instead means only a value outside the list (the unset default) falls back to the hint.
+    final hasSelection = widget.items.contains(widget.value);
+    final selectedLabel = hasSelection ? widget.itemLabelBuilder(widget.value as T) : null;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

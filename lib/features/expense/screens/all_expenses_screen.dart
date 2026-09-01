@@ -143,7 +143,7 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
                           padding: EdgeInsets.only(bottom: theme.listItemGap),
                           child: ExpenseTile(
                             expense: expense,
-                            groupName: provider.showAllGroups ? groupProvider.nameForGroup(expense.groupId) : null,
+                            groupName: groupProvider.showAllGroups ? groupProvider.nameForGroup(expense.groupId) : null,
                             onTap: () => _openExpenseDetail(context, expense),
                           ),
                         ),
