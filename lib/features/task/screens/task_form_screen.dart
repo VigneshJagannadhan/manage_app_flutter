@@ -14,7 +14,6 @@ import 'package:huddle/features/shared/widgets/app_dropdown_field.dart';
 import 'package:huddle/features/shared/widgets/app_time_picker.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
 import 'package:huddle/features/shared/widgets/app_text_field.dart';
-import 'package:huddle/features/shared/widgets/member_dropdown_field.dart';
 import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:huddle/features/task/models/task_model.dart';
 import 'package:huddle/features/task/providers/task_provider.dart';
@@ -125,15 +124,18 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
 
     setState(() => _isSubmitting = true);
     try {
-      final dueDate = DateTime(
-        _dueDate!.year,
-        _dueDate!.month,
-        _dueDate!.day,
-        _dueTime!.hour,
-        _dueTime!.minute,
-      );
+      final dueDate = _dueDate == null
+          ? null
+          : DateTime(
+              _dueDate!.year,
+              _dueDate!.month,
+              _dueDate!.day,
+              _dueTime?.hour ?? 0,
+              _dueTime?.minute ?? 0,
+            );
       final title = _titleController.text.trim();
-      final description = _descriptionController.text.trim();
+      final descriptionText = _descriptionController.text.trim();
+      final description = descriptionText.isEmpty ? null : descriptionText;
       final taskProvider = context.read<TaskProvider>();
       final task = _isEditing
           ? await taskProvider.updateTask(
@@ -236,9 +238,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               controller: _descriptionController,
               enabled: !_isBusy,
               maxLines: 3,
-              validator: (value) => (value == null || value.trim().isEmpty)
-                  ? AppStrings.descriptionRequired
-                  : null,
             ),
             AppDropdownField<TaskPriority>(
               hint: AppStrings.priorityLabel,
@@ -260,19 +259,16 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               firstDate: _dueDate != null && _dueDate!.isBefore(DateTime.now())
                   ? _dueDate
                   : DateTime.now(),
-              validator: (value) =>
-                  value == null ? AppStrings.dueDateRequired : null,
               onChanged: (value) => _dueDate = value,
             ),
             AppTimePicker(
               label: AppStrings.dueTimeLabel,
               value: _dueTime,
               enabled: !_isBusy,
-              validator: (value) =>
-                  value == null ? AppStrings.dueTimeRequired : null,
               onChanged: (value) => _dueTime = value,
             ),
-            if (!_isEditing) _buildAssigneeField(),
+            if (!_isEditing && _activeGroupId == null)
+              const BodyText.medium(AppStrings.noActiveGroupMessage),
             AppButton.primary(
               label: _isSubmitting
                   ? (_isEditing ? AppStrings.saving : AppStrings.creating)
@@ -293,27 +289,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAssigneeField() {
-    final groupId = _activeGroupId;
-    if (groupId == null) {
-      return const BodyText.medium(AppStrings.noActiveGroupMessage);
-    }
-
-    final groupProvider = context.watch<GroupProvider>();
-    if (groupProvider.isLoadingMembers(groupId)) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    }
-
-    return MemberDropdownField(
-      hint: AppStrings.assigneeLabel,
-      members: groupProvider.membersFor(groupId),
-      value: _selectedAssignee,
-      currentUserId: context.watch<AuthProvider>().currentUser?.id,
-      enabled: !_isBusy,
-      onChanged: (member) => setState(() => _selectedAssignee = member),
     );
   }
 }

@@ -48,9 +48,6 @@ class AppStrings {
   // task form validation
   static const String pleaseSelectPriority = 'Please select a priority';
   static const String taskNameRequired = 'Task name is required';
-  static const String descriptionRequired = 'Description is required';
-  static const String dueDateRequired = 'Due date is required';
-  static const String dueTimeRequired = 'Due time is required';
   static const String couldNotCreateTask = 'Could not create task. Please try again.';
 
   // tooltips
@@ -218,7 +215,6 @@ class AppStrings {
   static const String goToGroups = 'Go to Groups';
 
   // assignee / payer
-  static const String assigneeLabel = 'Assignee';
   static const String assignedToLabel = 'Assigned To';
   static const String youSuffix = ' (You)';
   static const String payerLabel = 'Paid By';
