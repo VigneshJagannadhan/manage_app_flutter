@@ -230,4 +230,15 @@ class AppStrings {
   static const String saved = 'Saved';
   static const String couldNotSaveEntry = "Couldn't save. Tap to retry.";
   static const String couldNotLoadJournal = 'Could not load your journal. Please try again.';
+
+  // notification preferences
+  static const String notifications = 'Notifications';
+  static const String generalReminders = 'General';
+  static const String journalReminders = 'Journal';
+  static const String taskReminders = 'Tasks';
+  static const String expenseReminders = 'Expenses';
+  static const String taskRemindersNoFixedTime = "Sent based on each task's due date, not a fixed time.";
+  static const String generalRemindersNoFixedTime = 'Sent as needed, not on a fixed schedule.';
+  static const String reminderTime = 'Reminder time';
+  static const String couldNotLoadNotificationPreferences = 'Could not load notification preferences. Please try again.';
 }

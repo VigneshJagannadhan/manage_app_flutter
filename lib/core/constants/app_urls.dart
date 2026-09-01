@@ -13,6 +13,8 @@ class AppUrls {
   static const String profile = '/profile';
   static const String changePassword = '/profile/change-password';
   static const String defaultGroup = '/profile/default-group';
+  static const String notificationSchedule = '/notifications/schedule';
+  static const String notificationPreferences = '/notifications/preferences';
 
   static String group(String groupId) => '/groups/$groupId';
   static String groupMembers(String groupId) => '/groups/$groupId/members';

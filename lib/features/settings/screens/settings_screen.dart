@@ -11,6 +11,7 @@ import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/settings/providers/settings_provider.dart';
 import 'package:huddle/features/settings/providers/theme_provider.dart';
 import 'package:huddle/features/settings/screens/customise_app_screen.dart';
+import 'package:huddle/features/settings/screens/notification_preferences_screen.dart';
 import 'package:huddle/features/settings/screens/profile_edit_screen.dart';
 import 'package:huddle/features/settings/services/health_service.dart';
 import 'package:huddle/features/settings/widgets/profile_header.dart';
@@ -73,6 +74,10 @@ class _SettingsBody extends StatelessWidget {
     return navigationService.push(context, const CustomiseAppScreen());
   }
 
+  Future<void> _openNotificationPreferences(BuildContext context) {
+    return navigationService.push(context, const NotificationPreferencesScreen());
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SettingsProvider>();
@@ -89,6 +94,7 @@ class _SettingsBody extends StatelessWidget {
         ProfileHeader(profile: profileProvider.profile, isLoading: profileProvider.isLoading, onEdit: () => _openEditProfile(context)),
         AppButton.primary(label: AppStrings.groups, onPressed: () => _openGroups(context)),
         AppButton.secondary(label: AppStrings.customiseTheApp, onPressed: () => _openCustomiseApp(context)),
+        AppButton.secondary(label: AppStrings.notifications, onPressed: () => _openNotificationPreferences(context)),
 
         AppButton.destructive(label: AppStrings.logOut, onPressed: isSigningOut ? null : () => _signOut(context)),
 
