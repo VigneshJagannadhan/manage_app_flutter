@@ -1,3 +1,7 @@
+/// Single-letter weekday labels, Monday-first - shared by every widget that lays
+/// out a Monday-start week (the task date carousel and its calendar drawer).
+const List<String> kWeekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
 extension DateTimeExtensions on DateTime {
   /// Returns a new DateTime object with the time set to midnight (00:00:00).
   DateTime get atMidnight => DateTime(year, month, day);
@@ -42,6 +46,9 @@ extension DateTimeExtensions on DateTime {
   /// Short date without year, e.g. "10 Aug".
   String get formattedShortDate => '$day ${_monthNames[month - 1]}';
 
+  /// Full month and year, e.g. "September 2026" - used as a calendar view's month header.
+  String get monthYearLabel => '${_fullMonthNames[month - 1]} $year';
+
   static const List<String> _monthNames = [
     'Jan',
     'Feb',
@@ -55,5 +62,20 @@ extension DateTimeExtensions on DateTime {
     'Oct',
     'Nov',
     'Dec',
+  ];
+
+  static const List<String> _fullMonthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 }

@@ -5,14 +5,21 @@ import 'package:huddle/core/extensions/date_time_extensions.dart';
 import 'package:huddle/core/services/group_preference_service.dart';
 import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/shared/providers/base_provider.dart';
 import 'package:huddle/features/task/models/task_model.dart';
 
 class TaskProvider extends BaseProvider {
-  TaskProvider({required this.taskService, required this.groupProvider, required this.groupPreferenceService});
+  TaskProvider({
+    required this.taskService,
+    required this.groupProvider,
+    required this.groupPreferenceService,
+    required this.profileProvider,
+  });
   final TaskService taskService;
   final GroupProvider groupProvider;
   final GroupPreferenceService groupPreferenceService;
+  final ProfileProvider profileProvider;
 
   /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
   /// self-trigger here - it just needs to satisfy the BaseProvider contract.
@@ -63,6 +70,11 @@ class TaskProvider extends BaseProvider {
     _selectedDate = date.atMidnight;
     notifyListeners();
   }
+
+  /// Lower bound for [TaskCalendarDrawer] - falls back to today when the profile
+  /// hasn't loaded `createdAt` yet, so the calendar just opens to a single month
+  /// rather than letting the user page back indefinitely.
+  DateTime get accountCreatedDate => (profileProvider.profile?.createdAt ?? DateTime.now()).atMidnight;
 
   bool _showAllGroups = true;
   bool get showAllGroups => _showAllGroups;

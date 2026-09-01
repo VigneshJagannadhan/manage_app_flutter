@@ -27,6 +27,9 @@ class AppStrings {
   static const String apply = 'Apply';
   static const String clearAll = 'Clear All';
 
+  // task calendar
+  static const String calendar = 'Calendar';
+
   // task form
   static const String createTask = 'Create Task';
   static const String editTaskTitle = 'Edit Task';
