@@ -45,21 +45,21 @@ class TaskListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<TaskProvider>();
     return AppScaffold(
       appBar: ScreenAppBar(
         title: AppStrings.manageYourTasks,
         showBackButton: false,
         actions: const [SettingsAvatarButton()],
       ),
-      body: _buildBody(context),
+      body: _buildBody(context, provider),
       floatingActionButton: CreateFab(label: AppStrings.createTask, onPressed: () => _openCreateTask(context)),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, TaskProvider provider) {
     final theme = context.appTheme;
     final groupProvider = context.watch<GroupProvider>();
-    final provider = context.watch<TaskProvider>();
 
     if (groupProvider.groups.isEmpty && !groupProvider.isLoading) {
       return _NoGroupsPrompt(onGoToGroups: () => _openGroups(context));
@@ -92,6 +92,7 @@ class TaskListScreen extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.verticalMargin, theme.horizontalMargin, 0),
           child: TaskDateCarousel(
             selectedDate: provider.selectedDate,
+            accountCreatedDate: provider.accountCreatedDate,
             onDateSelected: provider.setSelectedDate,
             datesWithPendingTasks: provider.datesWithPendingTasks,
           ),

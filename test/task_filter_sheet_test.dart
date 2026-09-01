@@ -190,7 +190,13 @@ Future<void> _pumpHome(WidgetTester tester) async {
         )
         ..onInit();
   final taskProvider =
-      TaskProvider(taskService: _FakeTaskService(), groupProvider: groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
+      TaskProvider(
+          taskService: _FakeTaskService(),
+          groupProvider: groupProvider,
+          groupPreferenceService: groupPreferenceService,
+          profileProvider: profileProvider,
+        )
+        ..onInit();
   final expenseProvider =
       ExpenseProvider(expenseService: _FakeExpenseService(), groupProvider: groupProvider, groupPreferenceService: groupPreferenceService)
         ..onInit();
