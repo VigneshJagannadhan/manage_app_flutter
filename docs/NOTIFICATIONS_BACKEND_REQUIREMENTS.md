@@ -48,7 +48,7 @@ Returns the reminders currently due for the authenticated user, already filtered
 - **`id`** (string, required) — must be **stable** for the same logical reminder across repeated calls (e.g. `"journal-<date>"`, `"expense-<date>"`, `"task-<taskId>-due"`). The client re-fetches and reschedules from scratch on every app launch/resume, and relies on this id staying the same to avoid showing duplicate notifications for the same underlying reminder.
 - **`type`** (string, required) — one of `"journal" | "task" | "expense" | "general"`.
 - **`title` / `body`** (strings, required) — shown verbatim in the device notification.
-- **`scheduledAt`** (ISO 8601 UTC timestamp, required) — when the client should fire this locally. If it's already in the past by the time the client processes the response, the client just skips it (won't show a stale notification), so it's fine for this to occasionally be in the near past due to fetch timing.
+- **`scheduledAt`** (ISO 8601 UTC timestamp, required) — when the client should fire this locally. The client schedules this via a *future-only* local-notification API (`flutter_local_notifications.zonedSchedule`), so `scheduledAt` **must be in the future** at the time the client processes the response for the client to actually schedule it — the client silently discards anything that isn't. In particular, don't withhold a journal/expense reminder until its configured time has already passed "so `scheduledAt` is accurate" — hand it back as soon as it's known (even hours ahead), so the client can schedule it ahead of time while the app is backgrounded. It's still fine for this to occasionally land in the near past due to ordinary fetch timing; the client just won't show a stale notification for that case.
 - **`data`** (object, required, may be empty) — free-form, used only for tapping through to the right screen in-app:
   - `type: "task"` → `{ "taskId": "...", "groupId"?: "..." }` (`taskId` required)
   - `type: "expense"` → `{ "expenseId": "...", "groupId"?: "..." }` (`expenseId` required)
@@ -58,7 +58,7 @@ Returns the reminders currently due for the authenticated user, already filtered
 ### Behavior requirements
 
 1. Only include a category's items if that category's toggle is currently `true` per Endpoint 2's stored preferences for this user.
-2. For `journal`/`expense`: only include today's reminder if the user hasn't already journaled / logged an expense today, and only once it's at or past their configured `journalReminderTime`/`expenseReminderTime` (see Endpoint 2). If they've already done the thing today, omit it — don't send a reminder for something already done.
+2. For `journal`/`expense`: only include today's reminder if the user hasn't already journaled / logged an expense today. Include it as soon as that's known — do **not** wait until their configured `journalReminderTime`/`expenseReminderTime` (see Endpoint 2) has passed; `scheduledAt` carries that time and the client relies on receiving it while it's still in the future so it can schedule the local notification ahead of time (see the `scheduledAt` field note above). If they've already done the thing today, omit it — don't send a reminder for something already done.
 3. For `task`: include one entry per task with an upcoming/overdue `dueDate` assigned to (or visible to) this user, per whatever due-soon window the backend considers appropriate (e.g. due within the next 24h, or already overdue and still open). Exclude completed/deleted tasks.
 4. For `general`: entirely at the backend's discretion — no specific behavior required by the client, just the shape above.
 
@@ -75,21 +75,22 @@ Stores per-user notification category preferences. `PATCH` is a **partial patch*
   "taskReminderEnabled": true,
   "expenseReminderEnabled": true,
   "journalReminderTime": "20:00",
-  "expenseReminderTime": "21:00"
+  "expenseReminderTime": "21:00",
+  "timezone": "Asia/Kolkata"
 }
 ```
 
 - `generalRemindersEnabled`, `journalReminderEnabled`, `taskReminderEnabled`, `expenseReminderEnabled` — booleans.
 - `journalReminderTime`, `expenseReminderTime` — nullable strings, `"HH:mm"` 24-hour format, the user's preferred local time for that day's reminder. There is no equivalent time field for `task` (due-date-driven, not time-of-day) or `general` (ad hoc, not scheduled to a fixed daily time) — don't add one.
+- `timezone` — nullable IANA time zone name (e.g. `"Asia/Kolkata"`), used by the backend to interpret `journalReminderTime`/`expenseReminderTime` as an actual instant and to determine "today" for the "already done today?" checks and for task due-date day-boundaries. The client syncs this automatically (device's current zone) whenever notification preferences are loaded, so the backend doesn't need any other source for it. Treat a missing/invalid value as UTC.
 
 ### Defaults for a new user (no row yet)
 
-All four booleans default to `true`; `journalReminderTime` defaults to `"20:00"`, `expenseReminderTime` defaults to `"21:00"`.
+All four booleans default to `true`; `journalReminderTime` defaults to `"20:00"`, `expenseReminderTime` defaults to `"21:00"`; `timezone` defaults to `null` (treated as UTC until the client syncs it).
 
 ## Open questions for the backend implementer
 
 These are intentionally left for the backend team to decide — the client doesn't need a specific answer, just needs the response shapes above to stay stable:
 
-1. **Timezone handling** for `journalReminderTime`/`expenseReminderTime` — these are entered as local wall-clock time on the device. Decide whether to store the user's IANA timezone (e.g. captured at preference-update time, or from profile/locale data already on file) or handle it another way. This affects when "today" starts/ends for the "already done today?" check too.
-2. **Look-ahead window** for `GET /notifications/schedule` — e.g. "everything due in the next 24h" vs. a longer window. Since the client discards and reschedules on every fetch, a short window (next 24-48h) is simplest and keeps responses small; a longer window is also fine as long as `scheduledAt` timestamps stay correct.
-3. **Content** of `general` reminders — what triggers one, what it says. No client behavior depends on the specifics.
+1. **Look-ahead window** for `GET /notifications/schedule` — e.g. "everything due in the next 24h" vs. a longer window. Since the client discards and reschedules on every fetch, a short window (next 24-48h) is simplest and keeps responses small; a longer window is also fine as long as `scheduledAt` timestamps stay correct.
+2. **Content** of `general` reminders — what triggers one, what it says. No client behavior depends on the specifics.

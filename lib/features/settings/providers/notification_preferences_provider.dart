@@ -1,15 +1,21 @@
 import 'dart:async';
 
 import 'package:huddle/core/providers/notification_schedule_provider.dart';
+import 'package:huddle/core/services/local_notification_service.dart';
 import 'package:huddle/features/settings/models/notification_preferences_model.dart';
 import 'package:huddle/features/settings/services/notification_preferences_service.dart';
 import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class NotificationPreferencesProvider extends BaseProvider {
-  NotificationPreferencesProvider({required this.notificationPreferencesService, required this.notificationScheduleProvider});
+  NotificationPreferencesProvider({
+    required this.notificationPreferencesService,
+    required this.notificationScheduleProvider,
+    required this.localNotificationService,
+  });
 
   final NotificationPreferencesService notificationPreferencesService;
   final NotificationScheduleProvider notificationScheduleProvider;
+  final LocalNotificationService localNotificationService;
 
   @override
   void onInit() {}
@@ -37,6 +43,24 @@ class NotificationPreferencesProvider extends BaseProvider {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+    unawaited(_syncTimezoneIfNeeded());
+  }
+
+  /// The backend computes reminder-time `scheduledAt` instants using this stored zone (see
+  /// `NOTIFICATIONS_BACKEND_REQUIREMENTS.md`). Keep it current so a user who travels, or whose
+  /// zone was never recorded, still gets reminders at the right local wall-clock time.
+  Future<void> _syncTimezoneIfNeeded() async {
+    final current = _preferences;
+    if (current == null) return;
+    final deviceTimezone = await localNotificationService.getLocalTimezone();
+    if (current.timezone == deviceTimezone) return;
+
+    try {
+      _preferences = await notificationPreferencesService.updatePreferences(timezone: deviceTimezone);
+      notifyListeners();
+    } on NotificationPreferencesServiceException {
+      // Best-effort: the next launch/resume will retry.
     }
   }
 

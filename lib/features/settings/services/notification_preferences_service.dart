@@ -32,6 +32,7 @@ class NotificationPreferencesService {
     bool? expenseRemindersEnabled,
     String? journalReminderTime,
     String? expenseReminderTime,
+    String? timezone,
   }) async {
     final result = await _api.patch<NotificationPreferencesModel>(
       AppUrls.notificationPreferences,
@@ -42,6 +43,7 @@ class NotificationPreferencesService {
         'expenseReminderEnabled': ?expenseRemindersEnabled,
         'journalReminderTime': ?journalReminderTime,
         'expenseReminderTime': ?expenseReminderTime,
+        'timezone': ?timezone,
       },
       parser: (data) => NotificationPreferencesModel.fromJson(data as Map<String, dynamic>),
     );
