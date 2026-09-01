@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:huddle/core/enums/task_enums.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
 import 'package:huddle/core/services/group_preference_service.dart';
 import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
@@ -25,9 +26,16 @@ class TaskProvider extends BaseProvider {
 
   List<TaskModel> _tasks = [];
 
-  /// The task list filtered by [priorityFilter]/[dateFilterOption] and sorted by [sortOption].
+  /// The task list filtered by [priorityFilter]/[selectedDate] and sorted by [sortOption].
   /// Status filtering happens server-side (see [loadTasks]), so [_tasks] already reflects it.
   List<TaskModel> get tasks => _applySort(_tasks.where(_matchesClientFilters).toList());
+
+  /// Calendar days (at midnight) that have at least one open task due - used by
+  /// [TaskDateCarousel] to show a pending-task dot. Ignores [priorityFilter] and
+  /// [selectedDate] since it's a whole-week overview, not the current list view;
+  /// like [tasks], it's still limited to whatever [taskStatusFilter] loaded server-side.
+  Set<DateTime> get datesWithPendingTasks =>
+      _tasks.where((t) => t.status == TaskStatus.open && t.dueDate != null).map((t) => t.dueDate!.atMidnight).toSet();
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -35,8 +43,9 @@ class TaskProvider extends BaseProvider {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  // `null` represents "both" - all statuses.
-  TaskStatus? _taskStatusFilter = TaskStatus.open;
+  // `null` represents "both" - all statuses - and is the default so the list
+  // opens showing open and closed tasks together.
+  TaskStatus? _taskStatusFilter;
   TaskStatus? get taskStatusFilter => _taskStatusFilter;
 
   // `null` represents "all" priorities.
@@ -46,11 +55,14 @@ class TaskProvider extends BaseProvider {
   TaskSortOption _sortOption = TaskSortOption.dueDate;
   TaskSortOption get sortOption => _sortOption;
 
-  TaskDateFilterOption _dateFilterOption = TaskDateFilterOption.all;
-  TaskDateFilterOption get dateFilterOption => _dateFilterOption;
+  /// Day shown in [TaskDateCarousel] and used to scope [tasks] - defaults to today.
+  DateTime _selectedDate = DateTime.now().atMidnight;
+  DateTime get selectedDate => _selectedDate;
 
-  DateTime? _customDate;
-  DateTime? get customDate => _customDate;
+  void setSelectedDate(DateTime date) {
+    _selectedDate = date.atMidnight;
+    notifyListeners();
+  }
 
   bool _showAllGroups = true;
   bool get showAllGroups => _showAllGroups;
@@ -83,18 +95,9 @@ class TaskProvider extends BaseProvider {
 
   /// Commits a full set of filter/sort selections at once - used by [TaskFilterSheet]'s
   /// Apply button so picking individual pills/dropdowns doesn't filter the list until then.
-  /// [customDate] is only kept when [dateFilterOption] is [TaskDateFilterOption.custom].
-  void applyFilters({
-    required TaskStatus? status,
-    required TaskPriority? priority,
-    required TaskSortOption sortOption,
-    required TaskDateFilterOption dateFilterOption,
-    DateTime? customDate,
-  }) {
+  void applyFilters({required TaskStatus? status, required TaskPriority? priority, required TaskSortOption sortOption}) {
     _priorityFilter = priority;
     _sortOption = sortOption;
-    _dateFilterOption = dateFilterOption;
-    _customDate = dateFilterOption == TaskDateFilterOption.custom ? customDate : null;
     if (status != _taskStatusFilter) {
       setTaskStatusFilter(status);
     } else {
@@ -105,9 +108,7 @@ class TaskProvider extends BaseProvider {
   void clearFilters() {
     _priorityFilter = null;
     _sortOption = TaskSortOption.dueDate;
-    _dateFilterOption = TaskDateFilterOption.all;
-    _customDate = null;
-    setTaskStatusFilter(TaskStatus.open);
+    setTaskStatusFilter(null);
   }
 
   void setTasks(List<TaskModel> tasks) {
@@ -188,20 +189,8 @@ class TaskProvider extends BaseProvider {
 
   bool _matchesClientFilters(TaskModel task) {
     if (_priorityFilter != null && task.priority != _priorityFilter) return false;
-    return _matchesDateFilter(task);
-  }
-
-  bool _matchesDateFilter(TaskModel task) {
-    switch (_dateFilterOption) {
-      case TaskDateFilterOption.all:
-        return true;
-      case TaskDateFilterOption.today:
-        return _isSameDay(task.dueDate, DateTime.now());
-      case TaskDateFilterOption.tomorrow:
-        return _isSameDay(task.dueDate, DateTime.now().add(const Duration(days: 1)));
-      case TaskDateFilterOption.custom:
-        return _customDate != null && _isSameDay(task.dueDate, _customDate);
-    }
+    // Undated tasks have no day to be scoped to, so they show alongside every day's list.
+    return task.dueDate == null || _isSameDay(task.dueDate, _selectedDate);
   }
 
   bool _isSameDay(DateTime? a, DateTime? b) {

@@ -6,7 +6,6 @@ import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/shared/widgets/app_bottom_sheet.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
-import 'package:huddle/features/shared/widgets/app_date_picker.dart';
 import 'package:huddle/features/shared/widgets/app_dropdown_field.dart';
 import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:huddle/features/shared/widgets/text/label_text.dart';
@@ -19,15 +18,11 @@ class _TaskFilterDraft extends ChangeNotifier {
   _TaskFilterDraft.from(TaskProvider provider)
     : status = provider.taskStatusFilter,
       priority = provider.priorityFilter,
-      sortOption = provider.sortOption,
-      dateFilterOption = provider.dateFilterOption,
-      customDate = provider.customDate;
+      sortOption = provider.sortOption;
 
   TaskStatus? status;
   TaskPriority? priority;
   TaskSortOption sortOption;
-  TaskDateFilterOption dateFilterOption;
-  DateTime? customDate;
 
   void setStatus(TaskStatus? value) {
     status = value;
@@ -44,18 +39,10 @@ class _TaskFilterDraft extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setDateFilter(TaskDateFilterOption option, {DateTime? customDate}) {
-    dateFilterOption = option;
-    this.customDate = option == TaskDateFilterOption.custom ? customDate : null;
-    notifyListeners();
-  }
-
   void resetToDefaults() {
-    status = TaskStatus.open;
+    status = null;
     priority = null;
     sortOption = TaskSortOption.dueDate;
-    dateFilterOption = TaskDateFilterOption.all;
-    customDate = null;
     notifyListeners();
   }
 }
@@ -85,13 +72,6 @@ class _TaskFilterSheetBody extends StatelessWidget {
   static String _sortOptionLabel(TaskSortOption option) => switch (option) {
     TaskSortOption.dueDate => AppStrings.dueDateLabel,
     TaskSortOption.priority => AppStrings.priorityLabel,
-  };
-
-  static String _dateFilterLabel(TaskDateFilterOption option) => switch (option) {
-    TaskDateFilterOption.all => AppStrings.all,
-    TaskDateFilterOption.today => AppStrings.today,
-    TaskDateFilterOption.tomorrow => AppStrings.tomorrow,
-    TaskDateFilterOption.custom => AppStrings.customDate,
   };
 
   @override
@@ -132,28 +112,6 @@ class _TaskFilterSheetBody extends StatelessWidget {
             value: draft.sortOption,
             onChanged: draft.setSortOption,
           ),
-          SizedBox(height: sectionGap),
-          LabelText.large(AppStrings.dateLabel),
-          SizedBox(height: fieldGap),
-          Wrap(
-            spacing: fieldGap,
-            runSpacing: fieldGap,
-            children: TaskDateFilterOption.values.map((option) {
-              return ChoiceChip(
-                label: Text(_dateFilterLabel(option)),
-                selected: draft.dateFilterOption == option,
-                onSelected: (_) => draft.setDateFilter(option),
-              );
-            }).toList(),
-          ),
-          if (draft.dateFilterOption == TaskDateFilterOption.custom) ...[
-            SizedBox(height: fieldGap),
-            AppDatePicker(
-              value: draft.customDate,
-              hint: AppStrings.customDate,
-              onChanged: (date) => draft.setDateFilter(TaskDateFilterOption.custom, customDate: date),
-            ),
-          ],
         ],
       ),
     );
@@ -178,13 +136,7 @@ class _TaskFilterSheetFooter extends StatelessWidget {
             label: AppStrings.apply,
             onPressed: () {
               final draft = context.read<_TaskFilterDraft>();
-              context.read<TaskProvider>().applyFilters(
-                status: draft.status,
-                priority: draft.priority,
-                sortOption: draft.sortOption,
-                dateFilterOption: draft.dateFilterOption,
-                customDate: draft.customDate,
-              );
+              context.read<TaskProvider>().applyFilters(status: draft.status, priority: draft.priority, sortOption: draft.sortOption);
               navigationService.pop(context);
             },
           ),
