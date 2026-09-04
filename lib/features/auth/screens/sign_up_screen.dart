@@ -70,7 +70,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!mounted) return;
 
     if (success) {
-      await context.read<GlobalDataProvider>().loadAllData();
+      await context.read<GlobalDataProvider>().syncAllData();
       if (!mounted) return;
       navigationService.pushAndRemoveUntil(context, HomeScreen());
     } else if (authProvider.errorMessage != null) {

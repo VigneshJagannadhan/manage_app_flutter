@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:huddle/core/data/json_cache.dart';
 import 'package:huddle/core/resources/app_fonts.dart';
 import 'package:huddle/core/extensions/date_time_extensions.dart';
 import 'package:huddle/core/services/connectivity_service.dart';
@@ -13,6 +14,7 @@ import 'package:huddle/features/journal/providers/journal_provider.dart';
 import 'package:huddle/features/journal/screens/journal_screen.dart';
 import 'package:huddle/features/journal/widgets/create_today_card.dart';
 import 'package:huddle/features/journal/widgets/journal_day_tile.dart';
+import 'package:huddle/features/settings/data/profile_repository.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/settings/services/profile_service.dart';
 import 'package:provider/provider.dart';
@@ -88,7 +90,11 @@ void main() {
   testWidgets('journal list shows create-today card when today has no entry, and past entries/missing days', (tester) async {
     final today = DateTime.now();
     final threeDaysAgo = DateTime(today.year, today.month, today.day - 3);
-    final profileProvider = ProfileProvider(profileService: _FakeProfileService(threeDaysAgo));
+    final fakeProfileService = _FakeProfileService(threeDaysAgo);
+    final profileProvider = ProfileProvider(
+      profileService: fakeProfileService,
+      profileRepository: ProfileRepository(remote: fakeProfileService, cache: JsonCache('test_profile_cache')),
+    );
     await profileProvider.loadProfile();
 
     final yesterday = DateTime(today.year, today.month, today.day - 1);

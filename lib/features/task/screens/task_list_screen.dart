@@ -7,6 +7,7 @@ import 'package:huddle/features/group/screens/groups_screen.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
 import 'package:huddle/features/shared/widgets/filter_icon_button.dart';
+import 'package:huddle/features/shared/widgets/global_sync_banner.dart';
 import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:huddle/features/shared/widgets/settings_avatar_button.dart';
 import 'package:huddle/features/task/models/task_model.dart';
@@ -51,6 +52,7 @@ class TaskListScreen extends StatelessWidget {
         showBackButton: false,
         actions: const [SettingsAvatarButton()],
       ),
+      syncBanner: const GlobalSyncBanner(),
       body: _buildBody(context, provider),
     );
   }

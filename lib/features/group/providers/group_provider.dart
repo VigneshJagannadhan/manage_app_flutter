@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:huddle/core/services/group_preference_service.dart';
 import 'package:huddle/core/services/group_service.dart';
 import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/group/data/group_repository.dart';
 import 'package:huddle/features/group/models/group_member_model.dart';
 import 'package:huddle/features/group/models/group_model.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
@@ -12,12 +13,14 @@ import 'package:huddle/features/shared/providers/base_provider.dart';
 class GroupProvider extends BaseProvider {
   GroupProvider({
     required this.groupService,
+    required this.groupRepository,
     required this.groupPreferenceService,
     required this.authProvider,
     required this.profileProvider,
   });
 
   final GroupService groupService;
+  final GroupRepository groupRepository;
   final GroupPreferenceService groupPreferenceService;
   final AuthProvider authProvider;
   final ProfileProvider profileProvider;
@@ -98,13 +101,43 @@ class GroupProvider extends BaseProvider {
 
   Future<void> _restore() async {
     await loadGroups();
+    await _resolveActiveGroup();
+    notifyListeners();
+  }
+
+  /// Resolves [_activeGroupId]/[_showAllGroups] against whatever is currently in [_groups]
+  /// (network-fetched or cached) - shared by [_restore], [primeFromCache] and [syncGroups]
+  /// so all three compute the active group the same way instead of duplicating this logic.
+  Future<void> _resolveActiveGroup() async {
     final localId = await groupPreferenceService.readActiveGroupId();
     // Falls back to the account's server-synced default when there's no local pick yet
     // (fresh install / new device) - see setActiveGroup, which keeps the two in sync.
     final defaultId = profileProvider.profile?.defaultGroupId;
     _activeGroupId = _findGroup(localId)?.id ?? _findGroup(defaultId)?.id ?? (_groups.isNotEmpty ? _groups.first.id : null);
     _showAllGroups = await groupPreferenceService.readShowAllGroups();
+  }
+
+  /// Populates from the local cache instantly, with no loading/error state - called once
+  /// by GlobalDataProvider.primeFromCache() before Home is ever shown.
+  Future<void> primeFromCache() async {
+    final cached = groupRepository.cachedGroups();
+    if (cached.isNotEmpty) _groups = cached;
+    await _resolveActiveGroup();
     notifyListeners();
+  }
+
+  /// Background refresh from the network - called by GlobalDataProvider.syncAllData() on
+  /// app open/resume/reconnect. Unlike [restoreActiveGroup], a failure here is silent: the
+  /// cached/previous groups stay on screen rather than surfacing an error, since the user
+  /// never asked for this reload.
+  Future<void> syncGroups() async {
+    try {
+      _groups = await groupRepository.syncGroups();
+      await _resolveActiveGroup();
+      notifyListeners();
+    } on GroupServiceException {
+      // Swallowed by design - see doc comment above.
+    }
   }
 
   /// Resets the group-scope choice back to "all groups" and wipes the persisted

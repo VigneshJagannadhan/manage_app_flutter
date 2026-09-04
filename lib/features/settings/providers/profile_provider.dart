@@ -1,12 +1,14 @@
 import 'package:huddle/core/services/session_expired_notifier.dart';
 import 'package:huddle/features/auth/models/user_model.dart';
+import 'package:huddle/features/settings/data/profile_repository.dart';
 import 'package:huddle/features/settings/services/profile_service.dart';
 import 'package:huddle/features/shared/providers/base_provider.dart';
 
 class ProfileProvider extends BaseProvider {
-  ProfileProvider({required this.profileService});
+  ProfileProvider({required this.profileService, required this.profileRepository});
 
   final ProfileService profileService;
+  final ProfileRepository profileRepository;
 
   @override
   void onInit() {
@@ -44,6 +46,29 @@ class ProfileProvider extends BaseProvider {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Populates from the local cache instantly, with no loading/error state - called once
+  /// by GlobalDataProvider.primeFromCache() before Home is ever shown.
+  void primeFromCache() {
+    final cached = profileRepository.cachedProfile();
+    if (cached != null) {
+      _profile = cached;
+      notifyListeners();
+    }
+  }
+
+  /// Background refresh from the network - called by GlobalDataProvider.syncAllData() on
+  /// app open/resume/reconnect. Unlike [loadProfile], a failure here is silent: the
+  /// cached/previous profile stays on screen rather than surfacing an error, since the
+  /// user never asked for this reload.
+  Future<void> syncProfile() async {
+    try {
+      _profile = await profileRepository.syncProfile();
+      notifyListeners();
+    } on ProfileServiceException {
+      // Swallowed by design - see doc comment above.
     }
   }
 

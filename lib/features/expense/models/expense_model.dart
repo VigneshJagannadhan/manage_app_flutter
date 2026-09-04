@@ -61,6 +61,24 @@ class ExpenseModel {
     };
   }
 
+  /// Full-fidelity serialization for the local cache - mirrors [fromJson]'s wire shape
+  /// (unlike [toJson], which is a create-request body and omits the server-assigned
+  /// `id`). Decode with [fromJson] unchanged.
+  Map<String, dynamic> toCacheJson() {
+    return {
+      '_id': id,
+      'title': title,
+      'amount': amount,
+      'category': category?.apiValue,
+      'date': date?.toServer(),
+      'createdAt': createdAt?.toServer(),
+      'groupId': groupId,
+      if (payerId != null) 'payer': {'userId': payerId},
+      'splits': splits.map((split) => split.toJson()).toList(),
+      'essential': essential,
+    };
+  }
+
   ExpenseModel copyWith({
     String? title,
     double? amount,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:huddle/core/data/json_cache.dart';
 import 'package:huddle/core/enums/expense_enums.dart';
 import 'package:huddle/core/enums/task_enums.dart';
 import 'package:huddle/core/resources/app_fonts.dart';
@@ -17,8 +18,10 @@ import 'package:huddle/features/auth/models/auth_session_model.dart';
 import 'package:huddle/features/auth/models/token_pair_model.dart';
 import 'package:huddle/features/auth/models/user_model.dart';
 import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/expense/data/expense_repository.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
 import 'package:huddle/features/expense/providers/expense_provider.dart';
+import 'package:huddle/features/group/data/group_repository.dart';
 import 'package:huddle/features/group/models/group_model.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/home/screens/home_screen.dart';
@@ -26,8 +29,10 @@ import 'package:huddle/features/journal/data/journal_local_data_source.dart';
 import 'package:huddle/features/journal/data/journal_repository.dart';
 import 'package:huddle/features/journal/models/journal_entry_model.dart';
 import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/settings/data/profile_repository.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/settings/services/profile_service.dart';
+import 'package:huddle/features/task/data/task_repository.dart';
 import 'package:huddle/features/task/models/task_model.dart';
 import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:huddle/features/shared/widgets/app_dropdown_field.dart';
@@ -170,26 +175,38 @@ class _FakeTaskService extends TaskService {
 Future<void> _pumpHome(WidgetTester tester) async {
   final authProvider = AuthProvider(authService: AuthService(), tokenStorageService: _FakeTokenStorageService())..onInit();
   await authProvider.restoreSession();
-  final profileProvider = ProfileProvider(profileService: _FakeProfileService())..onInit();
+  final fakeProfileService = _FakeProfileService();
+  final profileProvider =
+      ProfileProvider(
+          profileService: fakeProfileService,
+          profileRepository: ProfileRepository(remote: fakeProfileService, cache: JsonCache('test_profile_cache')),
+        )
+        ..onInit();
   final groupPreferenceService = _FakeGroupPreferenceService();
+  final fakeGroupService = _FakeGroupService();
   final groupProvider =
       GroupProvider(
-          groupService: _FakeGroupService(),
+          groupService: fakeGroupService,
+          groupRepository: GroupRepository(remote: fakeGroupService, cache: JsonCache('test_group_cache')),
           groupPreferenceService: groupPreferenceService,
           authProvider: authProvider,
           profileProvider: profileProvider,
         )
         ..onInit();
+  final fakeTaskService = _FakeTaskService();
   final taskProvider =
       TaskProvider(
-          taskService: _FakeTaskService(),
+          taskService: fakeTaskService,
+          taskRepository: TaskRepository(remote: fakeTaskService, cache: JsonCache('test_task_cache')),
           groupProvider: groupProvider,
           profileProvider: profileProvider,
         )
         ..onInit();
+  final fakeExpenseService = _FakeExpenseService();
   final expenseProvider =
       ExpenseProvider(
-          expenseService: _FakeExpenseService(),
+          expenseService: fakeExpenseService,
+          expenseRepository: ExpenseRepository(remote: fakeExpenseService, cache: JsonCache('test_expense_cache')),
           groupProvider: groupProvider,
           profileProvider: profileProvider,
         )

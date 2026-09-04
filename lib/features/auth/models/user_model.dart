@@ -19,7 +19,14 @@ class UserModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'email': email, 'phone': phone, 'defaultGroupId': defaultGroupId};
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'email': email,
+    'phone': phone,
+    'defaultGroupId': defaultGroupId,
+    'createdAt': createdAt?.toIso8601String(),
+  };
 
   UserModel copyWith({String? defaultGroupId}) {
     return UserModel(

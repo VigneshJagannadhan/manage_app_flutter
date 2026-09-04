@@ -10,6 +10,7 @@ import 'package:huddle/features/journal/widgets/create_today_card.dart';
 import 'package:huddle/features/journal/widgets/journal_day_tile.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/shared/widgets/global_sync_banner.dart';
 import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:huddle/features/shared/widgets/settings_avatar_button.dart';
 import 'package:huddle/features/shared/widgets/text/body_text.dart';
@@ -57,6 +58,7 @@ class _JournalScreenState extends State<JournalScreen> {
         showBackButton: false,
         actions: const [SettingsAvatarButton()],
       ),
+      syncBanner: const GlobalSyncBanner(),
       body: _buildBody(context),
     );
   }

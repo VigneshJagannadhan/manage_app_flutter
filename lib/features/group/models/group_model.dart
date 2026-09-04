@@ -21,4 +21,17 @@ class GroupModel {
       role: json['role'] != null ? GroupRoleApi.fromApiValue(json['role'] as String) : null,
     );
   }
+
+  /// Full-fidelity serialization for the local cache - mirrors [fromJson]'s wire shape.
+  /// Decode with [fromJson] unchanged.
+  Map<String, dynamic> toCacheJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'inviteCode': inviteCode,
+      'createdBy': createdBy,
+      'createdAt': createdAt.toIso8601String(),
+      'role': role?.apiValue,
+    };
+  }
 }

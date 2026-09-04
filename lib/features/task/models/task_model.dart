@@ -57,6 +57,24 @@ class TaskModel {
     };
   }
 
+  /// Full-fidelity serialization for the local cache - mirrors [fromJson]'s wire shape
+  /// (unlike [toJson], which is a create-request body and omits server-assigned fields
+  /// like `_id`/`createdBy`). Decode with [fromJson] unchanged.
+  Map<String, dynamic> toCacheJson() {
+    return {
+      '_id': id,
+      'title': title,
+      'description': description,
+      'priority': priority?.apiValue,
+      'status': status?.apiValue,
+      'createdAt': createdAt?.toServer(),
+      'dueDate': dueDate?.toServer(),
+      'groupId': groupId,
+      'createdBy': createdBy,
+      'assignedTo': assignedTo,
+    };
+  }
+
   TaskModel copyWith({TaskStatus? status}) {
     return TaskModel(
       id: id,
