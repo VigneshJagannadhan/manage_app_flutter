@@ -65,6 +65,12 @@ class GroupProvider extends BaseProvider {
   String? _activeGroupId;
   String? get activeGroupId => _activeGroupId;
 
+  /// Whether Tasks/Expenses/Groups should show data across every group rather than
+  /// just [activeGroupId]. Shared here (rather than per-feature) so picking a scope
+  /// in any one of those screens' filters is reflected in all of them.
+  bool _showAllGroups = true;
+  bool get showAllGroups => _showAllGroups;
+
   GroupModel? get activeGroup => _findGroup(_activeGroupId);
 
   String? nameForGroup(String? groupId) => _findGroup(groupId)?.name;
@@ -97,7 +103,15 @@ class GroupProvider extends BaseProvider {
     // (fresh install / new device) - see setActiveGroup, which keeps the two in sync.
     final defaultId = profileProvider.profile?.defaultGroupId;
     _activeGroupId = _findGroup(localId)?.id ?? _findGroup(defaultId)?.id ?? (_groups.isNotEmpty ? _groups.first.id : null);
+    _showAllGroups = await groupPreferenceService.readShowAllGroups();
     notifyListeners();
+  }
+
+  /// Resets the group-scope choice back to "all groups" and wipes the persisted
+  /// preference, so it doesn't linger into the next account signed in on this device.
+  void resetShowAllGroupsPreference() {
+    _showAllGroups = true;
+    unawaited(groupPreferenceService.clearShowAllGroups());
   }
 
   Future<void> loadGroups() async {
@@ -133,6 +147,22 @@ class GroupProvider extends BaseProvider {
     notifyListeners();
     await groupPreferenceService.saveActiveGroupId(groupId);
     if (groupId != null) {
+      unawaited(_syncDefaultGroup(groupId));
+    }
+  }
+
+  /// Commits "all groups" vs a specific group at once - used by [TaskFilterSheet],
+  /// [ExpenseFilterSheet], and [GroupsScreen] so switching scope from any one of them
+  /// updates [showAllGroups]/[activeGroupId] for all of them together.
+  Future<void> setGroupScope({required bool showAllGroups, String? groupId}) async {
+    _showAllGroups = showAllGroups;
+    if (!showAllGroups && groupId != null) {
+      _activeGroupId = groupId;
+    }
+    notifyListeners();
+    await groupPreferenceService.saveShowAllGroups(showAllGroups);
+    if (!showAllGroups && groupId != null) {
+      await groupPreferenceService.saveActiveGroupId(groupId);
       unawaited(_syncDefaultGroup(groupId));
     }
   }

@@ -57,10 +57,6 @@ class GlobalDataProvider extends BaseProvider {
       await profileProvider.loadProfile();
       await groupProvider.restoreActiveGroup();
       await Future.wait([
-        taskProvider.restoreShowAllGroups(),
-        expenseProvider.restoreShowAllGroups(),
-      ]);
-      await Future.wait([
         taskProvider.loadTasks(),
         expenseProvider.loadExpenses(),
         journalProvider.loadInitial(),
@@ -75,12 +71,12 @@ class GlobalDataProvider extends BaseProvider {
   /// so no account-scoped data lingers into the next session.
   void resetAllData() {
     taskProvider.clearTasks();
-    taskProvider.resetShowAllGroupsPreference();
     expenseProvider.clearExpenses();
-    expenseProvider.resetShowAllGroupsPreference();
     journalProvider.clearEntries();
     profileProvider.clearProfile();
-    // GroupProvider clears itself reactively via its own AuthProvider listener.
+    groupProvider.resetShowAllGroupsPreference();
+    // GroupProvider's groups/activeGroupId clear themselves reactively via its own
+    // AuthProvider listener.
     _isDataLoaded = false;
     notifyListeners();
   }

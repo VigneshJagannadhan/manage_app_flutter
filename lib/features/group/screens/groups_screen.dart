@@ -22,10 +22,19 @@ import 'package:provider/provider.dart';
 class GroupsScreen extends StatelessWidget {
   const GroupsScreen({super.key});
 
+  Future<void> _selectAllGroups(BuildContext context) async {
+    final groupProvider = context.read<GroupProvider>();
+    if (groupProvider.showAllGroups) return;
+    await groupProvider.setGroupScope(showAllGroups: true);
+    if (!context.mounted) return;
+    context.read<TaskProvider>().loadTasks();
+    context.read<ExpenseProvider>().loadExpenses();
+  }
+
   Future<void> _switchTo(BuildContext context, GroupModel group) async {
     final groupProvider = context.read<GroupProvider>();
-    if (groupProvider.activeGroupId == group.id) return;
-    await groupProvider.setActiveGroup(group.id);
+    if (!groupProvider.showAllGroups && groupProvider.activeGroupId == group.id) return;
+    await groupProvider.setGroupScope(showAllGroups: false, groupId: group.id);
     if (!context.mounted) return;
     context.read<TaskProvider>().loadTasks();
     context.read<ExpenseProvider>().loadExpenses();
@@ -127,19 +136,58 @@ class GroupsScreen extends StatelessWidget {
       onRefresh: provider.loadGroups,
       child: ListView.builder(
         padding: EdgeInsets.all(theme.horizontalMargin),
-        itemCount: groups.length,
+        itemCount: groups.length + 1,
         itemBuilder: (context, index) {
-          final group = groups[index];
+          if (index == 0) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: theme.listItemGap),
+              child: _AllGroupsListItem(isActive: provider.showAllGroups, onTap: () => _selectAllGroups(context)),
+            );
+          }
+          final group = groups[index - 1];
           return Padding(
             padding: EdgeInsets.only(bottom: theme.listItemGap),
             child: _GroupListItem(
               group: group,
-              isActive: group.id == provider.activeGroupId,
+              isActive: !provider.showAllGroups && group.id == provider.activeGroupId,
               onTap: () => _switchTo(context, group),
               onOpenDetails: () => _openGroupDetails(context, group),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _AllGroupsListItem extends StatelessWidget {
+  const _AllGroupsListItem({required this.isActive, required this.onTap});
+
+  final bool isActive;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.appTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AppCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(
+            isActive ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+            color: colorScheme.primary,
+          ),
+          SizedBox(width: theme.spacingMedium),
+          Expanded(child: TitleText.medium(AppStrings.allGroups)),
+          if (isActive)
+            LabelText.large(
+              AppStrings.active,
+              color: colorScheme.primary,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+        ],
       ),
     );
   }

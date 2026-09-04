@@ -20,6 +20,7 @@ class AppStrings {
   static const String filterAndSort = 'Filter & Sort';
   static const String filterTooltip = 'Filter and sort tasks';
   static const String statusLabel = 'Status';
+  static const String groupLabel = 'Group';
   static const String sortByLabel = 'Sort By';
   static const String dateLabel = 'Date';
   static const String all = 'All';
@@ -81,11 +82,16 @@ class AppStrings {
 
   // expense dashboard
   static const String totalThisMonth = 'Total This Month';
+  static const String totalForMonthPrefix = 'Total for ';
   static const String essentialLabel = 'Essential';
   static const String nonEssentialLabel = 'Non-Essential';
   static const String noExpensesThisMonth = 'No expenses this month';
   static const String recentLabel = 'Recent';
   static const String seeAll = 'See All';
+  static const String filterExpensesTooltip = 'Filter expenses';
+  static const String monthLabel = 'Month';
+  static const String previousMonthTooltip = 'Previous month';
+  static const String nextMonthTooltip = 'Next month';
 
   // all expenses screen
   static const String allExpensesTitle = 'All Expenses';

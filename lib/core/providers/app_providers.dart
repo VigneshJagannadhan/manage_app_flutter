@@ -66,12 +66,16 @@ class _AppProvidersState extends State<AppProviders> {
       TaskProvider(
           taskService: taskService,
           groupProvider: _groupProvider,
-          groupPreferenceService: groupPreferenceService,
           profileProvider: _profileProvider,
         )
         ..onInit();
   late final _expenseProvider =
-      ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
+      ExpenseProvider(
+          expenseService: expenseService,
+          groupProvider: _groupProvider,
+          profileProvider: _profileProvider,
+        )
+        ..onInit();
   late final _journalRepository = JournalRepository(local: journalLocalDataSource, remote: journalService);
   late final _journalProvider =
       JournalProvider(

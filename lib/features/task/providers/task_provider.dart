@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:huddle/core/enums/task_enums.dart';
 import 'package:huddle/core/extensions/date_time_extensions.dart';
-import 'package:huddle/core/services/group_preference_service.dart';
 import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
@@ -13,12 +10,10 @@ class TaskProvider extends BaseProvider {
   TaskProvider({
     required this.taskService,
     required this.groupProvider,
-    required this.groupPreferenceService,
     required this.profileProvider,
   });
   final TaskService taskService;
   final GroupProvider groupProvider;
-  final GroupPreferenceService groupPreferenceService;
   final ProfileProvider profileProvider;
 
   /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
@@ -76,30 +71,6 @@ class TaskProvider extends BaseProvider {
   /// rather than letting the user page back indefinitely.
   DateTime get accountCreatedDate => (profileProvider.profile?.createdAt ?? DateTime.now()).atMidnight;
 
-  bool _showAllGroups = true;
-  bool get showAllGroups => _showAllGroups;
-
-  /// Reads the last-picked group scope from local storage. Must complete before
-  /// [loadTasks] so the very first load after sign-in respects it - see
-  /// GlobalDataProvider.loadAllData.
-  Future<void> restoreShowAllGroups() async {
-    _showAllGroups = await groupPreferenceService.readTasksShowAllGroups();
-    notifyListeners();
-  }
-
-  void toggleShowAllGroups(bool value) {
-    _showAllGroups = value;
-    unawaited(groupPreferenceService.saveTasksShowAllGroups(value));
-    loadTasks();
-  }
-
-  /// Resets the group-scope choice back to "all groups" and wipes the persisted
-  /// preference, so it doesn't linger into the next account signed in on this device.
-  void resetShowAllGroupsPreference() {
-    _showAllGroups = true;
-    unawaited(groupPreferenceService.clearTasksShowAllGroups());
-  }
-
   void setTaskStatusFilter(TaskStatus? status) {
     _taskStatusFilter = status;
     loadTasks();
@@ -107,11 +78,23 @@ class TaskProvider extends BaseProvider {
 
   /// Commits a full set of filter/sort selections at once - used by [TaskFilterSheet]'s
   /// Apply button so picking individual pills/dropdowns doesn't filter the list until then.
-  void applyFilters({required TaskStatus? status, required TaskPriority? priority, required TaskSortOption sortOption}) {
+  /// The sheet commits the group scope to [groupProvider] (see [GroupProvider.setGroupScope])
+  /// before calling this. [groupScopeChanged] is passed in rather than derived here because
+  /// "did the scope change" also depends on which specific group is now active, which this
+  /// provider doesn't track - only the caller, which holds both [GroupProvider] and this
+  /// provider, can tell.
+  void applyFilters({
+    required TaskStatus? status,
+    required TaskPriority? priority,
+    required TaskSortOption sortOption,
+    required bool groupScopeChanged,
+  }) {
     _priorityFilter = priority;
     _sortOption = sortOption;
-    if (status != _taskStatusFilter) {
-      setTaskStatusFilter(status);
+    final statusChanged = status != _taskStatusFilter;
+    _taskStatusFilter = status;
+    if (statusChanged || groupScopeChanged) {
+      loadTasks();
     } else {
       notifyListeners();
     }
@@ -145,7 +128,7 @@ class TaskProvider extends BaseProvider {
     try {
       final result = await taskService.listTasks(
         status: _taskStatusFilter,
-        groupId: _showAllGroups ? null : groupProvider.activeGroupId,
+        groupId: groupProvider.showAllGroups ? null : groupProvider.activeGroupId,
       );
       setTasks(result);
     } on TaskServiceException catch (e) {

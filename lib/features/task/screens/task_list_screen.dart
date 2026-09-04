@@ -4,10 +4,9 @@ import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/group/screens/groups_screen.dart';
-import 'package:huddle/features/group/widgets/group_scope_toggle.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
-import 'package:huddle/features/shared/widgets/create_fab.dart';
+import 'package:huddle/features/shared/widgets/filter_icon_button.dart';
 import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:huddle/features/shared/widgets/settings_avatar_button.dart';
 import 'package:huddle/features/task/models/task_model.dart';
@@ -53,7 +52,6 @@ class TaskListScreen extends StatelessWidget {
         actions: const [SettingsAvatarButton()],
       ),
       body: _buildBody(context, provider),
-      floatingActionButton: CreateFab(label: AppStrings.createTask, onPressed: () => _openCreateTask(context)),
     );
   }
 
@@ -98,18 +96,14 @@ class TaskListScreen extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.spacingMedium, theme.horizontalMargin, 0),
+          padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.spacingMedium, theme.horizontalMargin, theme.spacingSmall),
           child: Row(
             children: [
               Expanded(
-                child: GroupScopeToggle(
-                  activeGroupLabel: groupProvider.activeGroup?.name ?? AppStrings.thisGroup,
-                  showAllGroups: provider.showAllGroups,
-                  onChanged: provider.toggleShowAllGroups,
-                ),
+                child: AppButton.primary(label: AppStrings.createTask, onPressed: () => _openCreateTask(context)),
               ),
               SizedBox(width: theme.spacingMedium),
-              _FilterButton(onPressed: () => TaskFilterSheet.show(context)),
+              FilterIconButton(tooltip: AppStrings.filterTooltip, onPressed: () => TaskFilterSheet.show(context)),
             ],
           ),
         ),
@@ -126,7 +120,7 @@ class TaskListScreen extends StatelessWidget {
                       padding: EdgeInsets.only(bottom: theme.listItemGap),
                       child: TaskTile(
                         task: tasks[index],
-                        groupName: provider.showAllGroups ? groupProvider.nameForGroup(tasks[index].groupId) : null,
+                        groupName: groupProvider.showAllGroups ? groupProvider.nameForGroup(tasks[index].groupId) : null,
                         onTap: () => _openTaskDetail(context, tasks[index]),
                         onEdit: () => _openEditTask(context, tasks[index]),
                       ),
@@ -135,37 +129,6 @@ class TaskListScreen extends StatelessWidget {
                 ),
         ),
       ],
-    );
-  }
-}
-
-class _FilterButton extends StatelessWidget {
-  const _FilterButton({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.appTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    final size = theme.controlHeight;
-
-    return Semantics(
-      button: true,
-      label: AppStrings.filterTooltip,
-      child: Material(
-        color: colorScheme.primaryContainer,
-        shape: const CircleBorder(),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onPressed,
-          child: SizedBox(
-            width: size,
-            height: size,
-            child: Icon(Icons.filter_list_rounded, color: colorScheme.onPrimaryContainer),
-          ),
-        ),
-      ),
     );
   }
 }
