@@ -1,17 +1,20 @@
-import 'dart:async';
-
 import 'package:huddle/core/enums/task_enums.dart';
-import 'package:huddle/core/services/group_preference_service.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
 import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
+import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/shared/providers/base_provider.dart';
 import 'package:huddle/features/task/models/task_model.dart';
 
 class TaskProvider extends BaseProvider {
-  TaskProvider({required this.taskService, required this.groupProvider, required this.groupPreferenceService});
+  TaskProvider({
+    required this.taskService,
+    required this.groupProvider,
+    required this.profileProvider,
+  });
   final TaskService taskService;
   final GroupProvider groupProvider;
-  final GroupPreferenceService groupPreferenceService;
+  final ProfileProvider profileProvider;
 
   /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
   /// self-trigger here - it just needs to satisfy the BaseProvider contract.
@@ -25,9 +28,16 @@ class TaskProvider extends BaseProvider {
 
   List<TaskModel> _tasks = [];
 
-  /// The task list filtered by [priorityFilter]/[dateFilterOption] and sorted by [sortOption].
+  /// The task list filtered by [priorityFilter]/[selectedDate] and sorted by [sortOption].
   /// Status filtering happens server-side (see [loadTasks]), so [_tasks] already reflects it.
   List<TaskModel> get tasks => _applySort(_tasks.where(_matchesClientFilters).toList());
+
+  /// Calendar days (at midnight) that have at least one open task due - used by
+  /// [TaskDateCarousel] to show a pending-task dot. Ignores [priorityFilter] and
+  /// [selectedDate] since it's a whole-week overview, not the current list view;
+  /// like [tasks], it's still limited to whatever [taskStatusFilter] loaded server-side.
+  Set<DateTime> get datesWithPendingTasks =>
+      _tasks.where((t) => t.status == TaskStatus.open && t.dueDate != null).map((t) => t.dueDate!.atMidnight).toSet();
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -35,8 +45,9 @@ class TaskProvider extends BaseProvider {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  // `null` represents "both" - all statuses.
-  TaskStatus? _taskStatusFilter = TaskStatus.open;
+  // `null` represents "both" - all statuses - and is the default so the list
+  // opens showing open and closed tasks together.
+  TaskStatus? _taskStatusFilter;
   TaskStatus? get taskStatusFilter => _taskStatusFilter;
 
   // `null` represents "all" priorities.
@@ -46,35 +57,19 @@ class TaskProvider extends BaseProvider {
   TaskSortOption _sortOption = TaskSortOption.dueDate;
   TaskSortOption get sortOption => _sortOption;
 
-  TaskDateFilterOption _dateFilterOption = TaskDateFilterOption.all;
-  TaskDateFilterOption get dateFilterOption => _dateFilterOption;
+  /// Day shown in [TaskDateCarousel] and used to scope [tasks] - defaults to today.
+  DateTime _selectedDate = DateTime.now().atMidnight;
+  DateTime get selectedDate => _selectedDate;
 
-  DateTime? _customDate;
-  DateTime? get customDate => _customDate;
-
-  bool _showAllGroups = true;
-  bool get showAllGroups => _showAllGroups;
-
-  /// Reads the last-picked group scope from local storage. Must complete before
-  /// [loadTasks] so the very first load after sign-in respects it - see
-  /// GlobalDataProvider.loadAllData.
-  Future<void> restoreShowAllGroups() async {
-    _showAllGroups = await groupPreferenceService.readTasksShowAllGroups();
+  void setSelectedDate(DateTime date) {
+    _selectedDate = date.atMidnight;
     notifyListeners();
   }
 
-  void toggleShowAllGroups(bool value) {
-    _showAllGroups = value;
-    unawaited(groupPreferenceService.saveTasksShowAllGroups(value));
-    loadTasks();
-  }
-
-  /// Resets the group-scope choice back to "all groups" and wipes the persisted
-  /// preference, so it doesn't linger into the next account signed in on this device.
-  void resetShowAllGroupsPreference() {
-    _showAllGroups = true;
-    unawaited(groupPreferenceService.clearTasksShowAllGroups());
-  }
+  /// Lower bound for [TaskCalendarDrawer] - falls back to today when the profile
+  /// hasn't loaded `createdAt` yet, so the calendar just opens to a single month
+  /// rather than letting the user page back indefinitely.
+  DateTime get accountCreatedDate => (profileProvider.profile?.createdAt ?? DateTime.now()).atMidnight;
 
   void setTaskStatusFilter(TaskStatus? status) {
     _taskStatusFilter = status;
@@ -83,20 +78,23 @@ class TaskProvider extends BaseProvider {
 
   /// Commits a full set of filter/sort selections at once - used by [TaskFilterSheet]'s
   /// Apply button so picking individual pills/dropdowns doesn't filter the list until then.
-  /// [customDate] is only kept when [dateFilterOption] is [TaskDateFilterOption.custom].
+  /// The sheet commits the group scope to [groupProvider] (see [GroupProvider.setGroupScope])
+  /// before calling this. [groupScopeChanged] is passed in rather than derived here because
+  /// "did the scope change" also depends on which specific group is now active, which this
+  /// provider doesn't track - only the caller, which holds both [GroupProvider] and this
+  /// provider, can tell.
   void applyFilters({
     required TaskStatus? status,
     required TaskPriority? priority,
     required TaskSortOption sortOption,
-    required TaskDateFilterOption dateFilterOption,
-    DateTime? customDate,
+    required bool groupScopeChanged,
   }) {
     _priorityFilter = priority;
     _sortOption = sortOption;
-    _dateFilterOption = dateFilterOption;
-    _customDate = dateFilterOption == TaskDateFilterOption.custom ? customDate : null;
-    if (status != _taskStatusFilter) {
-      setTaskStatusFilter(status);
+    final statusChanged = status != _taskStatusFilter;
+    _taskStatusFilter = status;
+    if (statusChanged || groupScopeChanged) {
+      loadTasks();
     } else {
       notifyListeners();
     }
@@ -105,9 +103,7 @@ class TaskProvider extends BaseProvider {
   void clearFilters() {
     _priorityFilter = null;
     _sortOption = TaskSortOption.dueDate;
-    _dateFilterOption = TaskDateFilterOption.all;
-    _customDate = null;
-    setTaskStatusFilter(TaskStatus.open);
+    setTaskStatusFilter(null);
   }
 
   void setTasks(List<TaskModel> tasks) {
@@ -132,7 +128,7 @@ class TaskProvider extends BaseProvider {
     try {
       final result = await taskService.listTasks(
         status: _taskStatusFilter,
-        groupId: _showAllGroups ? null : groupProvider.activeGroupId,
+        groupId: groupProvider.showAllGroups ? null : groupProvider.activeGroupId,
       );
       setTasks(result);
     } on TaskServiceException catch (e) {
@@ -188,20 +184,8 @@ class TaskProvider extends BaseProvider {
 
   bool _matchesClientFilters(TaskModel task) {
     if (_priorityFilter != null && task.priority != _priorityFilter) return false;
-    return _matchesDateFilter(task);
-  }
-
-  bool _matchesDateFilter(TaskModel task) {
-    switch (_dateFilterOption) {
-      case TaskDateFilterOption.all:
-        return true;
-      case TaskDateFilterOption.today:
-        return _isSameDay(task.dueDate, DateTime.now());
-      case TaskDateFilterOption.tomorrow:
-        return _isSameDay(task.dueDate, DateTime.now().add(const Duration(days: 1)));
-      case TaskDateFilterOption.custom:
-        return _customDate != null && _isSameDay(task.dueDate, _customDate);
-    }
+    // Undated tasks have no day to be scoped to, so they show alongside every day's list.
+    return task.dueDate == null || _isSameDay(task.dueDate, _selectedDate);
   }
 
   bool _isSameDay(DateTime? a, DateTime? b) {

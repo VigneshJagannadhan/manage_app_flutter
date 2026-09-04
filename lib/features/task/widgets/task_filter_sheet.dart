@@ -4,9 +4,9 @@ import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
 import 'package:huddle/core/extensions/string_extensions.dart';
 import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
+import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/shared/widgets/app_bottom_sheet.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
-import 'package:huddle/features/shared/widgets/app_date_picker.dart';
 import 'package:huddle/features/shared/widgets/app_dropdown_field.dart';
 import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:huddle/features/shared/widgets/text/label_text.dart';
@@ -16,18 +16,18 @@ import 'package:provider/provider.dart';
 /// the pills/dropdowns and only pushed into [TaskProvider] when Apply is pressed -
 /// selecting an option must not filter the underlying list until then.
 class _TaskFilterDraft extends ChangeNotifier {
-  _TaskFilterDraft.from(TaskProvider provider)
+  _TaskFilterDraft.from(TaskProvider provider, GroupProvider groupProvider)
     : status = provider.taskStatusFilter,
       priority = provider.priorityFilter,
       sortOption = provider.sortOption,
-      dateFilterOption = provider.dateFilterOption,
-      customDate = provider.customDate;
+      selectedGroupId = groupProvider.showAllGroups ? null : groupProvider.activeGroupId;
 
   TaskStatus? status;
   TaskPriority? priority;
   TaskSortOption sortOption;
-  TaskDateFilterOption dateFilterOption;
-  DateTime? customDate;
+
+  /// `null` means "All Groups"; otherwise the id of the group to switch to on Apply.
+  String? selectedGroupId;
 
   void setStatus(TaskStatus? value) {
     status = value;
@@ -44,18 +44,15 @@ class _TaskFilterDraft extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setDateFilter(TaskDateFilterOption option, {DateTime? customDate}) {
-    dateFilterOption = option;
-    this.customDate = option == TaskDateFilterOption.custom ? customDate : null;
+  void setSelectedGroupId(String? value) {
+    selectedGroupId = value;
     notifyListeners();
   }
 
   void resetToDefaults() {
-    status = TaskStatus.open;
+    status = null;
     priority = null;
     sortOption = TaskSortOption.dueDate;
-    dateFilterOption = TaskDateFilterOption.all;
-    customDate = null;
     notifyListeners();
   }
 }
@@ -64,7 +61,7 @@ class TaskFilterSheet {
   const TaskFilterSheet._();
 
   static Future<void> show(BuildContext context) {
-    final draft = _TaskFilterDraft.from(context.read<TaskProvider>());
+    final draft = _TaskFilterDraft.from(context.read<TaskProvider>(), context.read<GroupProvider>());
     return AppBottomSheet.show<void>(
       context,
       title: AppStrings.filterAndSort,
@@ -87,25 +84,29 @@ class _TaskFilterSheetBody extends StatelessWidget {
     TaskSortOption.priority => AppStrings.priorityLabel,
   };
 
-  static String _dateFilterLabel(TaskDateFilterOption option) => switch (option) {
-    TaskDateFilterOption.all => AppStrings.all,
-    TaskDateFilterOption.today => AppStrings.today,
-    TaskDateFilterOption.tomorrow => AppStrings.tomorrow,
-    TaskDateFilterOption.custom => AppStrings.customDate,
-  };
-
   @override
   Widget build(BuildContext context) {
     final draft = context.watch<_TaskFilterDraft>();
+    final groupProvider = context.watch<GroupProvider>();
     final theme = context.appTheme;
     final sectionGap = theme.spacingMedium;
     final fieldGap = theme.spacingSmall;
+    final groupLabelById = {for (final group in groupProvider.groups) group.id: group.name};
 
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          LabelText.large(AppStrings.groupLabel),
+          SizedBox(height: fieldGap),
+          AppDropdownField<String?>(
+            items: [null, ...groupLabelById.keys],
+            itemLabelBuilder: (id) => id == null ? AppStrings.allGroups : groupLabelById[id]!,
+            value: draft.selectedGroupId,
+            onChanged: draft.setSelectedGroupId,
+          ),
+          SizedBox(height: sectionGap),
           LabelText.large(AppStrings.statusLabel),
           SizedBox(height: fieldGap),
           AppDropdownField<TaskStatus?>(
@@ -132,28 +133,6 @@ class _TaskFilterSheetBody extends StatelessWidget {
             value: draft.sortOption,
             onChanged: draft.setSortOption,
           ),
-          SizedBox(height: sectionGap),
-          LabelText.large(AppStrings.dateLabel),
-          SizedBox(height: fieldGap),
-          Wrap(
-            spacing: fieldGap,
-            runSpacing: fieldGap,
-            children: TaskDateFilterOption.values.map((option) {
-              return ChoiceChip(
-                label: Text(_dateFilterLabel(option)),
-                selected: draft.dateFilterOption == option,
-                onSelected: (_) => draft.setDateFilter(option),
-              );
-            }).toList(),
-          ),
-          if (draft.dateFilterOption == TaskDateFilterOption.custom) ...[
-            SizedBox(height: fieldGap),
-            AppDatePicker(
-              value: draft.customDate,
-              hint: AppStrings.customDate,
-              onChanged: (date) => draft.setDateFilter(TaskDateFilterOption.custom, customDate: date),
-            ),
-          ],
         ],
       ),
     );
@@ -176,16 +155,21 @@ class _TaskFilterSheetFooter extends StatelessWidget {
         Expanded(
           child: AppButton.primary(
             label: AppStrings.apply,
-            onPressed: () {
+            onPressed: () async {
               final draft = context.read<_TaskFilterDraft>();
-              context.read<TaskProvider>().applyFilters(
+              final groupProvider = context.read<GroupProvider>();
+              final taskProvider = context.read<TaskProvider>();
+              final showAllGroups = draft.selectedGroupId == null;
+              final groupScopeChanged =
+                  showAllGroups != groupProvider.showAllGroups || (!showAllGroups && draft.selectedGroupId != groupProvider.activeGroupId);
+              await groupProvider.setGroupScope(showAllGroups: showAllGroups, groupId: draft.selectedGroupId);
+              taskProvider.applyFilters(
                 status: draft.status,
                 priority: draft.priority,
                 sortOption: draft.sortOption,
-                dateFilterOption: draft.dateFilterOption,
-                customDate: draft.customDate,
+                groupScopeChanged: groupScopeChanged,
               );
-              navigationService.pop(context);
+              if (context.mounted) navigationService.pop(context);
             },
           ),
         ),

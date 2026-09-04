@@ -3,6 +3,7 @@ class AppStrings {
   static const String manageYourTasks = 'Manage your tasks';
   static const String taskDetails = 'Task Details';
   static const String completed = 'Completed';
+  static const String closed = 'Closed';
   static const String due = 'Due';
   static const String created = 'Created';
   static const String edit = 'Edit';
@@ -19,14 +20,16 @@ class AppStrings {
   static const String filterAndSort = 'Filter & Sort';
   static const String filterTooltip = 'Filter and sort tasks';
   static const String statusLabel = 'Status';
+  static const String groupLabel = 'Group';
   static const String sortByLabel = 'Sort By';
   static const String dateLabel = 'Date';
   static const String all = 'All';
   static const String today = 'Today';
-  static const String tomorrow = 'Tomorrow';
-  static const String customDate = 'Custom Date';
   static const String apply = 'Apply';
   static const String clearAll = 'Clear All';
+
+  // task calendar
+  static const String calendar = 'Calendar';
 
   // task form
   static const String createTask = 'Create Task';
@@ -46,9 +49,6 @@ class AppStrings {
   // task form validation
   static const String pleaseSelectPriority = 'Please select a priority';
   static const String taskNameRequired = 'Task name is required';
-  static const String descriptionRequired = 'Description is required';
-  static const String dueDateRequired = 'Due date is required';
-  static const String dueTimeRequired = 'Due time is required';
   static const String couldNotCreateTask = 'Could not create task. Please try again.';
 
   // tooltips
@@ -82,11 +82,16 @@ class AppStrings {
 
   // expense dashboard
   static const String totalThisMonth = 'Total This Month';
+  static const String totalForMonthPrefix = 'Total for ';
   static const String essentialLabel = 'Essential';
   static const String nonEssentialLabel = 'Non-Essential';
   static const String noExpensesThisMonth = 'No expenses this month';
   static const String recentLabel = 'Recent';
   static const String seeAll = 'See All';
+  static const String filterExpensesTooltip = 'Filter expenses';
+  static const String monthLabel = 'Month';
+  static const String previousMonthTooltip = 'Previous month';
+  static const String nextMonthTooltip = 'Next month';
 
   // all expenses screen
   static const String allExpensesTitle = 'All Expenses';
@@ -216,7 +221,6 @@ class AppStrings {
   static const String goToGroups = 'Go to Groups';
 
   // assignee / payer
-  static const String assigneeLabel = 'Assignee';
   static const String assignedToLabel = 'Assigned To';
   static const String youSuffix = ' (You)';
   static const String payerLabel = 'Paid By';
@@ -230,4 +234,15 @@ class AppStrings {
   static const String saved = 'Saved';
   static const String couldNotSaveEntry = "Couldn't save. Tap to retry.";
   static const String couldNotLoadJournal = 'Could not load your journal. Please try again.';
+
+  // notification preferences
+  static const String notifications = 'Notifications';
+  static const String generalReminders = 'General';
+  static const String journalReminders = 'Journal';
+  static const String taskReminders = 'Tasks';
+  static const String expenseReminders = 'Expenses';
+  static const String taskRemindersNoFixedTime = "Sent based on each task's due date, not a fixed time.";
+  static const String generalRemindersNoFixedTime = 'Sent as needed, not on a fixed schedule.';
+  static const String reminderTime = 'Reminder time';
+  static const String couldNotLoadNotificationPreferences = 'Could not load notification preferences. Please try again.';
 }

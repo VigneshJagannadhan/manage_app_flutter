@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/extensions/date_time_extensions.dart';
 import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
@@ -8,14 +9,14 @@ import 'package:huddle/features/expense/screens/all_expenses_screen.dart';
 import 'package:huddle/features/expense/screens/expense_detail_screen.dart';
 import 'package:huddle/features/expense/screens/expense_form_screen.dart';
 import 'package:huddle/features/expense/widgets/expense_category_breakdown.dart';
+import 'package:huddle/features/expense/widgets/expense_filter_sheet.dart';
 import 'package:huddle/features/expense/widgets/expense_summary_card.dart';
 import 'package:huddle/features/expense/widgets/expense_tile.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/group/screens/groups_screen.dart';
-import 'package:huddle/features/group/widgets/group_scope_toggle.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
-import 'package:huddle/features/shared/widgets/create_fab.dart';
+import 'package:huddle/features/shared/widgets/filter_icon_button.dart';
 import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:huddle/features/shared/widgets/settings_avatar_button.dart';
 import 'package:huddle/features/shared/widgets/text/body_text.dart';
@@ -59,7 +60,6 @@ class ExpenseDashboardScreen extends StatelessWidget {
         actions: [const SettingsAvatarButton()],
       ),
       body: _buildBody(context),
-      floatingActionButton: CreateFab(label: AppStrings.createExpense, onPressed: () => _openCreateExpense(context)),
     );
   }
 
@@ -103,12 +103,17 @@ class ExpenseDashboardScreen extends StatelessWidget {
         SizedBox(height: theme.spacingMedium),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: theme.horizontalMargin),
-          child: GroupScopeToggle(
-            activeGroupLabel: groupProvider.activeGroup?.name ?? AppStrings.thisGroup,
-            showAllGroups: provider.showAllGroups,
-            onChanged: provider.toggleShowAllGroups,
+          child: Row(
+            children: [
+              Expanded(
+                child: AppButton.primary(label: AppStrings.createExpense, onPressed: () => _openCreateExpense(context)),
+              ),
+              SizedBox(width: theme.spacingMedium),
+              FilterIconButton(tooltip: AppStrings.filterExpensesTooltip, onPressed: () => ExpenseFilterSheet.show(context)),
+            ],
           ),
         ),
+        SizedBox(height: theme.spacingSmall),
         Expanded(
           child: provider.expenses.isEmpty
               ? const Center(child: BodyText.medium(AppStrings.noExpensesYet))
@@ -138,22 +143,30 @@ class _DashboardContent extends StatelessWidget {
   final VoidCallback onSeeAll;
   final ValueChanged<ExpenseModel> onTapExpense;
 
+  static String _periodLabel(DateTime selectedMonth) {
+    final now = DateTime.now();
+    if (selectedMonth.year == now.year && selectedMonth.month == now.month) return AppStrings.totalThisMonth;
+    return '${AppStrings.totalForMonthPrefix}${selectedMonth.monthYearLabel}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final recentExpenses = provider.recentExpenses();
+    final groupProvider = context.read<GroupProvider>();
 
     return ListView(
       padding: EdgeInsets.fromLTRB(theme.horizontalMargin, theme.horizontalMargin, theme.horizontalMargin, 88),
       children: [
         ExpenseSummaryCard(
-          totalThisMonth: provider.totalThisMonth,
-          essentialAmount: provider.essentialAmountThisMonth,
-          nonEssentialAmount: provider.nonEssentialAmountThisMonth,
+          periodLabel: _periodLabel(provider.selectedMonth),
+          total: provider.totalForSelectedMonth,
+          essentialAmount: provider.essentialAmountForSelectedMonth,
+          nonEssentialAmount: provider.nonEssentialAmountForSelectedMonth,
         ),
         SizedBox(height: theme.spacingMedium),
         ExpenseCategoryBreakdown(
-          breakdown: provider.categoryBreakdownThisMonth,
+          breakdown: provider.categoryBreakdownForSelectedMonth,
         ),
         SizedBox(height: theme.spacingMedium),
         Row(
@@ -171,9 +184,7 @@ class _DashboardContent extends StatelessWidget {
             padding: EdgeInsets.only(bottom: theme.listItemGap),
             child: ExpenseTile(
               expense: expense,
-              groupName: provider.showAllGroups
-                  ? context.read<GroupProvider>().nameForGroup(expense.groupId)
-                  : null,
+              groupName: groupProvider.showAllGroups ? groupProvider.nameForGroup(expense.groupId) : null,
               onTap: () => onTapExpense(expense),
             ),
           ),

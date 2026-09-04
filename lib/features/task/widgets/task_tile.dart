@@ -84,7 +84,14 @@ class TaskTile extends StatelessWidget {
           ),
           SizedBox(height: theme.spacingXSmall),
           BodyText.medium(description, color: Colors.white.withValues(alpha: 0.72)),
-          if (task.dueDate != null) ...[
+          if (task.status == TaskStatus.completed) ...[
+            SizedBox(height: theme.spacingSmall),
+            AppTilePill(
+              icon: const Icon(Icons.check_circle_rounded, size: 16, color: Colors.white),
+              label: AppStrings.closed,
+              color: theme.successColor,
+            ),
+          ] else if (task.dueDate != null) ...[
             SizedBox(height: theme.spacingSmall),
             AppTilePill(
               icon: const AppSvgIcon(SvgIcons.calendar, size: 16, color: Colors.white),

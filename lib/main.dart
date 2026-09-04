@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:huddle/core/providers/app_providers.dart';
+import 'package:huddle/core/providers/notification_schedule_provider.dart';
+import 'package:huddle/core/services/local_notification_service.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/core/services/session_expired_notifier.dart';
 import 'package:huddle/core/themes/app_theme.dart';
@@ -13,6 +15,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await localNotificationService.initialize();
   await Hive.initFlutter();
   try {
     await journalLocalDataSource.init();
@@ -32,17 +35,26 @@ class HuddleApp extends StatefulWidget {
   State<HuddleApp> createState() => _HuddleAppState();
 }
 
-class _HuddleAppState extends State<HuddleApp> {
+class _HuddleAppState extends State<HuddleApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
     sessionExpiredNotifier.addListener(_handleSessionExpired);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     sessionExpiredNotifier.removeListener(_handleSessionExpired);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      navigatorKey.currentContext?.read<NotificationScheduleProvider>().refresh();
+    }
   }
 
   void _handleSessionExpired() {

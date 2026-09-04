@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:huddle/core/providers/global_data_provider.dart';
+import 'package:huddle/core/providers/notification_schedule_provider.dart';
 import 'package:huddle/core/services/auth_service.dart';
 import 'package:huddle/core/services/connectivity_service.dart';
 import 'package:huddle/core/services/expense_service.dart';
 import 'package:huddle/core/services/group_preference_service.dart';
 import 'package:huddle/core/services/group_service.dart';
 import 'package:huddle/core/services/journal_service.dart';
+import 'package:huddle/core/services/local_notification_service.dart';
+import 'package:huddle/core/services/notification_schedule_service.dart';
 import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/core/services/font_preference_service.dart';
 import 'package:huddle/core/services/theme_preference_service.dart';
@@ -51,10 +54,28 @@ class _AppProvidersState extends State<AppProviders> {
         )
         ..onInit();
 
+  late final _notificationScheduleProvider =
+      NotificationScheduleProvider(
+          notificationScheduleService: notificationScheduleService,
+          localNotificationService: localNotificationService,
+          authProvider: _authProvider,
+        )
+        ..onInit();
+
   late final _taskProvider =
-      TaskProvider(taskService: taskService, groupProvider: _groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
+      TaskProvider(
+          taskService: taskService,
+          groupProvider: _groupProvider,
+          profileProvider: _profileProvider,
+        )
+        ..onInit();
   late final _expenseProvider =
-      ExpenseProvider(expenseService: expenseService, groupProvider: _groupProvider, groupPreferenceService: groupPreferenceService)..onInit();
+      ExpenseProvider(
+          expenseService: expenseService,
+          groupProvider: _groupProvider,
+          profileProvider: _profileProvider,
+        )
+        ..onInit();
   late final _journalRepository = JournalRepository(local: journalLocalDataSource, remote: journalService);
   late final _journalProvider =
       JournalProvider(
@@ -81,6 +102,7 @@ class _AppProvidersState extends State<AppProviders> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _authProvider),
+        ChangeNotifierProvider.value(value: _notificationScheduleProvider),
         ChangeNotifierProvider.value(value: _groupProvider),
         ChangeNotifierProvider.value(value: _taskProvider),
         ChangeNotifierProvider.value(value: _expenseProvider),

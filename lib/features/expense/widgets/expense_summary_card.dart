@@ -6,17 +6,21 @@ import 'package:huddle/features/shared/widgets/text/body_text.dart';
 import 'package:huddle/features/shared/widgets/text/headline_text.dart';
 import 'package:huddle/features/shared/widgets/text/label_text.dart';
 
-/// "Total this month" figure plus an essential/non-essential breakdown bar,
-/// driven by each expense's `essential` flag.
+/// Total-for-the-viewed-month figure plus an essential/non-essential breakdown
+/// bar, driven by each expense's `essential` flag.
 class ExpenseSummaryCard extends StatelessWidget {
   const ExpenseSummaryCard({
     super.key,
-    required this.totalThisMonth,
+    required this.periodLabel,
+    required this.total,
     required this.essentialAmount,
     required this.nonEssentialAmount,
   });
 
-  final double totalThisMonth;
+  /// e.g. "Total This Month" for the current month, or "Total for March 2026"
+  /// once the viewer has picked a different month in [ExpenseFilterSheet].
+  final String periodLabel;
+  final double total;
   final double essentialAmount;
   final double nonEssentialAmount;
 
@@ -25,9 +29,9 @@ class ExpenseSummaryCard extends StatelessWidget {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final spacing = theme.spacingSmall;
-    final hasAmount = totalThisMonth > 0;
+    final hasAmount = total > 0;
     final essentialFlex = hasAmount
-        ? ((essentialAmount / totalThisMonth) * 1000).round().clamp(1, 999)
+        ? ((essentialAmount / total) * 1000).round().clamp(1, 999)
         : 1;
     final nonEssentialFlex = hasAmount
         ? (1000 - essentialFlex).clamp(1, 999)
@@ -39,12 +43,12 @@ class ExpenseSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           LabelText.large(
-            AppStrings.totalThisMonth,
+            periodLabel,
             color: colorScheme.outline,
           ),
           SizedBox(height: theme.spacingXSmall),
           HeadlineText.large(
-            totalThisMonth.toCurrencyString(),
+            total.toCurrencyString(),
             color: colorScheme.primary,
           ),
           SizedBox(height: theme.spacingMedium),
