@@ -4,15 +4,18 @@ import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/shared/providers/base_provider.dart';
+import 'package:huddle/features/task/data/task_repository.dart';
 import 'package:huddle/features/task/models/task_model.dart';
 
 class TaskProvider extends BaseProvider {
   TaskProvider({
     required this.taskService,
+    required this.taskRepository,
     required this.groupProvider,
     required this.profileProvider,
   });
   final TaskService taskService;
+  final TaskRepository taskRepository;
   final GroupProvider groupProvider;
   final ProfileProvider profileProvider;
 
@@ -137,6 +140,30 @@ class TaskProvider extends BaseProvider {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Populates from the local cache instantly, with no loading/error state - called once
+  /// by GlobalDataProvider.primeFromCache() before Home is ever shown, so the list isn't
+  /// empty while [syncTasks] is still in flight against a possibly cold-starting server.
+  void primeFromCache() {
+    final cached = taskRepository.cachedTasks();
+    if (cached.isNotEmpty) setTasks(cached);
+  }
+
+  /// Background refresh from the network - called by GlobalDataProvider.syncAllData() on
+  /// app open/resume/reconnect. Unlike [loadTasks], a failure here is silent: the
+  /// cached/previous list stays on screen rather than surfacing an error, since the user
+  /// never asked for this reload.
+  Future<void> syncTasks() async {
+    try {
+      final result = await taskRepository.syncTasks(
+        status: _taskStatusFilter,
+        groupId: groupProvider.showAllGroups ? null : groupProvider.activeGroupId,
+      );
+      setTasks(result);
+    } on TaskServiceException {
+      // Swallowed by design - see doc comment above.
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
 import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/providers/global_data_provider.dart';
 import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
@@ -17,6 +18,7 @@ import 'package:huddle/features/group/screens/groups_screen.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
 import 'package:huddle/features/shared/widgets/filter_icon_button.dart';
+import 'package:huddle/features/shared/widgets/global_sync_banner.dart';
 import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:huddle/features/shared/widgets/settings_avatar_button.dart';
 import 'package:huddle/features/shared/widgets/text/body_text.dart';
@@ -59,6 +61,7 @@ class ExpenseDashboardScreen extends StatelessWidget {
         showBackButton: false,
         actions: [const SettingsAvatarButton()],
       ),
+      syncBanner: const GlobalSyncBanner(),
       body: _buildBody(context),
     );
   }
@@ -69,6 +72,12 @@ class ExpenseDashboardScreen extends StatelessWidget {
     final provider = context.watch<ExpenseProvider>();
 
     if (groupProvider.groups.isEmpty && !groupProvider.isLoading) {
+      // An empty cache read at launch looks identical to "this account genuinely has no
+      // groups" - only a completed sync tells them apart, so hold off on the CTA (which
+      // reads as a confident, final answer) until the first sync this session has landed.
+      if (!context.watch<GlobalDataProvider>().hasSyncedOnce) {
+        return const Center(child: CircularProgressIndicator.adaptive());
+      }
       return _NoGroupsPrompt(onGoToGroups: () => _openGroups(context));
     }
 

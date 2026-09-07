@@ -48,11 +48,16 @@ class _SplashScreenState extends State<SplashScreen> {
     await context.read<AuthProvider>().restoreSession();
 
     if (!mounted) return;
-    await context.read<GlobalDataProvider>().loadAllData();
+    // Cache-only and fast - never waits on the network, so a cold-starting backend can't
+    // hold up navigation. The real network sync below runs in the background instead.
+    await context.read<GlobalDataProvider>().primeFromCache();
 
     if (!mounted) return;
     final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
-    if (isAuthenticated) unawaited(context.read<NotificationScheduleProvider>().refresh());
+    if (isAuthenticated) {
+      unawaited(context.read<NotificationScheduleProvider>().refresh());
+      unawaited(context.read<GlobalDataProvider>().syncAllData());
+    }
 
     if (!mounted) return;
     await navigationService.pushReplacement(

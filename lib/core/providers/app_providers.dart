@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huddle/core/data/json_cache.dart';
 import 'package:huddle/core/providers/global_data_provider.dart';
 import 'package:huddle/core/providers/notification_schedule_provider.dart';
 import 'package:huddle/core/services/auth_service.dart';
@@ -14,15 +15,19 @@ import 'package:huddle/core/services/font_preference_service.dart';
 import 'package:huddle/core/services/theme_preference_service.dart';
 import 'package:huddle/core/services/token_storage_service.dart';
 import 'package:huddle/features/auth/providers/auth_provider.dart';
+import 'package:huddle/features/expense/data/expense_repository.dart';
 import 'package:huddle/features/expense/providers/expense_provider.dart';
+import 'package:huddle/features/group/data/group_repository.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/journal/data/journal_local_data_source.dart';
 import 'package:huddle/features/journal/data/journal_repository.dart';
 import 'package:huddle/features/journal/providers/journal_provider.dart';
+import 'package:huddle/features/settings/data/profile_repository.dart';
 import 'package:huddle/features/settings/providers/font_provider.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/settings/providers/theme_provider.dart';
 import 'package:huddle/features/settings/services/profile_service.dart';
+import 'package:huddle/features/task/data/task_repository.dart';
 import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -40,14 +45,18 @@ class AppProviders extends StatefulWidget {
 
 class _AppProvidersState extends State<AppProviders> {
   late final _authProvider = AuthProvider(authService: authService, tokenStorageService: tokenStorageService)..onInit();
-  late final _profileProvider = ProfileProvider(profileService: profileService)..onInit();
 
+  late final _profileRepository = ProfileRepository(remote: profileService, cache: appDataCache);
+  late final _profileProvider = ProfileProvider(profileService: profileService, profileRepository: _profileRepository)..onInit();
+
+  late final _groupRepository = GroupRepository(remote: groupService, cache: appDataCache);
   // Depends on _authProvider being constructed first so GroupProvider.onInit() sees its
   // real isAuthenticated value instead of racing session restoration/login, and on
   // _profileProvider for reading/syncing the account's server-side default group.
   late final _groupProvider =
       GroupProvider(
           groupService: groupService,
+          groupRepository: _groupRepository,
           groupPreferenceService: groupPreferenceService,
           authProvider: _authProvider,
           profileProvider: _profileProvider,
@@ -62,16 +71,20 @@ class _AppProvidersState extends State<AppProviders> {
         )
         ..onInit();
 
+  late final _taskRepository = TaskRepository(remote: taskService, cache: appDataCache);
   late final _taskProvider =
       TaskProvider(
           taskService: taskService,
+          taskRepository: _taskRepository,
           groupProvider: _groupProvider,
           profileProvider: _profileProvider,
         )
         ..onInit();
+  late final _expenseRepository = ExpenseRepository(remote: expenseService, cache: appDataCache);
   late final _expenseProvider =
       ExpenseProvider(
           expenseService: expenseService,
+          expenseRepository: _expenseRepository,
           groupProvider: _groupProvider,
           profileProvider: _profileProvider,
         )
@@ -94,6 +107,7 @@ class _AppProvidersState extends State<AppProviders> {
           expenseProvider: _expenseProvider,
           profileProvider: _profileProvider,
           journalProvider: _journalProvider,
+          connectivityService: connectivityService,
         )
         ..onInit();
 
