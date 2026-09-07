@@ -12,6 +12,7 @@ class AppScaffold extends StatelessWidget {
     super.key,
     this.appBar,
     required this.body,
+    this.syncBanner,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.bottomNavigationBar,
@@ -23,6 +24,10 @@ class AppScaffold extends StatelessWidget {
 
   final PreferredSizeWidget? appBar;
   final Widget body;
+  // Rendered above [body], below [appBar] - a single shared slot (e.g. for
+  // GlobalSyncBanner) so every screen that wants it gets it in the same place without
+  // duplicating the wiring per screen.
+  final Widget? syncBanner;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? bottomNavigationBar;
@@ -34,13 +39,21 @@ class AppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigationBar = bottomNavigationBar;
+    final banner = syncBanner;
     return Scaffold(
       appBar: appBar,
       body: Listener(
         onPointerDown: (_) => FocusScope.of(context).unfocus(),
         behavior: HitTestBehavior.translucent,
         child: SafeArea(
-          child: scrollable ? _ScrollableBody(child: body) : body,
+          child: banner == null
+              ? (scrollable ? _ScrollableBody(child: body) : body)
+              : Column(
+                  children: [
+                    banner,
+                    Expanded(child: scrollable ? _ScrollableBody(child: body) : body),
+                  ],
+                ),
         ),
       ),
       floatingActionButton: floatingActionButton,

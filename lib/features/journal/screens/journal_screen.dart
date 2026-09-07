@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
 import 'package:huddle/core/extensions/date_time_extensions.dart';
+import 'package:huddle/core/providers/global_data_provider.dart';
 import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/journal/models/journal_entry_model.dart';
@@ -10,6 +11,7 @@ import 'package:huddle/features/journal/widgets/create_today_card.dart';
 import 'package:huddle/features/journal/widgets/journal_day_tile.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
+import 'package:huddle/features/shared/widgets/global_sync_banner.dart';
 import 'package:huddle/features/shared/widgets/screen_appbar.dart';
 import 'package:huddle/features/shared/widgets/settings_avatar_button.dart';
 import 'package:huddle/features/shared/widgets/text/body_text.dart';
@@ -57,6 +59,7 @@ class _JournalScreenState extends State<JournalScreen> {
         showBackButton: false,
         actions: const [SettingsAvatarButton()],
       ),
+      syncBanner: const GlobalSyncBanner(),
       body: _buildBody(context),
     );
   }
@@ -65,7 +68,11 @@ class _JournalScreenState extends State<JournalScreen> {
     final theme = context.appTheme;
     final provider = context.watch<JournalProvider>();
 
-    if (provider.isLoading && provider.days.isEmpty) {
+    // The second half of this condition covers the gap between Home appearing (cache-primed,
+    // but Journal isn't cached - see GlobalDataProvider.primeFromCache) and loadInitial()
+    // actually starting as part of the background sync - without it, an empty `days` here
+    // reads as "you have no entries" when it may really just mean "haven't checked yet".
+    if (provider.days.isEmpty && (provider.isLoading || !context.watch<GlobalDataProvider>().hasSyncedOnce)) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
 

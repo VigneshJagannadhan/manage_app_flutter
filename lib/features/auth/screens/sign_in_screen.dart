@@ -49,7 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
     if (!mounted) return;
 
     if (success) {
-      await context.read<GlobalDataProvider>().loadAllData();
+      await context.read<GlobalDataProvider>().syncAllData();
       if (!mounted) return;
       navigationService.pushAndRemoveUntil(context, HomeScreen());
     } else if (authProvider.errorMessage != null) {

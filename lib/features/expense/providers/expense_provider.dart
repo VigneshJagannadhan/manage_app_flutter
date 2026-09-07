@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:huddle/core/enums/expense_enums.dart';
 import 'package:huddle/core/services/expense_service.dart';
+import 'package:huddle/features/expense/data/expense_repository.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
@@ -11,10 +12,12 @@ import 'package:huddle/features/shared/providers/base_provider.dart';
 class ExpenseProvider extends BaseProvider {
   ExpenseProvider({
     required this.expenseService,
+    required this.expenseRepository,
     required this.groupProvider,
     required this.profileProvider,
   });
   final ExpenseService expenseService;
+  final ExpenseRepository expenseRepository;
   final GroupProvider groupProvider;
   final ProfileProvider profileProvider;
 
@@ -197,6 +200,29 @@ class ExpenseProvider extends BaseProvider {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Populates from the local cache instantly, with no loading/error state - called once
+  /// by GlobalDataProvider.primeFromCache() before Home is ever shown, so the list isn't
+  /// empty while [syncExpenses] is still in flight against a possibly cold-starting server.
+  void primeFromCache() {
+    final cached = expenseRepository.cachedExpenses();
+    if (cached.isNotEmpty) setExpenses(cached);
+  }
+
+  /// Background refresh from the network - called by GlobalDataProvider.syncAllData() on
+  /// app open/resume/reconnect. Unlike [loadExpenses], a failure here is silent: the
+  /// cached/previous list stays on screen rather than surfacing an error, since the user
+  /// never asked for this reload.
+  Future<void> syncExpenses() async {
+    try {
+      final result = await expenseRepository.syncExpenses(
+        groupId: groupProvider.showAllGroups ? null : groupProvider.activeGroupId,
+      );
+      setExpenses(result);
+    } on ExpenseServiceException {
+      // Swallowed by design - see doc comment above.
     }
   }
 

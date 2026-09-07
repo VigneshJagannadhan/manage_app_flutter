@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:huddle/core/data/json_cache.dart';
 import 'package:huddle/core/providers/app_providers.dart';
+import 'package:huddle/core/providers/global_data_provider.dart';
 import 'package:huddle/core/providers/notification_schedule_provider.dart';
 import 'package:huddle/core/services/local_notification_service.dart';
 import 'package:huddle/core/services/navigation_service.dart';
@@ -24,6 +26,12 @@ void main() async {
     // than blocking app launch.
     await Hive.deleteBoxFromDisk(journalLocalDataSource.boxName);
     await journalLocalDataSource.init();
+  }
+  try {
+    await appDataCache.init();
+  } catch (_) {
+    await Hive.deleteBoxFromDisk(appDataCache.boxName);
+    await appDataCache.init();
   }
   runApp(const HuddleApp());
 }
@@ -53,7 +61,9 @@ class _HuddleAppState extends State<HuddleApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      navigatorKey.currentContext?.read<NotificationScheduleProvider>().refresh();
+      final context = navigatorKey.currentContext;
+      context?.read<NotificationScheduleProvider>().refresh();
+      context?.read<GlobalDataProvider>().syncIfStale();
     }
   }
 
