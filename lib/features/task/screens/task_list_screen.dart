@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
+import 'package:huddle/core/providers/global_data_provider.dart';
 import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
@@ -62,6 +63,12 @@ class TaskListScreen extends StatelessWidget {
     final groupProvider = context.watch<GroupProvider>();
 
     if (groupProvider.groups.isEmpty && !groupProvider.isLoading) {
+      // An empty cache read at launch looks identical to "this account genuinely has no
+      // groups" - only a completed sync tells them apart, so hold off on the CTA (which
+      // reads as a confident, final answer) until the first sync this session has landed.
+      if (!context.watch<GlobalDataProvider>().hasSyncedOnce) {
+        return const Center(child: CircularProgressIndicator.adaptive());
+      }
       return _NoGroupsPrompt(onGoToGroups: () => _openGroups(context));
     }
 

@@ -55,6 +55,15 @@ class GlobalDataProvider extends BaseProvider {
   bool _isSyncing = false;
   bool get isSyncing => _isSyncing;
 
+  // True once syncAllData() has completed at least once (success or failure) this
+  // session. Screens use this to tell "cache came back empty because there's genuinely
+  // nothing there" apart from "cache came back empty because nothing has synced yet" -
+  // an empty Hive cache means the same thing in both cases, so this is the only signal
+  // that distinguishes them. See TaskListScreen/ExpenseDashboardScreen's "No groups yet"
+  // prompt and JournalScreen's empty state.
+  bool _hasSyncedOnce = false;
+  bool get hasSyncedOnce => _hasSyncedOnce;
+
   DateTime? _lastSyncAt;
 
   static const _minSyncInterval = Duration(seconds: 30);
@@ -97,6 +106,7 @@ class GlobalDataProvider extends BaseProvider {
       _lastSyncAt = DateTime.now();
       _isDataLoaded = true;
       _isSyncing = false;
+      _hasSyncedOnce = true;
       notifyListeners();
     }
   }
@@ -125,6 +135,7 @@ class GlobalDataProvider extends BaseProvider {
     // AuthProvider listener.
     _isDataLoaded = false;
     _lastSyncAt = null;
+    _hasSyncedOnce = false;
     notifyListeners();
   }
 }
