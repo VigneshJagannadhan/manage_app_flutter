@@ -75,15 +75,25 @@ class TaskModel {
     };
   }
 
-  TaskModel copyWith({TaskStatus? status}) {
+  // `null` means "unchanged" for every param here, matching TaskService.updateTask's own
+  // request-body semantics (`'description': ?description` etc.) - there's no way to clear
+  // a field back to null through this, same limitation the network path already has.
+  TaskModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    TaskPriority? priority,
+    TaskStatus? status,
+    DateTime? dueDate,
+  }) {
     return TaskModel(
-      id: id,
-      title: title,
-      description: description,
-      priority: priority,
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      priority: priority ?? this.priority,
       status: status ?? this.status,
       createdAt: createdAt,
-      dueDate: dueDate,
+      dueDate: dueDate ?? this.dueDate,
       groupId: groupId,
       createdBy: createdBy,
       assignedTo: assignedTo,

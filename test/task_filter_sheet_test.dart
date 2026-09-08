@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:huddle/core/data/json_cache.dart';
+import 'package:huddle/core/data/mutation_store.dart';
 import 'package:huddle/core/enums/expense_enums.dart';
 import 'package:huddle/core/enums/task_enums.dart';
 import 'package:huddle/core/resources/app_fonts.dart';
@@ -194,10 +195,14 @@ Future<void> _pumpHome(WidgetTester tester) async {
         )
         ..onInit();
   final fakeTaskService = _FakeTaskService();
+  // In-memory rather than Hive-backed - real Hive box I/O hangs inside testWidgets (see
+  // MutationStore.inMemory's doc comment).
+  final taskMutationStore = MutationStore.inMemory();
+  await taskMutationStore.init();
   final taskProvider =
       TaskProvider(
           taskService: fakeTaskService,
-          taskRepository: TaskRepository(remote: fakeTaskService, cache: JsonCache('test_task_cache')),
+          taskRepository: TaskRepository(remote: fakeTaskService, cache: JsonCache('test_task_cache'), mutations: taskMutationStore),
           groupProvider: groupProvider,
           profileProvider: profileProvider,
         )

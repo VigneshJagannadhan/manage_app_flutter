@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:huddle/core/data/json_cache.dart';
+import 'package:huddle/core/data/mutation_store.dart';
 import 'package:huddle/core/providers/app_providers.dart';
 import 'package:huddle/core/providers/global_data_provider.dart';
 import 'package:huddle/core/providers/notification_schedule_provider.dart';
@@ -32,6 +33,12 @@ void main() async {
   } catch (_) {
     await Hive.deleteBoxFromDisk(appDataCache.boxName);
     await appDataCache.init();
+  }
+  try {
+    await mutationStore.init();
+  } catch (_) {
+    await Hive.deleteBoxFromDisk(mutationStore.boxName!);
+    await mutationStore.init();
   }
   runApp(const HuddleApp());
 }

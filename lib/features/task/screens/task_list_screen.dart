@@ -5,6 +5,7 @@ import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/group/screens/groups_screen.dart';
+import 'package:huddle/features/shared/widgets/app_bottom_sheet.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_scaffold.dart';
 import 'package:huddle/features/shared/widgets/filter_icon_button.dart';
@@ -42,6 +43,37 @@ class TaskListScreen extends StatelessWidget {
 
   Future<void> _openTaskDetail(BuildContext context, TaskModel task) {
     return navigationService.push<TaskChangeResult>(context, TaskDetailScreen(task: task));
+  }
+
+  Future<void> _showSyncActionSheet(BuildContext context, TaskProvider provider, String taskId) {
+    return AppBottomSheet.show(
+      context,
+      title: AppStrings.couldNotSyncTask,
+      body: const BodyText.medium(AppStrings.couldNotSyncTaskMessage),
+      footer: Row(
+        spacing: 12,
+        children: [
+          Expanded(
+            child: AppButton.secondary(
+              label: AppStrings.discard,
+              onPressed: () {
+                navigationService.pop(context);
+                provider.discardFailed(taskId);
+              },
+            ),
+          ),
+          Expanded(
+            child: AppButton.primary(
+              label: AppStrings.retry,
+              onPressed: () {
+                navigationService.pop(context);
+                provider.retryFailed(taskId);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -132,6 +164,8 @@ class TaskListScreen extends StatelessWidget {
                         groupName: groupProvider.showAllGroups ? groupProvider.nameForGroup(tasks[index].groupId) : null,
                         onTap: () => _openTaskDetail(context, tasks[index]),
                         onEdit: () => _openEditTask(context, tasks[index]),
+                        syncState: provider.syncStateFor(tasks[index].id!),
+                        onTapFailedSync: () => _showSyncActionSheet(context, provider, tasks[index].id!),
                       ),
                     ),
                   ),
