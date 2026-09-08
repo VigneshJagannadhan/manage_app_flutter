@@ -8,6 +8,7 @@ import 'package:huddle/features/shared/widgets/app_card.dart';
 import 'package:huddle/features/shared/widgets/app_svg_icon.dart';
 import 'package:huddle/features/shared/widgets/app_tile_pill.dart';
 import 'package:huddle/features/task/models/task_model.dart';
+import 'package:huddle/features/task/providers/task_provider.dart';
 import 'package:huddle/features/task/widgets/task_priority_badge.dart';
 import 'package:huddle/features/shared/widgets/text/body_text.dart';
 import 'package:huddle/features/shared/widgets/text/label_text.dart';
@@ -20,6 +21,8 @@ class TaskTile extends StatelessWidget {
     this.groupName,
     this.onTap,
     this.onEdit,
+    this.syncState = TaskSyncState.synced,
+    this.onTapFailedSync,
   });
 
   final TaskModel task;
@@ -27,6 +30,10 @@ class TaskTile extends StatelessWidget {
   final String? groupName;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
+  // Offline write-queue status for this task - see TaskProvider.syncStateFor.
+  final TaskSyncState syncState;
+  // Opens the retry/discard action sheet - only meaningful when syncState is `failed`.
+  final VoidCallback? onTapFailedSync;
 
   String get description =>
       task.description ?? AppStrings.noDescriptionProvided;
@@ -62,9 +69,9 @@ class TaskTile extends StatelessWidget {
           Row(
             children: [
               TaskPriorityBadge(priority: priority),
+              const Spacer(),
               if (groupName != null) ...[
-                SizedBox(width: theme.spacingSmall),
-                Expanded(
+                Flexible(
                   child: LabelText.small(
                     groupName!,
                     textAlign: TextAlign.right,
@@ -73,7 +80,9 @@ class TaskTile extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
+                SizedBox(width: theme.spacingSmall),
               ],
+              if (syncState != TaskSyncState.synced) _TaskSyncBadge(state: syncState, onTapFailed: onTapFailedSync),
             ],
           ),
           SizedBox(height: theme.spacingSmall),
@@ -99,6 +108,34 @@ class TaskTile extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// A small spinner while a queued write is still in flight, or a tappable warning icon
+/// (opens a retry/discard action sheet via [onTapFailed]) once it's permanently failed.
+class _TaskSyncBadge extends StatelessWidget {
+  const _TaskSyncBadge({required this.state, this.onTapFailed});
+
+  final TaskSyncState state;
+  final VoidCallback? onTapFailed;
+
+  @override
+  Widget build(BuildContext context) {
+    if (state == TaskSyncState.pending) {
+      return const SizedBox(
+        width: 14,
+        height: 14,
+        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+      );
+    }
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTapFailed,
+      child: const Padding(
+        padding: EdgeInsets.all(2),
+        child: Icon(Icons.error_outline, size: 18, color: Colors.white),
       ),
     );
   }

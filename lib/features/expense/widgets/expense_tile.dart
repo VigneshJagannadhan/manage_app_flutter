@@ -4,8 +4,13 @@ import 'package:huddle/core/extensions/build_context_theme_extensions.dart';
 import 'package:huddle/core/extensions/currency_extension.dart';
 import 'package:huddle/core/extensions/date_time_extensions.dart';
 import 'package:huddle/core/extensions/string_extensions.dart';
+import 'package:huddle/core/resources/app_strings.dart';
+import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
+import 'package:huddle/features/expense/providers/expense_provider.dart';
 import 'package:huddle/features/expense/widgets/expense_category_style.dart';
+import 'package:huddle/features/shared/widgets/app_bottom_sheet.dart';
+import 'package:huddle/features/shared/widgets/app_button.dart';
 import 'package:huddle/features/shared/widgets/app_card.dart';
 import 'package:huddle/features/shared/widgets/app_tile_badge.dart';
 import 'package:huddle/features/shared/widgets/app_tile_pill.dart';
@@ -13,13 +18,57 @@ import 'package:huddle/features/shared/widgets/text/body_text.dart';
 import 'package:huddle/features/shared/widgets/text/label_text.dart';
 import 'package:huddle/features/shared/widgets/text/title_text.dart';
 
+/// Opens the retry/discard action sheet for an expense whose queued write has permanently
+/// failed - shared by every screen that renders an [ExpenseTile] (dashboard + All Expenses).
+Future<void> showExpenseSyncActionSheet(BuildContext context, ExpenseProvider provider, String expenseId) {
+  return AppBottomSheet.show(
+    context,
+    title: AppStrings.couldNotSyncExpense,
+    body: const BodyText.medium(AppStrings.couldNotSyncExpenseMessage),
+    footer: Row(
+      spacing: 12,
+      children: [
+        Expanded(
+          child: AppButton.secondary(
+            label: AppStrings.discard,
+            onPressed: () {
+              navigationService.pop(context);
+              provider.discardFailed(expenseId);
+            },
+          ),
+        ),
+        Expanded(
+          child: AppButton.primary(
+            label: AppStrings.retry,
+            onPressed: () {
+              navigationService.pop(context);
+              provider.retryFailed(expenseId);
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class ExpenseTile extends StatelessWidget {
-  const ExpenseTile({super.key, required this.expense, this.groupName, this.onTap});
+  const ExpenseTile({
+    super.key,
+    required this.expense,
+    this.groupName,
+    this.onTap,
+    this.syncState = ExpenseSyncState.synced,
+    this.onTapFailedSync,
+  });
 
   final ExpenseModel expense;
   // Shown only in "all groups" mode, where expenses from multiple groups are mixed together.
   final String? groupName;
   final VoidCallback? onTap;
+  // Offline write-queue status for this expense - see ExpenseProvider.syncStateFor.
+  final ExpenseSyncState syncState;
+  // Opens the retry/discard action sheet - only meaningful when syncState is `failed`.
+  final VoidCallback? onTapFailedSync;
 
   String get title => expense.title ?? '';
   ExpenseCategory? get category => expense.category;
@@ -56,9 +105,9 @@ class ExpenseTile extends StatelessWidget {
             children: [
               if (categoryName.isNotEmpty)
                 AppTileBadge(label: categoryName, icon: ExpenseCategoryStyle.iconFor(category)),
+              const Spacer(),
               if (groupName != null) ...[
-                SizedBox(width: theme.spacingSmall),
-                Expanded(
+                Flexible(
                   child: LabelText.small(
                     groupName!,
                     textAlign: TextAlign.right,
@@ -67,7 +116,9 @@ class ExpenseTile extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
+                SizedBox(width: theme.spacingSmall),
               ],
+              if (syncState != ExpenseSyncState.synced) _ExpenseSyncBadge(state: syncState, onTapFailed: onTapFailedSync),
             ],
           ),
           SizedBox(height: theme.spacingSmall),
@@ -97,6 +148,34 @@ class ExpenseTile extends StatelessWidget {
             label: displayAmount,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A small spinner while a queued write is still in flight, or a tappable warning icon
+/// (opens a retry/discard action sheet via [onTapFailed]) once it's permanently failed.
+class _ExpenseSyncBadge extends StatelessWidget {
+  const _ExpenseSyncBadge({required this.state, this.onTapFailed});
+
+  final ExpenseSyncState state;
+  final VoidCallback? onTapFailed;
+
+  @override
+  Widget build(BuildContext context) {
+    if (state == ExpenseSyncState.pending) {
+      return const SizedBox(
+        width: 14,
+        height: 14,
+        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+      );
+    }
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTapFailed,
+      child: const Padding(
+        padding: EdgeInsets.all(2),
+        child: Icon(Icons.error_outline, size: 18, color: Colors.white),
       ),
     );
   }
