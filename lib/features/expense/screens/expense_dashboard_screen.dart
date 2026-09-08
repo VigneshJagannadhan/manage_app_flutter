@@ -195,6 +195,8 @@ class _DashboardContent extends StatelessWidget {
               expense: expense,
               groupName: groupProvider.showAllGroups ? groupProvider.nameForGroup(expense.groupId) : null,
               onTap: () => onTapExpense(expense),
+              syncState: provider.syncStateFor(expense.id!),
+              onTapFailedSync: () => showExpenseSyncActionSheet(context, provider, expense.id!),
             ),
           ),
       ],

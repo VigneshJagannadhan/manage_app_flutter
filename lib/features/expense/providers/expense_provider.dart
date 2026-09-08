@@ -1,13 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:huddle/core/data/pending_mutation.dart';
 import 'package:huddle/core/enums/expense_enums.dart';
+import 'package:huddle/core/services/api_result.dart';
 import 'package:huddle/core/services/expense_service.dart';
 import 'package:huddle/features/expense/data/expense_repository.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/settings/providers/profile_provider.dart';
 import 'package:huddle/features/shared/providers/base_provider.dart';
+import 'package:uuid/uuid.dart';
+
+/// Per-expense sync status for the offline write queue - drives the pending/failed badge on
+/// `ExpenseTile`. `synced` covers both "never had a pending write" and "successfully flushed".
+enum ExpenseSyncState { synced, pending, failed }
 
 class ExpenseProvider extends BaseProvider {
   ExpenseProvider({
@@ -21,6 +28,18 @@ class ExpenseProvider extends BaseProvider {
   final GroupProvider groupProvider;
   final ProfileProvider profileProvider;
 
+  static const _entityType = 'expense';
+  static const _tempIdPrefix = 'local-';
+  static const _maxAttempts = 5;
+
+  // In-memory only - a restart clears it, which is fine since the underlying
+  // PendingMutation stays `pending` in storage and just gets retried fresh.
+  final Set<String> _inFlightIds = {};
+  // temp id -> real id, populated once a queued create's flush succeeds. Lets a screen
+  // that's still holding a temp id (e.g. ExpenseDetailScreen opened right after an offline
+  // create) resolve to the real one once it exists.
+  final Map<String, String> _idRemap = {};
+
   /// Loading is driven explicitly by GlobalDataProvider.loadAllData, so there's nothing to
   /// self-trigger here - it just needs to satisfy the BaseProvider contract.
   @override
@@ -33,6 +52,25 @@ class ExpenseProvider extends BaseProvider {
 
   List<ExpenseModel> _expenses = [];
   List<ExpenseModel> get expenses => _expenses;
+
+  /// Looks up an expense by id in the raw list - used by ExpenseDetailScreen to resolve a
+  /// reactive reference (mirrors [TaskProvider.taskById]).
+  ExpenseModel? expenseById(String id) {
+    for (final expense in _expenses) {
+      if (expense.id == id) return expense;
+    }
+    return null;
+  }
+
+  /// Resolves a temp id to its real server id once the create that made it has synced;
+  /// returns [id] unchanged otherwise (already-real ids, or a create still pending).
+  String currentIdFor(String id) => _idRemap[id] ?? id;
+
+  ExpenseSyncState syncStateFor(String id) {
+    final mutation = expenseRepository.mutationFor(id);
+    if (mutation == null) return ExpenseSyncState.synced;
+    return mutation.state == MutationSyncState.failed ? ExpenseSyncState.failed : ExpenseSyncState.pending;
+  }
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -193,7 +231,7 @@ class ExpenseProvider extends BaseProvider {
         category: category,
         groupId: groupProvider.showAllGroups ? null : groupProvider.activeGroupId,
       );
-      setExpenses(result);
+      setExpenses(expenseRepository.applyPendingOverlay(result));
     } on ExpenseServiceException catch (e) {
       _errorMessage = e.message;
       notifyListeners();
@@ -226,12 +264,18 @@ class ExpenseProvider extends BaseProvider {
     }
   }
 
-  Future<ExpenseModel?> createExpense(ExpenseModel expense) async {
-    final result = await expenseService.createExpense(expense);
-    if (result != null) {
-      addExpense(result);
-    }
-    return result;
+  // ---------------------------------------------------------------------------------
+  // Mutations - always apply optimistically and queue for background delivery, online
+  // or offline, so nothing ever blocks on the network (see the offline write-queue plan).
+  // ---------------------------------------------------------------------------------
+
+  Future<ExpenseModel> createExpense(ExpenseModel expense) async {
+    final tempId = '$_tempIdPrefix${const Uuid().v4()}';
+    final optimistic = expense.copyWith(id: tempId);
+    addExpense(optimistic);
+    await _recordMutation(entityId: tempId, op: MutationOp.create, expense: optimistic);
+    unawaited(_flushOne(expenseRepository.mutationFor(tempId)!));
+    return optimistic;
   }
 
   Future<ExpenseModel> updateExpense({
@@ -242,20 +286,200 @@ class ExpenseProvider extends BaseProvider {
     DateTime? date,
     bool? essential,
   }) async {
-    final updated = await expenseService.updateExpense(id: id, title: title, amount: amount, category: category, date: date, essential: essential);
+    final current = expenseById(id);
+    if (current == null) throw StateError('ExpenseProvider.updateExpense: no expense with id $id');
+    final updated = current.copyWith(title: title, amount: amount, category: category, date: date, essential: essential);
     setExpenses([
       for (final expense in _expenses)
         if (expense.id != id) expense,
       updated,
     ]);
+
+    // A still-pending, not-yet-synced create just gets its payload replaced - it's not a
+    // separate "update" against a server id yet.
+    final existingOp = expenseRepository.mutationFor(id)?.op;
+    final op = existingOp == MutationOp.create ? MutationOp.create : MutationOp.update;
+    await _recordMutation(entityId: id, op: op, expense: updated);
+    unawaited(_flushOne(expenseRepository.mutationFor(id)!));
     return updated;
   }
 
   Future<void> deleteExpense(String id) async {
-    await expenseService.deleteExpense(id: id);
     setExpenses([
       for (final expense in _expenses)
         if (expense.id != id) expense,
     ]);
+
+    final existing = expenseRepository.mutationFor(id);
+    if (existing != null && existing.op == MutationOp.create && !_inFlightIds.contains(id)) {
+      // Never made it to the server and never will - nothing to tell it.
+      await expenseRepository.discardMutation(id);
+      return;
+    }
+    await _recordMutation(entityId: id, op: MutationOp.delete, expense: null);
+    unawaited(_flushOne(expenseRepository.mutationFor(id)!));
+  }
+
+  /// Records/coalesces one local mutation. A mutation for an id currently mid-flight
+  /// (see [_inFlightIds]) is stored with `dirty: true` rather than triggering a second,
+  /// overlapping network call - see `_finishCreate`/`_finishUpdate` for how a dirty record
+  /// gets replayed once the in-flight attempt resolves.
+  Future<void> _recordMutation({required String entityId, required MutationOp op, required ExpenseModel? expense}) async {
+    await expenseRepository.recordMutation(
+      PendingMutation(
+        entityType: _entityType,
+        entityId: entityId,
+        op: op,
+        payload: expense?.toCacheJson(),
+        queuedAt: DateTime.now(),
+        dirty: _inFlightIds.contains(entityId),
+      ),
+    );
+  }
+
+  /// Dispatches every non-in-flight pending expense mutation to the network. Safe to call
+  /// repeatedly (app resume/reconnect) - already-in-flight entries are skipped.
+  Future<void> flushPending() async {
+    final pending = expenseRepository.allPendingMutations();
+    await Future.wait(pending.map(_flushOne));
+  }
+
+  Future<void> _flushOne(PendingMutation mutation) async {
+    if (_inFlightIds.contains(mutation.entityId)) return;
+    _inFlightIds.add(mutation.entityId);
+    try {
+      final result = await expenseRepository.flushMutation(mutation);
+      switch (mutation.op) {
+        case MutationOp.create:
+          await _finishCreate(mutation.entityId, result!);
+        case MutationOp.update:
+          await _finishUpdate(mutation.entityId, result!);
+        case MutationOp.delete:
+          await expenseRepository.discardMutation(mutation.entityId);
+      }
+    } on ExpenseServiceException catch (e) {
+      await _handleFlushFailure(mutation, e);
+    } finally {
+      _inFlightIds.remove(mutation.entityId);
+      notifyListeners();
+    }
+  }
+
+  Future<void> _finishCreate(String tempId, ExpenseModel result) async {
+    _idRemap[tempId] = result.id!;
+    final coalesced = expenseRepository.mutationFor(tempId);
+    await expenseRepository.discardMutation(tempId);
+
+    if (coalesced == null || !coalesced.dirty) {
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id == tempId) result else e,
+      ]);
+      return;
+    }
+
+    // A local edit/delete arrived while this create was still in flight - the POST already
+    // went out with the pre-edit payload, so it was never sent. Replay it now against the
+    // real id: an edit becomes an `update` (the entity now exists), a delete stays a delete.
+    final followUp = coalesced.op == MutationOp.delete
+        ? PendingMutation(entityType: _entityType, entityId: result.id!, op: MutationOp.delete, payload: null, queuedAt: coalesced.queuedAt)
+        : PendingMutation(
+            entityType: _entityType,
+            entityId: result.id!,
+            op: MutationOp.update,
+            payload: coalesced.payload,
+            queuedAt: coalesced.queuedAt,
+          );
+    await expenseRepository.recordMutation(followUp);
+
+    if (followUp.op == MutationOp.delete) {
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id != tempId) e,
+      ]);
+    } else {
+      final patched = ExpenseModel.fromJson(followUp.payload!).copyWith(id: result.id);
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id == tempId) patched else e,
+      ]);
+    }
+    unawaited(_flushOne(followUp));
+  }
+
+  Future<void> _finishUpdate(String id, ExpenseModel result) async {
+    final coalesced = expenseRepository.mutationFor(id);
+    if (coalesced == null || !coalesced.dirty) {
+      await expenseRepository.discardMutation(id);
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id == id) result else e,
+      ]);
+      return;
+    }
+
+    // A local edit/delete arrived while this update was in flight - replay it now.
+    final followUp = coalesced.copyWith(dirty: false, attempts: 0);
+    await expenseRepository.recordMutation(followUp);
+    if (followUp.op == MutationOp.delete) {
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id != id) e,
+      ]);
+    } else {
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id == id) ExpenseModel.fromJson(followUp.payload!) else e,
+      ]);
+    }
+    unawaited(_flushOne(followUp));
+  }
+
+  Future<void> _handleFlushFailure(PendingMutation mutation, ExpenseServiceException e) async {
+    final current = expenseRepository.mutationFor(mutation.entityId) ?? mutation;
+
+    // The item is already gone server-side (someone/something else deleted it first) -
+    // that's the intended end state for an update or delete, not a real failure.
+    if (mutation.op != MutationOp.create && e.statusCode == 404) {
+      await expenseRepository.discardMutation(mutation.entityId);
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id != mutation.entityId) e,
+      ]);
+      return;
+    }
+
+    final isPermanent = e.type == FailureType.badResponse && (e.statusCode == null || e.statusCode! < 500);
+    if (isPermanent || current.attempts + 1 >= _maxAttempts) {
+      await expenseRepository.recordMutation(current.copyWith(state: MutationSyncState.failed, attempts: current.attempts + 1));
+    } else {
+      await expenseRepository.recordMutation(current.copyWith(attempts: current.attempts + 1));
+    }
+  }
+
+  /// Resets a permanently-failed mutation and retries it - used by the ExpenseTile action
+  /// sheet's "Retry" option.
+  Future<void> retryFailed(String id) async {
+    final mutation = expenseRepository.mutationFor(id);
+    if (mutation == null) return;
+    final reset = mutation.copyWith(state: MutationSyncState.pending, attempts: 0, dirty: false);
+    await expenseRepository.recordMutation(reset);
+    unawaited(_flushOne(reset));
+  }
+
+  /// Drops a permanently-failed mutation without retrying - used by the ExpenseTile action
+  /// sheet's "Discard" option. Also removes the local item if it was never actually
+  /// created server-side.
+  Future<void> discardFailed(String id) async {
+    final mutation = expenseRepository.mutationFor(id);
+    await expenseRepository.discardMutation(id);
+    if (mutation?.op == MutationOp.create) {
+      setExpenses([
+        for (final e in _expenses)
+          if (e.id != id) e,
+      ]);
+    } else {
+      notifyListeners();
+    }
   }
 }

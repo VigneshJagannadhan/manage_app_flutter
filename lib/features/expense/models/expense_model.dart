@@ -79,7 +79,11 @@ class ExpenseModel {
     };
   }
 
+  // `null` means "unchanged" for every param here, matching ExpenseService.updateExpense's
+  // own request-body semantics (`'title': ?title` etc.) - there's no way to clear a field
+  // back to null through this, same limitation the network path already has.
   ExpenseModel copyWith({
+    String? id,
     String? title,
     double? amount,
     ExpenseCategory? category,
@@ -89,7 +93,7 @@ class ExpenseModel {
     bool? essential,
   }) {
     return ExpenseModel(
-      id: id,
+      id: id ?? this.id,
       title: title ?? this.title,
       amount: amount ?? this.amount,
       category: category ?? this.category,
