@@ -94,9 +94,10 @@ class GlobalDataProvider extends BaseProvider {
     notifyListeners();
     try {
       // Push whatever's pending in the offline write queue before pulling a fresh list -
-      // otherwise a task created/edited on this device could be briefly overwritten (or
-      // missed entirely) by the read-sync below racing ahead of its own write.
+      // otherwise a task/expense created/edited on this device could be briefly overwritten
+      // (or missed entirely) by the read-sync below racing ahead of its own write.
       await taskProvider.flushPending();
+      await expenseProvider.flushPending();
       // Profile must sync first - GroupProvider's active-group resolution falls back to
       // the profile's server-synced defaultGroupId when there's no local pick yet.
       await profileProvider.syncProfile();

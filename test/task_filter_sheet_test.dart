@@ -208,10 +208,16 @@ Future<void> _pumpHome(WidgetTester tester) async {
         )
         ..onInit();
   final fakeExpenseService = _FakeExpenseService();
+  final expenseMutationStore = MutationStore.inMemory();
+  await expenseMutationStore.init();
   final expenseProvider =
       ExpenseProvider(
           expenseService: fakeExpenseService,
-          expenseRepository: ExpenseRepository(remote: fakeExpenseService, cache: JsonCache('test_expense_cache')),
+          expenseRepository: ExpenseRepository(
+            remote: fakeExpenseService,
+            cache: JsonCache('test_expense_cache'),
+            mutations: expenseMutationStore,
+          ),
           groupProvider: groupProvider,
           profileProvider: profileProvider,
         )

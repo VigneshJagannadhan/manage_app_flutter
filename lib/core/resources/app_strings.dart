@@ -4,6 +4,9 @@ class AppStrings {
   static const String couldNotSyncTask = "Couldn't sync this task";
   static const String couldNotSyncTaskMessage =
       "This change couldn't be sent to the server. You can retry, or discard it and keep working.";
+  static const String couldNotSyncExpense = "Couldn't sync this expense";
+  static const String couldNotSyncExpenseMessage =
+      "This change couldn't be sent to the server. You can retry, or discard it and keep working.";
   static const String discard = 'Discard';
 
   static const String manageEverything = 'Manage Everything';
@@ -124,7 +127,6 @@ class AppStrings {
   static const String invalidAmount = 'Enter a valid amount';
   static const String categoryRequired = 'Please select a category';
   static const String expenseDateRequired = 'Date is required';
-  static const String couldNotCreateExpense = 'Could not create expense. Please try again.';
   static const String editExpenseTooltip = 'Edit expense';
 
   // expense detail screen
