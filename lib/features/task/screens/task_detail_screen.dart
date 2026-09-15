@@ -6,7 +6,6 @@ import 'package:huddle/core/extensions/string_extensions.dart';
 import 'package:huddle/core/resources/app_assets.dart';
 import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
-import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
 import 'package:huddle/features/shared/widgets/app_body_column.dart';
 import 'package:huddle/features/shared/widgets/app_button.dart';
@@ -33,9 +32,18 @@ class TaskDetailScreen extends StatefulWidget {
 }
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
-  late TaskModel _task = widget.task;
+  // Resolved fresh on every build via [_resolveTask] - tracked here only so a temp id
+  // (an offline-created task still awaiting its first sync) can follow the swap to a real
+  // server id once one exists, rather than pointing at an id that no longer resolves.
+  late String _taskId = widget.task.id ?? '';
   TaskChangeResult? _pendingResult;
-  bool _isClosing = false;
+
+  late TaskModel _task = widget.task;
+
+  TaskModel _resolveTask(TaskProvider provider) {
+    _taskId = provider.currentIdFor(_taskId);
+    return provider.taskById(_taskId) ?? widget.task;
+  }
 
   bool get _isCompleted => _task.status == TaskStatus.completed;
   TaskPriority get priority => _task.priority ?? TaskPriority.medium;
@@ -78,39 +86,29 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
     if (!mounted || result == null) return;
     switch (result) {
-      case TaskChangeSaved(:final task):
-        setState(() {
-          _task = task;
-          _pendingResult = result;
-        });
+      case TaskChangeSaved():
+        // The edit already applied optimistically in TaskProvider - _resolveTask picks it
+        // up reactively on the next build, nothing to copy over here.
+        setState(() => _pendingResult = result);
       case TaskChangeDeleted():
         navigationService.pop(context, result);
     }
   }
 
   Future<void> _closeTask() async {
-    setState(() => _isClosing = true);
-    try {
-      final updated = await context.read<TaskProvider>().updateTask(
-        id: _task.id!,
-        status: TaskStatus.completed,
-      );
-      if (!mounted) return;
-      navigationService.pop(context, TaskChangeSaved(updated));
-    } on TaskServiceException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
-    } finally {
-      if (mounted) setState(() => _isClosing = false);
-    }
+    // Applies instantly and queues for background delivery - see TaskProvider.updateTask -
+    // so there's nothing to wait on or show a busy state for here.
+    final updated = await context.read<TaskProvider>().updateTask(id: _task.id!, status: TaskStatus.completed);
+    if (!mounted) return;
+    navigationService.pop(context, TaskChangeSaved(updated));
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final taskProvider = context.watch<TaskProvider>();
+    _task = _resolveTask(taskProvider);
     final assigneeName = _resolveAssigneeName(context.watch<GroupProvider>());
     final priorityColor = TaskPriorityBadge.colorFor(priority, colorScheme);
 
@@ -176,16 +174,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             Expanded(
               child: AppButton.secondary(
                 label: AppStrings.edit,
-                onPressed: _isClosing ? null : _editTask,
+                onPressed: _editTask,
                 color: priorityColor,
               ),
             ),
             Expanded(
               child: AppButton.primary(
-                label: _isCompleted
-                    ? AppStrings.completed
-                    : (_isClosing ? AppStrings.closing : AppStrings.closeTask),
-                onPressed: (_isCompleted || _isClosing) ? null : _closeTask,
+                label: _isCompleted ? AppStrings.completed : AppStrings.closeTask,
+                onPressed: _isCompleted ? null : _closeTask,
                 color: priorityColor,
               ),
             ),

@@ -8,6 +8,7 @@ import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/auth/providers/auth_provider.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
+import 'package:huddle/features/expense/providers/expense_provider.dart';
 import 'package:huddle/features/expense/screens/expense_form_screen.dart';
 import 'package:huddle/features/expense/widgets/expense_category_style.dart';
 import 'package:huddle/features/group/models/group_member_model.dart';
@@ -29,8 +30,18 @@ class ExpenseDetailScreen extends StatefulWidget {
 }
 
 class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
-  late ExpenseModel _expense = widget.expense;
+  // Resolved fresh on every build via [_resolveExpense] - tracked here only so a temp id
+  // (an offline-created expense still awaiting its first sync) can follow the swap to a
+  // real server id once one exists, rather than pointing at an id that no longer resolves.
+  late String _expenseId = widget.expense.id ?? '';
   ExpenseChangeResult? _pendingResult;
+
+  late ExpenseModel _expense = widget.expense;
+
+  ExpenseModel _resolveExpense(ExpenseProvider provider) {
+    _expenseId = provider.currentIdFor(_expenseId);
+    return provider.expenseById(_expenseId) ?? widget.expense;
+  }
 
   String get title => _expense.title ?? '';
   ExpenseCategory? get category => _expense.category;
@@ -72,11 +83,10 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
     );
     if (!mounted || result == null) return;
     switch (result) {
-      case ExpenseChangeSaved(:final expense):
-        setState(() {
-          _expense = expense;
-          _pendingResult = result;
-        });
+      case ExpenseChangeSaved():
+        // The edit already applied optimistically in ExpenseProvider - _resolveExpense
+        // picks it up reactively on the next build, nothing to copy over here.
+        setState(() => _pendingResult = result);
       case ExpenseChangeDeleted():
         navigationService.pop(context, result);
     }
@@ -86,6 +96,8 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen> {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final expenseProvider = context.watch<ExpenseProvider>();
+    _expense = _resolveExpense(expenseProvider);
     final groupProvider = context.watch<GroupProvider>();
     final currentUserId = context.watch<AuthProvider>().currentUser?.id;
     final groupId = _expense.groupId;

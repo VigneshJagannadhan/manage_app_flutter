@@ -1,6 +1,13 @@
 class AppStrings {
   // global sync
   static const String syncing = 'Syncing...';
+  static const String couldNotSyncTask = "Couldn't sync this task";
+  static const String couldNotSyncTaskMessage =
+      "This change couldn't be sent to the server. You can retry, or discard it and keep working.";
+  static const String couldNotSyncExpense = "Couldn't sync this expense";
+  static const String couldNotSyncExpenseMessage =
+      "This change couldn't be sent to the server. You can retry, or discard it and keep working.";
+  static const String discard = 'Discard';
 
   static const String manageEverything = 'Manage Everything';
   static const String manageYourTasks = 'Manage your tasks';
@@ -10,7 +17,6 @@ class AppStrings {
   static const String due = 'Due';
   static const String created = 'Created';
   static const String edit = 'Edit';
-  static const String closing = 'Closing...';
   static const String closeTask = 'Close Task';
   static const String retry = 'Retry';
   static const String cancel = 'Cancel';
@@ -52,7 +58,6 @@ class AppStrings {
   // task form validation
   static const String pleaseSelectPriority = 'Please select a priority';
   static const String taskNameRequired = 'Task name is required';
-  static const String couldNotCreateTask = 'Could not create task. Please try again.';
 
   // tooltips
   static const String backTooltip = 'Back';
@@ -122,7 +127,6 @@ class AppStrings {
   static const String invalidAmount = 'Enter a valid amount';
   static const String categoryRequired = 'Please select a category';
   static const String expenseDateRequired = 'Date is required';
-  static const String couldNotCreateExpense = 'Could not create expense. Please try again.';
   static const String editExpenseTooltip = 'Edit expense';
 
   // expense detail screen

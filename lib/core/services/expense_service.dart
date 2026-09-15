@@ -6,9 +6,14 @@ import 'package:huddle/core/services/api_services.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
 
 class ExpenseServiceException implements Exception {
-  ExpenseServiceException(this.message);
+  ExpenseServiceException(this.message, {this.type = FailureType.unknown, this.statusCode});
 
   final String message;
+  // Lets callers (e.g. the offline mutation queue's replay step) tell a transient failure
+  // (timeout, no connection) apart from a permanent server rejection (4xx) without
+  // re-parsing `message`.
+  final FailureType type;
+  final int? statusCode;
 
   @override
   String toString() => message;
@@ -66,7 +71,10 @@ class ExpenseService {
   }
 
   T _unwrap<T>(ApiResult<T> result) {
-    return result.when(success: (data) => data, failure: (failure) => throw ExpenseServiceException(failure.message));
+    return result.when(
+      success: (data) => data,
+      failure: (failure) => throw ExpenseServiceException(failure.message, type: failure.type, statusCode: failure.statusCode),
+    );
   }
 }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:huddle/core/enums/expense_enums.dart';
 import 'package:huddle/core/extensions/string_extensions.dart';
 import 'package:huddle/core/resources/app_strings.dart';
-import 'package:huddle/core/services/expense_service.dart';
 import 'package:huddle/core/services/navigation_service.dart';
 import 'package:huddle/features/auth/providers/auth_provider.dart';
 import 'package:huddle/features/expense/models/expense_model.dart';
@@ -65,12 +64,8 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
   late ExpenseCategory? _selectedCategory = widget.expense?.category;
   late DateTime? _date = widget.expense?.date ?? DateTime.now();
   late bool _essential = widget.expense?.essential ?? false;
-  bool _isSubmitting = false;
-  bool _isDeleting = false;
 
   GroupMemberModel? _selectedPayer;
-
-  bool get _isBusy => _isSubmitting || _isDeleting;
 
   // Payer/splits only apply at creation - the API doesn't support editing them on an
   // existing expense yet, so this screen only offers title/amount/category/date when editing.
@@ -124,48 +119,33 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
 
     final title = _titleController.text.trim();
     final amount = double.parse(_amountController.text.trim());
-
-    setState(() => _isSubmitting = true);
-    try {
-      final expenseProvider = context.read<ExpenseProvider>();
-      final expense = _isEditing
-          ? await expenseProvider.updateExpense(
-              id: widget.expense!.id!,
+    final expenseProvider = context.read<ExpenseProvider>();
+    // Applies instantly and queues for background delivery, online or offline - see
+    // ExpenseProvider's mutation methods - so there's nothing to wait on here.
+    final expense = _isEditing
+        ? await expenseProvider.updateExpense(
+            id: widget.expense!.id!,
+            title: title,
+            amount: amount,
+            category: _selectedCategory!,
+            date: _date!,
+            essential: _essential,
+          )
+        : await expenseProvider.createExpense(
+            ExpenseModel(
               title: title,
               amount: amount,
               category: _selectedCategory!,
               date: _date!,
+              createdAt: null,
+              groupId: _activeGroupId,
+              payerId: _selectedPayer?.userId,
+              splits: const <ExpenseSplit>[],
               essential: _essential,
-            )
-          : await expenseProvider.createExpense(
-              ExpenseModel(
-                title: title,
-                amount: amount,
-                category: _selectedCategory!,
-                date: _date!,
-                createdAt: null,
-                groupId: _activeGroupId,
-                payerId: _selectedPayer?.userId,
-                splits: const <ExpenseSplit>[],
-                essential: _essential,
-              ),
-            );
-      if (!mounted) return;
-      if (expense == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppStrings.couldNotCreateExpense)),
-        );
-        return;
-      }
-      navigationService.pop(context, ExpenseChangeSaved(expense));
-    } on ExpenseServiceException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
-    }
+            ),
+          );
+    if (!mounted) return;
+    navigationService.pop(context, ExpenseChangeSaved(expense));
   }
 
   Future<void> _delete() async {
@@ -191,20 +171,10 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
     );
     if (confirmed != true || !mounted) return;
 
-    setState(() => _isDeleting = true);
-    try {
-      final id = widget.expense!.id!;
-      await context.read<ExpenseProvider>().deleteExpense(id);
-      if (!mounted) return;
-      navigationService.pop(context, ExpenseChangeDeleted(id));
-    } on ExpenseServiceException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
-    } finally {
-      if (mounted) setState(() => _isDeleting = false);
-    }
+    final id = widget.expense!.id!;
+    await context.read<ExpenseProvider>().deleteExpense(id);
+    if (!mounted) return;
+    navigationService.pop(context, ExpenseChangeDeleted(id));
   }
 
   @override
@@ -224,7 +194,6 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
             AppTextField(
               label: AppStrings.expenseTitleLabel,
               controller: _titleController,
-              enabled: !_isBusy,
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? AppStrings.expenseTitleRequired
                   : null,
@@ -232,7 +201,6 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
             AppTextField(
               label: AppStrings.amountLabel,
               controller: _amountController,
-              enabled: !_isBusy,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -252,7 +220,6 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
               value: _selectedCategory,
               items: ExpenseCategory.values,
               itemLabelBuilder: (item) => item.name.toTitleCase,
-              enabled: !_isBusy,
               onChanged: (value) {
                 _selectedCategory = value;
                 setState(() {});
@@ -261,7 +228,6 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
             AppDatePicker(
               label: AppStrings.dateLabel,
               value: _date,
-              enabled: !_isBusy,
               lastDate: DateTime.now(),
               validator: (value) =>
                   value == null ? AppStrings.expenseDateRequired : null,
@@ -272,27 +238,17 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
               controlAffinity: ListTileControlAffinity.leading,
               title: const Text(AppStrings.essentialLabel),
               value: _essential,
-              onChanged: _isBusy
-                  ? null
-                  : (checked) => setState(() => _essential = checked ?? false),
+              onChanged: (checked) => setState(() => _essential = checked ?? false),
             ),
             if (!_isEditing) ..._buildGroupFields(),
             AppButton.primary(
-              label: _isSubmitting
-                  ? (_isEditing ? AppStrings.saving : AppStrings.creating)
-                  : (_isEditing
-                        ? AppStrings.saveChanges
-                        : AppStrings.createExpense),
-              onPressed: (_isBusy || (!_isEditing && _activeGroupId == null))
-                  ? null
-                  : _submit,
+              label: _isEditing ? AppStrings.saveChanges : AppStrings.createExpense,
+              onPressed: (!_isEditing && _activeGroupId == null) ? null : _submit,
             ),
             if (_isEditing)
               AppButton.destructive(
-                label: _isDeleting
-                    ? AppStrings.deleting
-                    : AppStrings.deleteExpense,
-                onPressed: _isBusy ? null : _delete,
+                label: AppStrings.deleteExpense,
+                onPressed: _delete,
               ),
           ],
         ),
@@ -320,7 +276,6 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
         members: members,
         value: _selectedPayer,
         currentUserId: currentUserId,
-        enabled: !_isBusy,
         onChanged: (member) => setState(() => _selectedPayer = member),
       ),
     ];

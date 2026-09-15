@@ -145,6 +145,8 @@ class _AllExpensesScreenState extends State<AllExpensesScreen> {
                             expense: expense,
                             groupName: groupProvider.showAllGroups ? groupProvider.nameForGroup(expense.groupId) : null,
                             onTap: () => _openExpenseDetail(context, expense),
+                            syncState: provider.syncStateFor(expense.id!),
+                            onTapFailedSync: () => showExpenseSyncActionSheet(context, provider, expense.id!),
                           ),
                         ),
                       ],

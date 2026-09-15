@@ -3,7 +3,6 @@ import 'package:huddle/core/enums/task_enums.dart';
 import 'package:huddle/core/extensions/string_extensions.dart';
 import 'package:huddle/core/resources/app_strings.dart';
 import 'package:huddle/core/services/navigation_service.dart';
-import 'package:huddle/core/services/task_service.dart';
 import 'package:huddle/features/auth/providers/auth_provider.dart';
 import 'package:huddle/features/group/models/group_member_model.dart';
 import 'package:huddle/features/group/providers/group_provider.dart';
@@ -64,11 +63,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   late TimeOfDay? _dueTime = widget.task?.dueDate != null
       ? TimeOfDay.fromDateTime(widget.task!.dueDate!)
       : null;
-  bool _isSubmitting = false;
-  bool _isDeleting = false;
   GroupMemberModel? _selectedAssignee;
-
-  bool get _isBusy => _isSubmitting || _isDeleting;
 
   // Assignment only happens at creation - the API doesn't support reassigning an
   // existing task, so an already-created task's assignee is display-only (see TaskDetailScreen).
@@ -122,56 +117,42 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       return;
     }
 
-    setState(() => _isSubmitting = true);
-    try {
-      final dueDate = _dueDate == null
-          ? null
-          : DateTime(
-              _dueDate!.year,
-              _dueDate!.month,
-              _dueDate!.day,
-              _dueTime?.hour ?? 0,
-              _dueTime?.minute ?? 0,
-            );
-      final title = _titleController.text.trim();
-      final descriptionText = _descriptionController.text.trim();
-      final description = descriptionText.isEmpty ? null : descriptionText;
-      final taskProvider = context.read<TaskProvider>();
-      final task = _isEditing
-          ? await taskProvider.updateTask(
-              id: widget.task!.id!,
+    final dueDate = _dueDate == null
+        ? null
+        : DateTime(
+            _dueDate!.year,
+            _dueDate!.month,
+            _dueDate!.day,
+            _dueTime?.hour ?? 0,
+            _dueTime?.minute ?? 0,
+          );
+    final title = _titleController.text.trim();
+    final descriptionText = _descriptionController.text.trim();
+    final description = descriptionText.isEmpty ? null : descriptionText;
+    final taskProvider = context.read<TaskProvider>();
+    // Applies instantly and queues for background delivery, online or offline - see
+    // TaskProvider's mutation methods - so there's nothing to wait on here.
+    final task = _isEditing
+        ? await taskProvider.updateTask(
+            id: widget.task!.id!,
+            title: title,
+            description: description,
+            priority: _selectedPriority!,
+            dueDate: dueDate,
+          )
+        : await taskProvider.createTask(
+            TaskModel(
               title: title,
               description: description,
               priority: _selectedPriority!,
               dueDate: dueDate,
-            )
-          : await taskProvider.createTask(
-              TaskModel(
-                title: title,
-                description: description,
-                priority: _selectedPriority!,
-                dueDate: dueDate,
-                createdAt: null,
-                groupId: _activeGroupId,
-                assignedTo: _selectedAssignee?.userId,
-              ),
-            );
-      if (!mounted) return;
-      if (task == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppStrings.couldNotCreateTask)),
-        );
-        return;
-      }
-      navigationService.pop(context, TaskChangeSaved(task));
-    } on TaskServiceException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
-    }
+              createdAt: null,
+              groupId: _activeGroupId,
+              assignedTo: _selectedAssignee?.userId,
+            ),
+          );
+    if (!mounted) return;
+    navigationService.pop(context, TaskChangeSaved(task));
   }
 
   Future<void> _delete() async {
@@ -197,20 +178,10 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     );
     if (confirmed != true || !mounted) return;
 
-    setState(() => _isDeleting = true);
-    try {
-      final id = widget.task!.id!;
-      await context.read<TaskProvider>().deleteTask(id);
-      if (!mounted) return;
-      navigationService.pop(context, TaskChangeDeleted(id));
-    } on TaskServiceException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
-    } finally {
-      if (mounted) setState(() => _isDeleting = false);
-    }
+    final id = widget.task!.id!;
+    await context.read<TaskProvider>().deleteTask(id);
+    if (!mounted) return;
+    navigationService.pop(context, TaskChangeDeleted(id));
   }
 
   @override
@@ -228,7 +199,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             AppTextField(
               label: AppStrings.taskNameLabel,
               controller: _titleController,
-              enabled: !_isBusy,
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? AppStrings.taskNameRequired
                   : null,
@@ -236,7 +206,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             AppTextField(
               label: AppStrings.descriptionLabel,
               controller: _descriptionController,
-              enabled: !_isBusy,
               maxLines: 3,
             ),
             AppDropdownField<TaskPriority>(
@@ -244,7 +213,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               value: _selectedPriority,
               items: TaskPriority.values,
               itemLabelBuilder: (item) => item.name.toTitleCase,
-              enabled: !_isBusy,
               onChanged: (value) {
                 _selectedPriority = value;
                 setState(() {});
@@ -253,7 +221,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             AppDatePicker(
               label: AppStrings.dueDateLabel,
               value: _dueDate,
-              enabled: !_isBusy,
               // Editing a task whose due date is already in the past must not raise the
               // picker's date range below that existing value.
               firstDate: _dueDate != null && _dueDate!.isBefore(DateTime.now())
@@ -264,27 +231,18 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             AppTimePicker(
               label: AppStrings.dueTimeLabel,
               value: _dueTime,
-              enabled: !_isBusy,
               onChanged: (value) => _dueTime = value,
             ),
             if (!_isEditing && _activeGroupId == null)
               const BodyText.medium(AppStrings.noActiveGroupMessage),
             AppButton.primary(
-              label: _isSubmitting
-                  ? (_isEditing ? AppStrings.saving : AppStrings.creating)
-                  : (_isEditing
-                        ? AppStrings.saveChanges
-                        : AppStrings.createTask),
-              onPressed: (_isBusy || (!_isEditing && _activeGroupId == null))
-                  ? null
-                  : _submit,
+              label: _isEditing ? AppStrings.saveChanges : AppStrings.createTask,
+              onPressed: (!_isEditing && _activeGroupId == null) ? null : _submit,
             ),
             if (_isEditing)
               AppButton.destructive(
-                label: _isDeleting
-                    ? AppStrings.deleting
-                    : AppStrings.deleteTask,
-                onPressed: _isBusy ? null : _delete,
+                label: AppStrings.deleteTask,
+                onPressed: _delete,
               ),
           ],
         ),
